@@ -1,20 +1,19 @@
-# Storage
+# ذخیره‌سازی {#storage}
 
-## Storage directories
+## پوشه‌های ذخیره‌سازی {#storage-directories}
 
-uv uses the following high-level directories for storage.
+uv از پوشه‌های سطح بالای زیر برای ذخیره‌سازی استفاده می‌کند.
 
-For each location, uv checks for the existence of environment variables in the given order and uses
-the first path found.
+برای هر مکان، uv وجود environment variableها را به ترتیبی که داده شده بررسی می‌کند و از اولین
+مسیری که پیدا شود استفاده می‌کند.
 
-The paths of storage directories are platform-specific. uv follows the
-[XDG](https://specifications.freedesktop.org/basedir-spec/latest/) conventions on Linux and macOS
-and the [Known Folder](https://learn.microsoft.com/en-us/windows/win32/shell/known-folders) scheme
-on Windows.
+مسیرهای پوشه‌های ذخیره‌سازی به platform وابسته‌اند. uv در Linux و macOS از قراردادهای
+[XDG](https://specifications.freedesktop.org/basedir-spec/latest/) و در Windows از طرح
+[Known Folder](https://learn.microsoft.com/en-us/windows/win32/shell/known-folders) پیروی می‌کند.
 
-### Temporary directory
+### پوشهٔ موقت {#temporary-directory}
 
-The temporary directory is used for ephemeral data.
+پوشهٔ موقت برای داده‌های موقت استفاده می‌شود.
 
 === "Unix"
 
@@ -27,9 +26,10 @@ The temporary directory is used for ephemeral data.
     1. `%TEMP%`
     1. `%USERPROFILE%`
 
-### Cache directory
+### پوشهٔ cache {#cache-directory}
 
-The cache directory is used for disposable data that is useful to keep between invocations.
+پوشهٔ cache برای داده‌های دورریختنی‌ای استفاده می‌شود که نگه داشتن آن‌ها بین فراخوانی‌ها مفید
+است.
 
 === "Unix"
 
@@ -39,11 +39,11 @@ The cache directory is used for disposable data that is useful to keep between i
 === "Windows"
 
     1. `%LOCALAPPDATA%\uv\cache`
-    1. `uv\cache` within [`FOLDERID_LocalAppData`](https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid#FOLDERID_LocalAppData)
+    1. `uv\cache` درون [`FOLDERID_LocalAppData`](https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid#FOLDERID_LocalAppData)
 
-### Persistent data directory
+### پوشهٔ داده‌های ماندگار {#persistent-data-directory}
 
-The persistent data directory is used for non-disposable data.
+پوشهٔ داده‌های ماندگار برای داده‌های غیر دورریختنی استفاده می‌شود.
 
 === "Unix"
 
@@ -56,11 +56,11 @@ The persistent data directory is used for non-disposable data.
     1. `%APPDATA%\uv\data`
     1. `.\.uv`
 
-### Configuration directories
+### پوشه‌های پیکربندی {#configuration-directories}
 
-The configuration directories are used to store changes to uv's settings.
+پوشه‌های پیکربندی برای ذخیرهٔ تغییرات تنظیمات uv استفاده می‌شوند.
 
-User-level configuration
+پیکربندی در سطح کاربر
 
 === "Unix"
 
@@ -70,9 +70,9 @@ User-level configuration
 === "Windows"
 
     1. `%APPDATA%\uv`
-    1. `uv` within [`FOLDERID_RoamingAppData`](https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid#FOLDERID_RoamingAppData)
+    1. `uv` درون [`FOLDERID_RoamingAppData`](https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid#FOLDERID_RoamingAppData)
 
-System-level configuration
+پیکربندی در سطح سیستم
 
 === "Unix"
 
@@ -82,12 +82,12 @@ System-level configuration
 === "Windows"
 
     1. `%PROGRAMDATA%\uv`
-    1. `uv` within [`FOLDERID_AppDataProgramData`](https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid#FOLDERID_AppDataProgramData)
+    1. `uv` درون [`FOLDERID_AppDataProgramData`](https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid#FOLDERID_AppDataProgramData)
 
-### Executable directory
+### پوشهٔ اجرایی {#executable-directory}
 
-The executable directory is used to store files that can be run by the user, i.e., a directory that
-should be on the `PATH`.
+پوشهٔ اجرایی برای ذخیرهٔ فایل‌هایی استفاده می‌شود که کاربر می‌تواند آن‌ها را اجرا کند؛ یعنی
+پوشه‌ای که باید در `PATH` باشد.
 
 === "Unix"
 
@@ -101,106 +101,111 @@ should be on the `PATH`.
     1. `%XDG_DATA_HOME%\..\bin`
     1. `%USERPROFILE%\.local\bin`
 
-## Types of data
+## انواع داده {#types-of-data}
 
-### Dependency cache
+### cache مربوط به dependencyها {#dependency-cache}
 
-uv uses a local cache to avoid re-downloading and re-building dependencies.
+uv از یک cache محلی استفاده می‌کند تا از دانلود و build دوبارهٔ dependencyها جلوگیری کند.
 
-By default, the cache is stored in the [cache directory](#cache-directory) but it can be overridden
-via command line arguments, environment variables, or settings as detailed in
-[the cache documentation](../concepts/cache.md#cache-directory). When the cache is disabled, the
-cache will be stored in a [temporary directory](#temporary-directory).
+به‌طور پیش‌فرض، cache در [پوشهٔ cache](#cache-directory) ذخیره می‌شود، اما می‌توان آن را با
+آرگومان‌های خط فرمان، environment variableها یا تنظیمات، آن‌طور که در
+[مستندات cache](../concepts/cache.md#cache-directory) آمده، جایگزین کرد. وقتی cache غیرفعال
+باشد، cache در یک [پوشهٔ موقت](#temporary-directory) ذخیره می‌شود.
 
-Use `uv cache dir` to show the current cache directory path.
+برای نمایش مسیر فعلی پوشهٔ cache، از `uv cache dir` استفاده کنید.
 
 !!! important
 
-    For optimal performance, the cache directory needs to be on the same filesystem as virtual
-    environments.
+    برای عملکرد بهینه، پوشهٔ cache باید روی همان سیستم فایلی باشد که virtual environmentها روی
+    آن قرار دارند.
 
-### Python versions
+### نسخه‌های Python {#python-versions}
 
-uv can install managed [Python versions](../concepts/python-versions.md), e.g., with
+uv می‌تواند [نسخه‌های Python](../concepts/python-versions.md) مدیریت‌شده را نصب کند، مثلاً با
 `uv python install`.
 
-By default, Python versions managed by uv are stored in a `python/` subdirectory of the
-[persistent data directory](#persistent-data-directory), e.g., `~/.local/share/uv/python`.
+به‌طور پیش‌فرض، نسخه‌های Python مدیریت‌شده توسط uv در یک زیرپوشهٔ `python/` از
+[پوشهٔ داده‌های ماندگار](#persistent-data-directory) ذخیره می‌شوند، مثلاً
+`~/.local/share/uv/python`.
 
-Use `uv python dir` to show the Python installation directory.
+برای نمایش پوشهٔ نصب Python، از `uv python dir` استفاده کنید.
 
-Use the `UV_PYTHON_INSTALL_DIR` environment variable to override the installation directory.
+برای جایگزین کردن پوشهٔ نصب، از environment variable `UV_PYTHON_INSTALL_DIR` استفاده کنید.
 
 !!! note
 
-    Changing where Python is installed will not be automatically reflected in existing virtual environments; they will keep referring to the old location, and will need to be updated manually (e.g. by re-creating them).
+    تغییر محل نصب Python به‌طور خودکار در virtual environmentهای موجود اعمال نمی‌شود؛ آن‌ها
+    همچنان به مکان قبلی اشاره می‌کنند و باید به‌صورت دستی به‌روز شوند (مثلاً با بازسازی آن‌ها).
 
-### Python executables
+### فایل‌های اجرایی Python {#python-executables}
 
-uv installs executables for [Python versions](#python-versions), e.g., `python3.13`.
+uv فایل‌های اجرایی را برای [نسخه‌های Python](#python-versions) نصب می‌کند، مثلاً `python3.13`.
 
-By default, Python executables are stored in the [executable directory](#executable-directory).
+به‌طور پیش‌فرض، فایل‌های اجرایی Python در [پوشهٔ اجرایی](#executable-directory) ذخیره می‌شوند.
 
-Use `uv python dir --bin` to show the Python executable directory.
+برای نمایش پوشهٔ فایل‌های اجرایی Python، از `uv python dir --bin` استفاده کنید.
 
-Use the `UV_PYTHON_BIN_DIR` environment variable to override the Python executable directory.
+برای جایگزین کردن پوشهٔ فایل‌های اجرایی Python، از environment variable `UV_PYTHON_BIN_DIR`
+استفاده کنید.
 
-### Tools
+### toolها {#tools}
 
-uv can install Python packages as [command-line tools](../concepts/tools.md) using
-`uv tool install`.
+uv می‌تواند packageهای Python را به‌عنوان [toolهای خط فرمان](../concepts/tools.md) با
+`uv tool install` نصب کند.
 
-By default, tools are installed in a `tools/` subdirectory of the
-[persistent data directory](#persistent-data-directory), e.g., `~/.local/share/uv/tools`.
+به‌طور پیش‌فرض، toolها در یک زیرپوشهٔ `tools/` از
+[پوشهٔ داده‌های ماندگار](#persistent-data-directory) نصب می‌شوند، مثلاً
+`~/.local/share/uv/tools`.
 
-Use `uv tool dir` to show the tool installation directory.
+برای نمایش پوشهٔ نصب toolها، از `uv tool dir` استفاده کنید.
 
-Use the `UV_TOOL_DIR` environment variable to configure the installation directory.
+برای پیکربندی پوشهٔ نصب، از environment variable `UV_TOOL_DIR` استفاده کنید.
 
-### Tool executables
+### فایل‌های اجرایی toolها {#tool-executables}
 
-uv installs executables for installed [tools](#tools), e.g., `ruff`.
+uv فایل‌های اجرایی را برای [toolهای](#tools) نصب‌شده نصب می‌کند، مثلاً `ruff`.
 
-By default, tool executables are stored in the [executable directory](#executable-directory).
+به‌طور پیش‌فرض، فایل‌های اجرایی toolها در [پوشهٔ اجرایی](#executable-directory) ذخیره می‌شوند.
 
-Use `uv tool dir --bin` to show the tool executable directory.
+برای نمایش پوشهٔ فایل‌های اجرایی toolها، از `uv tool dir --bin` استفاده کنید.
 
-Use the `UV_TOOL_BIN_DIR` environment variable to configure the tool executable directory.
+برای پیکربندی پوشهٔ فایل‌های اجرایی toolها، از environment variable `UV_TOOL_BIN_DIR` استفاده
+کنید.
 
-### The uv executable
+### فایل اجرایی uv {#the-uv-executable}
 
-When using uv's [standalone installer](./installer.md) to install uv, the `uv` and `uvx` executables
-are installed into the [executable directory](#executable-directory).
+وقتی از [نصب‌کنندهٔ مستقل](./installer.md) uv برای نصب uv استفاده می‌کنید، فایل‌های اجرایی `uv`
+و `uvx` در [پوشهٔ اجرایی](#executable-directory) نصب می‌شوند.
 
-Use the `UV_INSTALL_DIR` environment variable to configure uv's installation directory.
+برای پیکربندی پوشهٔ نصب uv، از environment variable `UV_INSTALL_DIR` استفاده کنید.
 
-### Configuration files
+### فایل‌های پیکربندی {#configuration-files}
 
-uv's behavior can be configured through TOML files.
+رفتار uv را می‌توان از طریق فایل‌های TOML پیکربندی کرد.
 
-Configuration files are discovered in the [configuration directories](#configuration-directories).
+فایل‌های پیکربندی در [پوشه‌های پیکربندی](#configuration-directories) پیدا می‌شوند.
 
-For more details, see the [configuration files documentation](../concepts/configuration-files.md).
+برای جزئیات بیشتر، [مستندات فایل‌های پیکربندی](../concepts/configuration-files.md) را ببینید.
 
-### Project virtual environments
+### virtual environmentهای project {#project-virtual-environments}
 
-When working on [projects](../concepts/projects/index.md), uv creates a dedicated virtual
-environment for each project.
+هنگام کار روی [projectها](../concepts/projects/index.md)، uv برای هر project یک virtual environment
+اختصاصی می‌سازد.
 
-By default, project virtual environments are created in `.venv` in the project or workspace root,
-i.e., next to the `pyproject.toml`.
+به‌طور پیش‌فرض، virtual environmentهای project در `.venv` در ریشهٔ project یا workspace ساخته
+می‌شوند؛ یعنی در کنار `pyproject.toml`.
 
-Use the `UV_PROJECT_ENVIRONMENT` environment variable to override this location. For more details,
-see the
-[projects environment documentation](../concepts/projects/config.md#project-environment-path).
+برای جایگزین کردن این مکان، از environment variable `UV_PROJECT_ENVIRONMENT` استفاده کنید. برای
+جزئیات بیشتر، [مستندات environment مربوط به projectها](../concepts/projects/config.md#project-environment-path)
+را ببینید.
 
-With the [`centralized-project-envs` preview feature](../concepts/preview.md), uv stores default
-project environments in the [cache directory](#cache-directory). They can be removed by
-`uv cache clean` or `uv cache prune` and are recreated when next needed. See the
-[centralized project environments](../concepts/projects/layout.md#centralized-project-environments)
-documentation for details.
+با [قابلیت پیش‌نمایش `centralized-project-envs`](../concepts/preview.md)، uv environmentهای
+پیش‌فرض project را در [پوشهٔ cache](#cache-directory) ذخیره می‌کند. می‌توان آن‌ها را با
+`uv cache clean` یا `uv cache prune` حذف کرد و هنگام نیاز بعدی دوباره ساخته می‌شوند. برای جزئیات،
+مستندات [environmentهای متمرکز project](../concepts/projects/layout.md#centralized-project-environments)
+را ببینید.
 
-### Script virtual environments
+### virtual environmentهای script {#script-virtual-environments}
 
-When running [scripts with inline metadata](../guides/scripts.md), uv creates a dedicated virtual
-environment for each script in the [cache directory](#cache-directory).
+هنگام اجرای [scriptهای دارای metadata درون‌خطی](../guides/scripts.md)، uv برای هر script یک virtual
+environment اختصاصی در [پوشهٔ cache](#cache-directory) می‌سازد.

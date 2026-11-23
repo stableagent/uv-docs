@@ -1,26 +1,27 @@
 ---
-title: Running scripts
+title: اجرای scriptها
 description:
-  A guide to using uv to run Python scripts, including support for inline dependency metadata,
-  reproducible scripts, and more.
+  راهنمای استفاده از uv برای اجرای scriptهای Python، شامل پشتیبانی از inline dependency metadata،
+  scriptهای تکرارپذیر و موارد دیگر.
 ---
 
-# Running scripts
+# اجرای scriptها {#running-scripts}
 
-A Python script is a file intended for standalone execution, e.g., with `python <script>.py`. Using
-uv to execute scripts ensures that script dependencies are managed without manually managing
-environments.
+یک script در Python فایلی است که برای اجرای مستقل در نظر گرفته شده است، مثلاً با
+`python <script>.py`. استفاده از uv برای اجرای scriptها تضمین می‌کند که dependencyهای script بدون
+مدیریت دستی environmentها مدیریت شوند.
 
 !!! note
 
-    If you are not familiar with Python environments: every Python installation has an environment
-    that packages can be installed in. Typically, creating [_virtual_ environments](https://docs.python.org/3/library/venv.html) is recommended to
-    isolate packages required by each script. uv automatically manages virtual environments for you
-    and prefers a [declarative](#declaring-script-dependencies) approach to dependencies.
+    اگر با environmentهای Python آشنا نیستید: هر نصب Python یک environment دارد که packageها
+    می‌توانند در آن نصب شوند. معمولاً توصیه می‌شود برای جداسازی packageهای موردنیاز هر script،
+    [_virtual_ environments](https://docs.python.org/3/library/venv.html) ایجاد کنید. uv به‌طور
+    خودکار virtual environmentها را برای شما مدیریت می‌کند و رویکرد
+    [اعلانی](#declaring-script-dependencies) را برای dependencyها ترجیح می‌دهد.
 
-## Running a script without dependencies
+## اجرای یک script بدون dependency {#running-a-script-without-dependencies}
 
-If your script has no dependencies, you can execute it with `uv run`:
+اگر script شما dependency ندارد، می‌توانید آن را با `uv run` اجرا کنید:
 
 ```python title="example.py"
 print("Hello world")
@@ -33,7 +34,7 @@ Hello world
 
 <!-- TODO(zanieb): Once we have a `python` shim, note you can execute it with `python` here -->
 
-Similarly, if your script depends on a module in the standard library, there's nothing more to do:
+به همین ترتیب، اگر script شما به یک module در کتابخانهٔ استاندارد وابسته است، کار دیگری لازم نیست:
 
 ```python title="example.py"
 import os
@@ -46,7 +47,7 @@ $ uv run example.py
 /Users/astral
 ```
 
-Arguments may be provided to the script:
+می‌توان به script آرگومان داد:
 
 ```python title="example.py"
 import sys
@@ -62,13 +63,13 @@ $ uv run example.py hello world!
 hello world!
 ```
 
-Additionally, your script can be read directly from stdin:
+همچنین، script شما می‌تواند مستقیماً از stdin خوانده شود:
 
 ```console
 $ echo 'print("hello world!")' | uv run -
 ```
 
-Or, if your shell supports [here-documents](https://en.wikipedia.org/wiki/Here_document):
+یا، اگر shell شما از [here-documentها](https://en.wikipedia.org/wiki/Here_document) پشتیبانی می‌کند:
 
 ```bash
 uv run - <<EOF
@@ -76,27 +77,27 @@ print("hello world!")
 EOF
 ```
 
-Note that if you use `uv run` in a _project_, i.e., a directory with a `pyproject.toml`, it will
-install the current project before running the script. If your script does not depend on the
-project, use the `--no-project` flag to skip this:
+توجه کنید که اگر از `uv run` در یک _project_ استفاده کنید، یعنی در پوشه‌ای که یک
+`pyproject.toml` دارد، پیش از اجرای script، project فعلی نصب می‌شود. اگر script شما به project
+وابسته نیست، برای رد کردن این کار از فلگ `--no-project` استفاده کنید:
 
 ```console
 $ # Note: the `--no-project` flag must be provided _before_ the script name.
 $ uv run --no-project example.py
 ```
 
-See the [projects guide](./projects.md) for more details on working in projects.
+برای جزئیات بیشتر دربارهٔ کار در projectها، به [راهنمای projectها](./projects.md) مراجعه کنید.
 
-## Running a script with dependencies
+## اجرای یک script با dependencyها {#running-a-script-with-dependencies}
 
-When your script requires other packages, they must be installed into the environment that the
-script runs in. uv prefers to create these environments on-demand instead of using a long-lived
-virtual environment with manually managed dependencies. This requires explicit declaration of
-dependencies that are required for the script. Generally, it's recommended to use a
-[project](./projects.md) or [inline metadata](#declaring-script-dependencies) to declare
-dependencies, but uv supports requesting dependencies per invocation as well.
+وقتی script شما به packageهای دیگری نیاز دارد، آن‌ها باید در environmentای نصب شوند که script در
+آن اجرا می‌شود. uv ترجیح می‌دهد این environmentها را در صورت نیاز ایجاد کند، به‌جای استفاده از یک
+virtual environment بلندمدت با dependencyهایی که به‌صورت دستی مدیریت می‌شوند. این کار به اعلان
+صریح dependencyهای موردنیاز script نیاز دارد. به‌طور کلی، توصیه می‌شود برای اعلان dependencyها از
+یک [project](./projects.md) یا [inline metadata](#declaring-script-dependencies) استفاده کنید، اما
+uv از درخواست dependency در هر فراخوانی نیز پشتیبانی می‌کند.
 
-For example, the following script requires `rich`.
+برای مثال، script زیر به `rich` نیاز دارد.
 
 ```python title="example.py"
 import time
@@ -106,7 +107,7 @@ for i in track(range(20), description="For example:"):
     time.sleep(0.05)
 ```
 
-If executed without specifying a dependency, this script will fail:
+اگر این script بدون مشخص کردن dependency اجرا شود، با خطا مواجه می‌شود:
 
 ```console
 $ uv run --no-project example.py
@@ -116,47 +117,47 @@ Traceback (most recent call last):
 ModuleNotFoundError: No module named 'rich'
 ```
 
-Request the dependency using the `--with` option:
+dependency را با گزینهٔ `--with` درخواست کنید:
 
 ```console
 $ uv run --with rich example.py
 For example: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:01
 ```
 
-Constraints can be added to the requested dependency if specific versions are needed:
+اگر به نسخه‌های خاصی نیاز است، می‌توان به dependency درخواستی constraint اضافه کرد:
 
 ```console
 $ uv run --with 'rich>12,<13' example.py
 ```
 
-Multiple dependencies can be requested by repeating the `--with` option.
+با تکرار گزینهٔ `--with` می‌توان چند dependency درخواست کرد.
 
-Note that if `uv run` is used in a _project_, these dependencies will be included _in addition_ to
-the project's dependencies. To opt-out of this behavior, use the `--no-project` flag.
+توجه کنید که اگر `uv run` در یک _project_ استفاده شود، این dependencyها _علاوه بر_ dependencyهای
+project لحاظ می‌شوند. برای انصراف از این رفتار، از فلگ `--no-project` استفاده کنید.
 
-## Creating a Python script
+## ایجاد یک script در Python {#creating-a-python-script}
 
-Python recently added a standard format for
-[inline script metadata](https://packaging.python.org/en/latest/specifications/inline-script-metadata/#inline-script-metadata).
-It allows for selecting Python versions and defining dependencies. Use `uv init --script` to
-initialize scripts with the inline metadata:
+Python به‌تازگی یک قالب استاندارد برای
+[inline script metadata](https://packaging.python.org/en/latest/specifications/inline-script-metadata/#inline-script-metadata)
+اضافه کرده است. این قالب امکان انتخاب Python versionها و تعریف dependencyها را فراهم می‌کند. برای
+مقداردهی اولیهٔ scriptها با inline metadata از `uv init --script` استفاده کنید:
 
 ```console
 $ uv init --script example.py --python 3.12
 ```
 
-## Declaring script dependencies
+## اعلان dependencyهای script {#declaring-script-dependencies}
 
-The inline metadata format allows the dependencies for a script to be declared in the script itself.
+قالب inline metadata امکان می‌دهد dependencyهای یک script در خود script اعلان شوند.
 
-uv supports adding and updating inline script metadata for you. Use `uv add --script` to declare the
-dependencies for the script:
+uv افزودن و به‌روزرسانی inline script metadata را برای شما پشتیبانی می‌کند. برای اعلان dependencyهای
+script از `uv add --script` استفاده کنید:
 
 ```console
 $ uv add --script example.py 'requests<3' 'rich'
 ```
 
-This will add a `script` section at the top of the script declaring the dependencies using TOML:
+این کار یک بخش `script` در بالای script اضافه می‌کند که dependencyها را با TOML اعلان می‌کند:
 
 ```python title="example.py"
 # /// script
@@ -174,7 +175,7 @@ data = resp.json()
 pprint([(k, v["title"]) for k, v in data.items()][:10])
 ```
 
-uv will automatically create an environment with the dependencies necessary to run the script, e.g.:
+uv به‌طور خودکار یک environment با dependencyهای لازم برای اجرای script ایجاد می‌کند، مثلاً:
 
 ```console
 $ uv run example.py
@@ -194,9 +195,11 @@ $ uv run example.py
 
 !!! important
 
-    When using inline script metadata, even if `uv run` is [used in a _project_](../concepts/projects/run.md), the project's dependencies will be ignored. The `--no-project` flag is not required.
+    هنگام استفاده از inline script metadata، حتی اگر `uv run` در یک
+    [_project_](../concepts/projects/run.md) استفاده شود، dependencyهای project نادیده گرفته
+    می‌شوند. فلگ `--no-project` لازم نیست.
 
-uv also respects Python version requirements:
+uv به الزامات Python version نیز احترام می‌گذارد:
 
 ```python title="example.py"
 # /// script
@@ -211,18 +214,18 @@ print(Point)
 
 !!! note
 
-    The `dependencies` field must be provided even if empty.
+    فیلد `dependencies` حتی اگر خالی باشد نیز باید ارائه شود.
 
-`uv run` will search for and use the required Python version. The Python version will download if it
-is not installed — see the documentation on [Python versions](../concepts/python-versions.md) for
-more details.
+`uv run` نسخهٔ موردنیاز Python را جستجو و استفاده می‌کند. اگر Python version نصب نشده باشد، دانلود
+می‌شود — برای جزئیات بیشتر به مستندات [Python versionها](../concepts/python-versions.md) مراجعه
+کنید.
 
-## Using a shebang to create an executable file
+## استفاده از shebang برای ایجاد یک فایل اجرایی {#using-a-shebang-to-create-an-executable-file}
 
-A shebang can be added to make a script executable without using `uv run` — this makes it easy to
-run scripts that are on your `PATH` or in the current folder.
+می‌توان یک shebang اضافه کرد تا script بدون استفاده از `uv run` اجرایی شود — این کار اجرای
+scriptهایی را که در `PATH` شما یا در پوشهٔ فعلی هستند آسان می‌کند.
 
-For example, create a file called `greet` with the following contents:
+برای مثال، فایلی به نام `greet` با محتوای زیر ایجاد کنید:
 
 ```python title="greet"
 #!/usr/bin/env -S uv run --script
@@ -230,14 +233,14 @@ For example, create a file called `greet` with the following contents:
 print("Hello, world!")
 ```
 
-Ensure that your script is executable, e.g., with `chmod +x greet`, then run the script:
+مطمئن شوید script شما اجرایی است، مثلاً با `chmod +x greet`، سپس script را اجرا کنید:
 
 ```console
 $ ./greet
 Hello, world!
 ```
 
-Declaration of dependencies is also supported in this context, for example:
+اعلان dependencyها در این زمینه نیز پشتیبانی می‌شود، برای مثال:
 
 ```python title="example"
 #!/usr/bin/env -S uv run --script
@@ -252,52 +255,52 @@ import httpx
 print(httpx.get("https://example.com"))
 ```
 
-## Using alternative package indexes
+## استفاده از indexهای جایگزین package {#using-alternative-package-indexes}
 
-If you wish to use an alternative [package index](../concepts/indexes.md) to resolve dependencies,
-you can provide the index with the `--index` option:
+اگر می‌خواهید برای resolve کردن dependencyها از یک [package index](../concepts/indexes.md) جایگزین
+استفاده کنید، می‌توانید index را با گزینهٔ `--index` ارائه دهید:
 
 ```console
 $ uv add --index "https://example.com/simple" --script example.py 'requests<3' 'rich'
 ```
 
-This will include the package data in the inline metadata:
+این کار داده‌های package را در inline metadata قرار می‌دهد:
 
 ```python
 # [[tool.uv.index]]
 # url = "https://example.com/simple"
 ```
 
-If you require authentication to access the package index, then please refer to the
-[package index](../concepts/indexes.md) documentation.
+اگر برای دسترسی به package index به احراز هویت نیاز دارید، به مستندات
+[package index](../concepts/indexes.md) مراجعه کنید.
 
-## Locking dependencies
+## قفل کردن dependencyها {#locking-dependencies}
 
-uv supports locking dependencies for PEP 723 scripts using the `uv.lock` file format. Unlike with
-projects, scripts must be explicitly locked using `uv lock`:
+uv قفل کردن dependencyها برای scriptهای PEP 723 را با قالب فایل `uv.lock` پشتیبانی می‌کند. برخلاف
+projectها، scriptها باید به‌صورت صریح با `uv lock` قفل شوند:
 
 ```console
 $ uv lock --script example.py
 ```
 
-Running `uv lock --script` will create a `.lock` file adjacent to the script (e.g.,
-`example.py.lock`).
+اجرای `uv lock --script` یک فایل `.lock` در کنار script ایجاد می‌کند (مثلاً `example.py.lock`).
 
-Once locked, subsequent operations like `uv run --script`, `uv add --script`, `uv export --script`,
-and `uv tree --script` will reuse the locked dependencies, updating the lockfile if necessary.
+پس از قفل شدن، عملیات‌های بعدی مانند `uv run --script`، `uv add --script`، `uv export --script`
+و `uv tree --script` از dependencyهای قفل‌شده دوباره استفاده می‌کنند و در صورت نیاز lockfile را
+به‌روزرسانی می‌کنند.
 
-If no such lockfile is present, commands like `uv export --script` will still function as expected,
-but will not create a lockfile.
+اگر چنین lockfileای وجود نداشته باشد، دستورهایی مانند `uv export --script` همچنان طبق انتظار کار
+می‌کنند، اما lockfile ایجاد نمی‌کنند.
 
-## Improving reproducibility
+## بهبود تکرارپذیری {#improving-reproducibility}
 
-In addition to locking dependencies, uv supports an `exclude-newer` field in the `tool.uv` section
-of inline script metadata to limit uv to only considering distributions released before a specific
-date. This is useful for improving the reproducibility of your script when run at a later point in
-time.
+علاوه بر قفل کردن dependencyها، uv از یک فیلد `exclude-newer` در بخش `tool.uv` از inline script
+metadata پشتیبانی می‌کند تا uv را به در نظر گرفتن تنها distributionهایی که پیش از یک تاریخ مشخص
+منتشر شده‌اند محدود کند. این کار برای بهبود تکرارپذیری script شما هنگام اجرا در زمانی دیگر مفید
+است.
 
-The date should be specified as an [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339.html) timestamp
-(e.g., `2006-12-02T02:07:43Z`).
+تاریخ باید به‌صورت یک timestamp به قالب [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339.html)
+مشخص شود (مثلاً `2006-12-02T02:07:43Z`).
 
 ```python title="example.py"
 # /// script
@@ -313,9 +316,9 @@ import requests
 print(requests.__version__)
 ```
 
-## Using different Python versions
+## استفاده از Python versionهای مختلف {#using-different-python-versions}
 
-uv allows arbitrary Python versions to be requested on each script invocation, for example:
+uv امکان می‌دهد در هر فراخوانی script، Python versionهای دلخواه درخواست شوند، برای مثال:
 
 ```python title="example.py"
 import sys
@@ -335,12 +338,12 @@ $ uv run --python 3.10 example.py
 3.10.15
 ```
 
-See the [Python version request](../concepts/python-versions.md#requesting-a-version) documentation
-for more details on requesting Python versions.
+برای جزئیات بیشتر دربارهٔ درخواست Python versionها، به مستندات
+[درخواست Python version](../concepts/python-versions.md#requesting-a-version) مراجعه کنید.
 
-## Using GUI scripts
+## استفاده از scriptهای GUI {#using-gui-scripts}
 
-On Windows `uv` will run your script ending with `.pyw` extension using `pythonw`:
+در Windows، `uv` script شما را که با پسوند `.pyw` تمام می‌شود با `pythonw` اجرا می‌کند:
 
 ```python title="example.pyw"
 from tkinter import Tk, ttk
@@ -357,9 +360,9 @@ root.mainloop()
 PS> uv run example.pyw
 ```
 
-![Run Result](../assets/uv_gui_script_hello_world.png){: style="height:50px;width:150px"}
+![نتیجهٔ اجرا](../assets/uv_gui_script_hello_world.png){: style="height:50px;width:150px"}
 
-Similarly, it works with dependencies as well:
+به همین ترتیب، با dependencyها نیز کار می‌کند:
 
 ```python title="example_pyqt.pyw"
 import sys
@@ -384,10 +387,10 @@ sys.exit(app.exec_())
 PS> uv run --with PyQt5 example_pyqt.pyw
 ```
 
-![Run Result](../assets/uv_gui_script_hello_world_pyqt.png){: style="height:50px;width:150px"}
+![نتیجهٔ اجرا](../assets/uv_gui_script_hello_world_pyqt.png){: style="height:50px;width:150px"}
 
-## Next steps
+## گام‌های بعدی {#next-steps}
 
-To learn more about `uv run`, see the [command reference](../reference/cli.md#uv-run).
+برای آشنایی بیشتر با `uv run`، به [مرجع دستور](../reference/cli.md#uv-run) مراجعه کنید.
 
-Or, read on to learn how to [run and install tools](./tools.md) with uv.
+یا، برای یادگیری [اجرا و نصب toolها](./tools.md) با uv ادامه دهید.

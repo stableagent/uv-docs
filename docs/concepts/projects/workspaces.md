@@ -1,32 +1,32 @@
-# Using workspaces
+# استفاده از workspaceها {#using-workspaces}
 
-Inspired by the [Cargo](https://doc.rust-lang.org/cargo/reference/workspaces.html) concept of the
-same name, a workspace is "a collection of one or more packages, called _workspace members_, that
-are managed together."
+با الهام از مفهوم [Cargo](https://doc.rust-lang.org/cargo/reference/workspaces.html) به همین نام،
+یک workspace «مجموعه‌ای از یک یا چند package است که با نام _اعضای workspace_ شناخته می‌شوند و
+به‌صورت مشترک مدیریت می‌شوند.»
 
-Workspaces organize large codebases by splitting them into multiple packages with common
-dependencies. Think: a FastAPI-based web application, alongside a series of libraries that are
-versioned and maintained as separate Python packages, all in the same Git repository.
+workspaceها با تقسیم کدبیس‌های بزرگ به چند package با dependencyهای مشترک، آن‌ها را سازمان‌دهی
+می‌کنند. به این فکر کنید: یک وب‌اپلیکیشن مبتنی بر FastAPI، در کنار مجموعه‌ای از کتابخانه‌ها که
+به‌عنوان packageهای جداگانهٔ Python نسخه‌بندی و نگهداری می‌شوند، همه در یک مخزن Git.
 
-In a workspace, each package defines its own `pyproject.toml`, but the workspace shares a single
-lockfile, ensuring that the workspace operates with a consistent set of dependencies.
+در یک workspace، هر package فایل `pyproject.toml` خودش را تعریف می‌کند، اما workspace یک
+lockfile مشترک دارد و این تضمین می‌کند که workspace با مجموعه‌ای یکپارچه از dependencyها کار کند.
 
-As such, `uv lock` operates on the entire workspace at once, while `uv run` and `uv sync` operate on
-the workspace root by default, though both accept a `--package` argument, allowing you to run a
-command in a particular workspace member from any workspace directory.
+به همین دلیل، `uv lock` روی کل workspace به‌صورت یکجا عمل می‌کند، در حالی که `uv run` و `uv sync`
+به‌صورت پیش‌فرض روی ریشهٔ workspace عمل می‌کنند، هرچند هر دو آرگومان `--package` را می‌پذیرند و
+به شما اجازه می‌دهند دستوری را در یک عضو خاص workspace، از هر پوشهٔ workspace، اجرا کنید.
 
-## Getting started
+## شروع کار {#getting-started}
 
-To create a workspace, add a `tool.uv.workspace` table to a `pyproject.toml`, which will implicitly
-create a workspace rooted at that package.
+برای ساخت یک workspace، یک جدول `tool.uv.workspace` به `pyproject.toml` اضافه کنید؛ با این کار
+به‌صورت ضمنی یک workspace ساخته می‌شود که ریشهٔ آن همان package است.
 
 !!! tip
 
-    By default, running `uv init` inside an existing package will add the newly created member to the workspace, creating a `tool.uv.workspace` table in the workspace root if it doesn't already exist.
+    به‌صورت پیش‌فرض، اجرای `uv init` درون یک package موجود، عضو تازه‌ساخته‌شده را به workspace اضافه می‌کند و اگر جدول `tool.uv.workspace` در ریشهٔ workspace وجود نداشته باشد، آن را ایجاد می‌کند.
 
-In defining a workspace, you must specify the `members` (required) and `exclude` (optional) keys,
-which direct the workspace to include or exclude specific directories as members respectively, and
-accept lists of globs:
+در تعریف یک workspace، باید کلیدهای `members` (الزامی) و `exclude` (اختیاری) را مشخص کنید؛
+این کلیدها به‌ترتیب به workspace می‌گویند پوشه‌های مشخصی را به‌عنوان عضو شامل یا حذف کند و
+فهرست‌هایی از glob می‌پذیرند:
 
 ```toml title="pyproject.toml"
 [project]
@@ -43,23 +43,23 @@ members = ["packages/*"]
 exclude = ["packages/seeds"]
 ```
 
-Every directory included by the `members` globs (and not excluded by the `exclude` globs) must
-contain a `pyproject.toml` file. However, workspace members can be _either_
-[applications](./init.md#applications) or [libraries](./init.md#libraries); both are supported in
-the workspace context.
+هر پوشه‌ای که در globهای `members` گنجانده شده باشد (و در globهای `exclude` حذف نشده باشد) باید
+یک فایل `pyproject.toml` داشته باشد. با این حال، اعضای workspace می‌توانند _یا_
+[application](./init.md#applications) باشند _یا_ [library](./init.md#libraries)؛ هر دو در
+بستر workspace پشتیبانی می‌شوند.
 
-Every workspace needs a root, which is _also_ a workspace member. In the above example, `albatross`
-is the workspace root, and the workspace members include all projects under the `packages`
-directory, except `seeds`.
+هر workspace به یک ریشه نیاز دارد که _خودش هم_ یک عضو workspace است. در مثال بالا، `albatross`
+ریشهٔ workspace است و اعضای workspace شامل همهٔ projectهای زیر پوشهٔ `packages` هستند، به‌جز
+`seeds`.
 
-By default, `uv run` and `uv sync` operate on the workspace root. In the example above, `uv run` and
-`uv run --package albatross` would be equivalent, while `uv run --package bird-feeder` would run the
-command in the `bird-feeder` package.
+به‌صورت پیش‌فرض، `uv run` و `uv sync` روی ریشهٔ workspace عمل می‌کنند. در مثال بالا، `uv run` و
+`uv run --package albatross` معادل یکدیگر بودند، در حالی که `uv run --package bird-feeder` دستور
+را در packageی `bird-feeder` اجرا می‌کرد.
 
-## Workspace sources
+## منبع‌های workspace {#workspace-sources}
 
-Within a workspace, dependencies on workspace members are facilitated via
-[`tool.uv.sources`](./dependencies.md), as in:
+درون یک workspace، dependencyهای روی اعضای workspace از طریق
+[`tool.uv.sources`](./dependencies.md) فراهم می‌شوند، مانند:
 
 ```toml title="pyproject.toml"
 [project]
@@ -79,20 +79,20 @@ requires = ["uv_build>=0.13.9,<0.14"]
 build-backend = "uv_build"
 ```
 
-In this example, the `albatross` project depends on the `bird-feeder` project, which is a member of
-the workspace. The `workspace = true` key-value pair in the `tool.uv.sources` table indicates the
-`bird-feeder` dependency should be provided by the workspace, rather than fetched from PyPI or
-another registry. The `workspace` field can also be set to a path string to resolve a dependency
-from a different workspace. The path is resolved relative to the project that declares the source
-(or the workspace root for a workspace-level source) and must point to the external workspace root.
-uv selects the member that matches the dependency name.
+در این مثال، projectی `albatross` به projectی `bird-feeder` وابسته است که عضوی از
+workspace است. جفت کلید-مقدار `workspace = true` در جدول `tool.uv.sources` نشان می‌دهد که
+dependencyی `bird-feeder` باید از workspace تأمین شود، نه اینکه از PyPI یا
+registry دیگری دریافت شود. فیلد `workspace` را می‌توان روی یک رشتهٔ مسیر هم تنظیم کرد تا یک
+dependency از workspace دیگری مشخص شود. مسیر نسبت به projectی که source را اعلام می‌کند
+(یا نسبت به ریشهٔ workspace برای یک source در سطح workspace) مشخص می‌شود و باید به ریشهٔ
+workspace خارجی اشاره کند. uv عضوی را انتخاب می‌کند که با نام dependency مطابقت داشته باشد.
 
 !!! note
 
-    Dependencies between workspace members are editable.
+    dependencyهای میان اعضای workspace به‌صورت editable هستند.
 
-Any `tool.uv.sources` definitions in the workspace root apply to all members, unless overridden in
-the `tool.uv.sources` of a specific member. For example, given the following `pyproject.toml`:
+هر تعریف `tool.uv.sources` در ریشهٔ workspace برای همهٔ اعضا اعمال می‌شود، مگر اینکه در
+`tool.uv.sources` یک عضو خاص بازنویسی شده باشد. برای نمونه، با توجه به `pyproject.toml` زیر:
 
 ```toml title="pyproject.toml"
 [project]
@@ -113,23 +113,22 @@ requires = ["uv_build>=0.13.9,<0.14"]
 build-backend = "uv_build"
 ```
 
-Every workspace member would, by default, install `tqdm` from GitHub, unless a specific member
-overrides the `tqdm` entry in its own `tool.uv.sources` table.
+هر عضو workspace به‌صورت پیش‌فرض `tqdm` را از GitHub نصب می‌کرد، مگر اینکه یک عضو خاص
+ورودی `tqdm` را در جدول `tool.uv.sources` خودش بازنویسی کند.
 
 !!! note
 
-    If a workspace member provides `tool.uv.sources` for some dependency, it will ignore any
-    `tool.uv.sources` for the same dependency in the workspace root, even if the member's source is
-    limited by a [marker](dependencies.md#platform-specific-sources) that doesn't match the current
-    platform.
+    اگر یک عضو workspace برای dependencyای `tool.uv.sources` ارائه کند، هر
+    `tool.uv.sources` مربوط به همان dependency در ریشهٔ workspace را نادیده می‌گیرد، حتی اگر source عضو
+    با یک [marker](dependencies.md#platform-specific-sources) محدود شده باشد که با platform فعلی
+    مطابقت ندارد.
 
-## Workspace layouts
+## چیدمان‌های workspace {#workspace-layouts}
 
-The most common workspace layout can be thought of as a root project with a series of accompanying
-libraries.
+رایج‌ترین چیدمان workspace را می‌توان یک project ریشه با مجموعه‌ای از کتابخانه‌های همراه دانست.
 
-For example, continuing with the above example, this workspace has an explicit root at `albatross`,
-with two libraries (`bird-feeder` and `seeds`) in the `packages` directory:
+برای نمونه، با ادامهٔ مثال بالا، این workspace یک ریشهٔ صریح در `albatross` دارد،
+با دو کتابخانه (`bird-feeder` و `seeds`) در پوشهٔ `packages`:
 
 ```text
 albatross
@@ -154,31 +153,31 @@ albatross
         └── __init__.py
 ```
 
-Since `seeds` was excluded in the `pyproject.toml`, the workspace has two members total: `albatross`
-(the root) and `bird-feeder`.
+از آنجا که `seeds` در `pyproject.toml` حذف شده بود، workspace در مجموع دو عضو دارد: `albatross`
+(ریشه) و `bird-feeder`.
 
-## When (not) to use workspaces
+## چه زمانی از workspaceها استفاده کنیم (و چه زمانی نه) {#when-not-to-use-workspaces}
 
-Workspaces are intended to facilitate the development of multiple interconnected packages within a
-single repository. As a codebase grows in complexity, it can be helpful to split it into smaller,
-composable packages, each with their own dependencies and version constraints.
+workspaceها برای تسهیل توسعهٔ چند package به‌هم‌پیوسته در یک مخزن واحد در نظر گرفته شده‌اند. با
+رشد پیچیدگی یک کدبیس، تقسیم آن به packageهای کوچک‌تر و ترکیب‌پذیر می‌تواند مفید باشد؛ هر یک با
+dependencyها و قیدهای نسخهٔ خودشان.
 
-Workspaces help enforce isolation and separation of concerns. For example, in uv, we have separate
-packages for the core library and the command-line interface, enabling us to test the core library
-independently of the CLI, and vice versa.
+workspaceها به اعمال ایزولاسیون و جداسازی دغدغه‌ها کمک می‌کنند. برای نمونه، در uv، ما packageهای
+جداگانه‌ای برای کتابخانهٔ اصلی و رابط خط فرمان داریم که به ما امکان می‌دهد کتابخانهٔ اصلی را
+مستقل از CLI آزمایش کنیم و برعکس.
 
-Other common use cases for workspaces include:
+دیگر موارد رایج استفاده از workspaceها عبارت‌اند از:
 
-- A library with a performance-critical subroutine implemented in an extension module (Rust, C++,
-  etc.).
-- A library with a plugin system, where each plugin is a separate workspace package with a
-  dependency on the root.
+- یک کتابخانه با یک زیرروال حیاتی از نظر کارایی که در یک module توسعه‌ای (Rust ،C++ و
+  غیره) پیاده‌سازی شده است.
+- یک کتابخانه با یک سیستم پلاگین، که در آن هر پلاگین یک package جداگانهٔ workspace با یک
+  dependency روی ریشه است.
 
-Workspaces are _not_ suited for cases in which members have conflicting requirements, or desire a
-separate virtual environment for each member. In this case, path dependencies are often preferable.
-For example, rather than grouping `albatross` and its members in a workspace, you can always define
-each package as its own independent project, with inter-package dependencies defined as path
-dependencies in `tool.uv.sources`:
+workspaceها برای مواردی که اعضا requirementهای متناقض دارند یا یک virtual environment جداگانه برای
+هر عضو می‌خواهند، مناسب _نیستند_. در این حالت، path dependencyها اغلب ترجیح داده می‌شوند.
+برای نمونه، به‌جای گروه‌بندی `albatross` و اعضای آن در یک workspace، همیشه می‌توانید
+هر package را به‌عنوان project مستقل خودش تعریف کنید و dependencyهای میان packageها را به‌عنوان path
+dependency در `tool.uv.sources` تعریف کنید:
 
 ```toml title="pyproject.toml"
 [project]
@@ -195,15 +194,15 @@ requires = ["uv_build>=0.13.9,<0.14"]
 build-backend = "uv_build"
 ```
 
-This approach conveys many of the same benefits, but allows for more fine-grained control over
-dependency resolution and virtual environment management (with the downside that `uv run --package`
-is no longer available; instead, commands must be run from the relevant package directory).
+این رویکرد بسیاری از همان مزایا را ارائه می‌کند، اما امکان کنترل دقیق‌تر بر
+مشخص‌کردن dependency و مدیریت virtual environment را فراهم می‌کند (با این نقطه‌ضعف که `uv run --package`
+دیگر در دسترس نیست؛ در عوض، دستورها باید از پوشهٔ package مربوطه اجرا شوند).
 
-Finally, uv's workspaces enforce a single `requires-python` for the entire workspace, taking the
-intersection of all members' `requires-python` values. If you need to support testing a given member
-on a Python version that isn't supported by the rest of the workspace, you may need to use `uv pip`
-to install that member in a separate virtual environment.
+در نهایت، workspaceهای uv یک `requires-python` واحد را برای کل workspace اعمال می‌کنند و
+اشتراک همهٔ مقدارهای `requires-python` اعضا را می‌گیرند. اگر نیاز دارید آزمایش یک عضو مشخص را
+روی یک Python version پشتیبانی کنید که بقیهٔ workspace از آن پشتیبانی نمی‌کند، ممکن است لازم باشد
+از `uv pip` استفاده کنید تا آن عضو را در یک virtual environment جداگانه نصب کنید.
 
 !!! note
 
-    As Python does not provide dependency isolation, uv can't ensure that a package uses its declared dependencies and nothing else. For workspaces specifically, uv can't ensure that packages don't import dependencies declared by another workspace member.
+    از آنجا که Python ایزولاسیون dependency ارائه نمی‌دهد، uv نمی‌تواند تضمین کند که یک package فقط از dependencyهای اعلام‌شدهٔ خودش استفاده می‌کند و نه چیز دیگری. به‌طور خاص برای workspaceها، uv نمی‌تواند تضمین کند که packageها dependencyهای اعلام‌شده توسط عضو دیگری از workspace را import نمی‌کنند.

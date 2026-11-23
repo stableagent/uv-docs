@@ -1,64 +1,53 @@
 ---
-title: Building and publishing a package
-description: A guide to using uv to build and publish Python packages to a package index, like PyPI.
+title: ساخت و انتشار یک package
+description: راهنمایی برای استفاده از uv جهت ساخت و انتشار packageهای Python در یک package index، مانند PyPI.
 ---
 
-# Building and publishing a package
+# ساخت و انتشار یک package {#building-and-publishing-a-package}
 
-uv supports building Python packages into source and binary distributions via `uv build` and
-uploading them to a registry with `uv publish`.
+uv از ساخت packageهای Python به‌صورت source distribution و binary distribution از طریق `uv build` و بارگذاری آن‌ها در یک registry با `uv publish` پشتیبانی می‌کند.
 
-## Preparing your project
+## آماده‌سازی پروژهٔ شما {#preparing-your-project}
 
-Before attempting to publish your project, you'll want to make sure it's ready to be packaged for
-distribution.
+پیش از تلاش برای انتشار پروژهٔ خود، باید مطمئن شوید که آمادهٔ بسته‌بندی برای distribution است.
 
-If your project does not include a `[build-system]` definition in the `pyproject.toml`, uv will not
-build it during `uv sync` operations in the project, but will fall back to the legacy setuptools
-build system during `uv build`.
+اگر پروژهٔ شما در `pyproject.toml` تعریفی برای `[build-system]` نداشته باشد، uv آن را در جریان عملیات `uv sync` در پروژه نمی‌سازد، بلکه در جریان `uv build` به build system قدیمی setuptools بازمی‌گردد.
 
 !!! note
 
-    Projects created with `uv init` include a `[build-system]` definition by default.
+    پروژه‌هایی که با `uv init` ایجاد می‌شوند، به‌صورت پیش‌فرض یک تعریف `[build-system]` دارند.
 
-We strongly recommend configuring a build system. Read more about build systems in the
-[project configuration](../concepts/projects/config.md#build-systems) documentation.
+ما به‌شدت توصیه می‌کنیم یک build system پیکربندی کنید. دربارهٔ build systemها در مستندات [پیکربندی پروژه](../concepts/projects/config.md#build-systems) بیشتر بخوانید.
 
-## Building your package
+## ساخت package شما {#building-your-package}
 
-Build your package with `uv build`:
+package خود را با `uv build` بسازید:
 
 ```console
 $ uv build
 ```
 
-By default, `uv build` will build the project in the current directory, and place the built
-artifacts in a `dist/` subdirectory.
+به‌صورت پیش‌فرض، `uv build` پروژه را در پوشهٔ جاری می‌سازد و artifactهای ساخته‌شده را در یک زیرپوشهٔ `dist/` قرار می‌دهد.
 
-Alternatively, `uv build <SRC>` will build the package in the specified directory, while
-`uv build --package <PACKAGE>` will build the specified package within the current workspace.
+همچنین، `uv build <SRC>` package را در پوشهٔ مشخص‌شده می‌سازد، در حالی که `uv build --package <PACKAGE>` package مشخص‌شده را در workspace جاری می‌سازد.
 
 !!! info
 
-    By default, `uv build` respects `tool.uv.sources` when resolving build dependencies from the
-    `build-system.requires` section of the `pyproject.toml`. When publishing a package, we recommend
-    running `uv build --no-sources` to ensure that the package builds correctly when `tool.uv.sources`
-    is disabled, as is the case when using other build tools, like [`pypa/build`](https://github.com/pypa/build).
+    به‌صورت پیش‌فرض، `uv build` هنگام حل build dependencyها از بخش `build-system.requires` در `pyproject.toml`، به `tool.uv.sources` احترام می‌گذارد. هنگام انتشار یک package، توصیه می‌کنیم `uv build --no-sources` را اجرا کنید تا مطمئن شوید package هنگامی که `tool.uv.sources` غیرفعال است، به‌درستی ساخته می‌شود؛ همان‌طور که هنگام استفاده از ابزارهای ساخت دیگر، مانند [`pypa/build`](https://github.com/pypa/build)، چنین است.
 
-## Updating your version
+## به‌روزرسانی نسخهٔ شما {#updating-your-version}
 
-The `uv version` command provides conveniences for updating the version of your package before you
-publish it.
-[See the project docs for reading your package's version](./projects.md#viewing-your-version).
+دستور `uv version` امکاناتی برای به‌روزرسانی نسخهٔ package شما پیش از انتشار آن فراهم می‌کند.
+[برای خواندن نسخهٔ package خود، مستندات پروژه را ببینید](./projects.md#viewing-your-version).
 
-To update to an exact version, provide it as a positional argument:
+برای به‌روزرسانی به یک نسخهٔ دقیق، آن را به‌عنوان یک آرگومان موقعیتی بدهید:
 
 ```console
 $ uv version 1.0.0
 hello-world 0.7.0 => 1.0.0
 ```
 
-To preview the change without updating the `pyproject.toml`, use the `--dry-run` flag:
+برای پیش‌نمایش تغییر بدون به‌روزرسانی `pyproject.toml`، از فلگ `--dry-run` استفاده کنید:
 
 ```console
 $ uv version 2.0.0 --dry-run
@@ -67,27 +56,23 @@ $ uv version
 hello-world 1.0.0
 ```
 
-To increment a component of your package version, use the `--bump` option:
+برای افزایش یکی از اجزای نسخهٔ package، از گزینهٔ `--bump` استفاده کنید:
 
 ```console
 $ uv version --bump minor
 hello-world 1.2.3 => 1.3.0
 ```
 
-The `--bump` option supports the following common version components: `major`, `minor`, `patch`,
-`stable`, `alpha`, `beta`, `rc`, `post`, and `dev`. When provided more than once, the components
-will be applied in order, from largest (`major`) to smallest (`dev`).
+گزینهٔ `--bump` از اجزای رایج نسخهٔ زیر پشتیبانی می‌کند: `major`، `minor`، `patch`، `stable`، `alpha`، `beta`، `rc`، `post` و `dev`. وقتی بیش از یک بار داده شود، اجزا به ترتیب، از بزرگ‌ترین (`major`) تا کوچک‌ترین (`dev`)، اعمال می‌شوند.
 
-You can optionally provide a numeric value with `--bump <component>=<value>` to set the resulting
-component explicitly:
+به‌صورت اختیاری می‌توانید با `--bump <component>=<value>` یک مقدار عددی بدهید تا جزء حاصل را به‌صراحت تعیین کنید:
 
 ```console
 $ uv version --bump patch --bump dev=66463664
 hello-world 0.0.1 => 0.0.2.dev66463664
 ```
 
-To move from a stable to pre-release version, bump one of the major, minor, or patch components in
-addition to the pre-release component:
+برای رفتن از یک نسخهٔ پایدار به یک نسخهٔ پیش‌انتشار، یکی از اجزای major یا minor یا patch را علاوه بر جزء پیش‌انتشار افزایش دهید:
 
 ```console
 $ uv version --bump patch --bump beta
@@ -96,16 +81,14 @@ $ uv version --bump major --bump alpha
 hello-world 1.3.0 => 2.0.0a1
 ```
 
-When moving from a pre-release to a new pre-release version, just bump the relevant pre-release
-component:
+هنگام رفتن از یک نسخهٔ پیش‌انتشار به یک نسخهٔ پیش‌انتشار جدید، فقط جزء پیش‌انتشار مربوط را افزایش دهید:
 
 ```console
 $ uv version --bump beta
 hello-world 1.3.0b1 => 1.3.0b2
 ```
 
-When moving from a pre-release to a stable version, the `stable` option can be used to clear the
-pre-release component:
+هنگام رفتن از یک نسخهٔ پیش‌انتشار به یک نسخهٔ پایدار، می‌توان از گزینهٔ `stable` برای پاک کردن جزء پیش‌انتشار استفاده کرد:
 
 ```console
 $ uv version --bump stable
@@ -114,43 +97,33 @@ hello-world 1.3.1b2 => 1.3.1
 
 !!! info
 
-    By default, when `uv version` modifies the project it will perform a lock and sync. To
-    prevent locking and syncing, use `--frozen`. To prevent only syncing, use `--no-sync`.
+    به‌صورت پیش‌فرض، وقتی `uv version` پروژه را تغییر می‌دهد، یک lock و sync انجام می‌دهد. برای جلوگیری از lock و sync، از `--frozen` استفاده کنید. برای جلوگیری فقط از sync، از `--no-sync` استفاده کنید.
 
-## Publishing your package
+## انتشار package شما {#publishing-your-package}
 
 !!! note
 
-    A complete guide to publishing from GitHub Actions to PyPI can be found in the
-    [GitHub Guide](integration/github.md#publishing-to-pypi)
+    یک راهنمای کامل برای انتشار از GitHub Actions به PyPI را می‌توانید در
+    [راهنمای GitHub](integration/github.md#publishing-to-pypi) پیدا کنید.
 
-Publish your package with `uv publish`:
+package خود را با `uv publish` منتشر کنید:
 
 ```console
 $ uv publish
 ```
 
-Set a PyPI token with `--token` or `UV_PUBLISH_TOKEN`, or set a username with `--username` or
-`UV_PUBLISH_USERNAME` and password with `--password` or `UV_PUBLISH_PASSWORD`. For publishing to
-PyPI from GitHub Actions or another Trusted Publisher, you don't need to set any credentials.
-Instead,
-[add a trusted publisher to the PyPI project](https://docs.pypi.org/trusted-publishers/adding-a-publisher/).
+یک توکن PyPI را با `--token` یا `UV_PUBLISH_TOKEN` تنظیم کنید، یا یک نام کاربری را با `--username` یا `UV_PUBLISH_USERNAME` و یک رمز عبور را با `--password` یا `UV_PUBLISH_PASSWORD` تنظیم کنید. برای انتشار در PyPI از GitHub Actions یا یک Trusted Publisher دیگر، نیازی به تنظیم هیچ credentialای نیست. در عوض،
+[یک trusted publisher به پروژهٔ PyPI اضافه کنید](https://docs.pypi.org/trusted-publishers/adding-a-publisher/).
 
-When using trusted publishing, uv will attempt to invalidate the short-lived PyPI token after
-publishing, even if publishing fails. This further reduces the exposure period for the short-lived
-token, beyond its already short lifetime.
+هنگام استفاده از trusted publishing، uv تلاش می‌کند توکن کوتاه‌مدت PyPI را پس از انتشار باطل کند، حتی اگر انتشار ناموفق باشد. این کار دورهٔ در معرض بودن توکن کوتاه‌مدت را، فراتر از عمر کوتاهی که از پیش دارد، باز هم کاهش می‌دهد.
 
-If invalidation fails, uv emits a warning without changing the publishing result. Tokens provided
-explicitly with `--token` or `UV_PUBLISH_TOKEN` are not revoked.
+اگر باطل‌سازی ناموفق باشد، uv یک هشدار صادر می‌کند بدون اینکه نتیجهٔ انتشار را تغییر دهد. توکن‌هایی که به‌صراحت با `--token` یا `UV_PUBLISH_TOKEN` داده شده‌اند، لغو نمی‌شوند.
 
 !!! note
 
-    PyPI does not support publishing with username and password anymore, instead you need to
-    generate a token. Using a token is equivalent to setting `--username __token__` and using the
-    token as password.
+    PyPI دیگر از انتشار با نام کاربری و رمز عبور پشتیبانی نمی‌کند؛ در عوض باید یک توکن ایجاد کنید. استفاده از یک توکن معادل تنظیم `--username __token__` و استفاده از توکن به‌عنوان رمز عبور است.
 
-If you're using a custom index through `[[tool.uv.index]]`, add `publish-url` and use
-`uv publish --index <name>`. For example:
+اگر از یک index سفارشی از طریق `[[tool.uv.index]]` استفاده می‌کنید، `publish-url` را اضافه کنید و از `uv publish --index <name>` استفاده کنید. برای نمونه:
 
 ```toml
 [[tool.uv.index]]
@@ -162,37 +135,25 @@ explicit = true
 
 !!! note
 
-    When using `uv publish --index <name>`, the `pyproject.toml` must be present, i.e., you need to
-    have a checkout step in a publish CI job.
+    هنگام استفاده از `uv publish --index <name>`، فایل `pyproject.toml` باید وجود داشته باشد؛ یعنی باید در یک job انتشار در CI یک مرحلهٔ checkout داشته باشید.
 
-Even though `uv publish` retries failed uploads, it can happen that publishing fails in the middle,
-with some files uploaded and some files still missing. With PyPI, you can retry the exact same
-command; existing identical files will be ignored. With other registries, use
-`--check-url <index url>` with the index URL (not the publishing URL) the packages belong to. When
-using `--index`, the index URL is used as check URL. uv will skip uploading files that are identical
-to files in the registry, and it will also handle raced parallel uploads. Note that existing files
-need to match exactly with those previously uploaded to the registry. This avoids accidentally
-publishing source distribution and wheels with different contents for the same version.
+با اینکه `uv publish` بارگذاری‌های ناموفق را دوباره تلاش می‌کند، ممکن است انتشار در میانهٔ کار ناموفق شود، به‌طوری که برخی فایل‌ها بارگذاری شده باشند و برخی فایل‌ها هنوز جا مانده باشند. با PyPI می‌توانید دقیقاً همان دستور را دوباره اجرا کنید؛ فایل‌های یکسانِ موجود نادیده گرفته می‌شوند. با registryهای دیگر، از `--check-url <index url>` با URL مربوط به index (نه URL انتشار) که packageها به آن تعلق دارند استفاده کنید. هنگام استفاده از `--index`، URL مربوط به index به‌عنوان check URL استفاده می‌شود. uv از بارگذاری فایل‌هایی که با فایل‌های موجود در registry یکسان‌اند صرف‌نظر می‌کند، و همچنین بارگذاری‌های موازیِ هم‌زمان را نیز مدیریت می‌کند. توجه کنید که فایل‌های موجود باید دقیقاً با فایل‌هایی که پیش‌تر در registry بارگذاری شده‌اند مطابقت داشته باشند. این کار از انتشار تصادفی source distribution و wheelهایی با محتوای متفاوت برای نسخهٔ یکسان جلوگیری می‌کند.
 
-### Uploading attestations with your package
+### بارگذاری attestationها همراه با package شما {#uploading-attestations-with-your-package}
 
 !!! note
 
-    Some third-party package indexes may not support attestations, and may
-    reject uploads that include them (rather than silently ignoring them).
-    If you encounter issues when uploading, you can use `--no-attestations` or
-    `UV_PUBLISH_NO_ATTESTATIONS` to disable uv's default behavior.
+    برخی از package indexهای شخص ثالث ممکن است از attestationها پشتیبانی نکنند و بارگذاری‌هایی را که شامل آن‌ها هستند رد کنند (به‌جای اینکه بی‌صدا نادیده‌شان بگیرند).
+    اگر هنگام بارگذاری با مشکلی روبه‌رو شدید، می‌توانید از `--no-attestations` یا
+    `UV_PUBLISH_NO_ATTESTATIONS` برای غیرفعال کردن رفتار پیش‌فرض uv استفاده کنید.
 
 !!! tip
 
-    `uv publish` does not currently generate attestations; attestations must
-    be created separately before publishing.
+    `uv publish` در حال حاضر attestation تولید نمی‌کند؛ attestationها باید پیش از انتشار به‌صورت جداگانه ایجاد شوند.
 
-`uv publish` supports uploading [attestations](https://peps.python.org/pep-0740/) to registries that
-support them, like PyPI.
+`uv publish` از بارگذاری [attestation](https://peps.python.org/pep-0740/) در registryهایی که از آن‌ها پشتیبانی می‌کنند، مانند PyPI، پشتیبانی می‌کند.
 
-uv will automatically discover and match attestations. For example, given the following `dist/`
-directory, `uv publish` will upload the attestations along with their corresponding distributions:
+uv به‌صورت خودکار attestationها را پیدا و تطبیق می‌دهد. برای نمونه، با توجه به پوشهٔ `dist/` زیر، `uv publish` attestationها را همراه با distributionهای متناظرشان بارگذاری می‌کند:
 
 ```console
 $ ls dist/
@@ -202,25 +163,23 @@ hello_world-1.0.0.tar.gz
 hello_world-1.0.0.tar.gz.publish.attestation
 ```
 
-## Installing your package
+## نصب package شما {#installing-your-package}
 
-Test that the package can be installed and imported with `uv run`:
+با `uv run` بررسی کنید که package قابل نصب و import شدن است:
 
 ```console
 $ uv run --with <PACKAGE> --no-project -- python -c "import <PACKAGE>"
 ```
 
-The `--no-project` flag is used to avoid installing the package from your local project directory.
+از فلگ `--no-project` برای جلوگیری از نصب package از پوشهٔ پروژهٔ محلی خود استفاده می‌شود.
 
 !!! tip
 
-    If you have recently installed the package, you may need to include the
-    `--refresh-package <PACKAGE>` option to avoid using a cached version of the package.
+    اگر به‌تازگی package را نصب کرده‌اید، ممکن است لازم باشد گزینهٔ
+    `--refresh-package <PACKAGE>` را اضافه کنید تا از استفاده از یک نسخهٔ cacheشدهٔ package جلوگیری شود.
 
-## Next steps
+## گام‌های بعدی {#next-steps}
 
-To learn more about publishing packages, check out the
-[PyPA guides](https://packaging.python.org/en/latest/guides/section-build-and-publish/) on building
-and publishing.
+برای یادگیری بیشتر دربارهٔ انتشار packageها، [راهنماهای PyPA](https://packaging.python.org/en/latest/guides/section-build-and-publish/) دربارهٔ ساخت و انتشار را ببینید.
 
-Or, read on for [guides](./integration/index.md) on integrating uv with other software.
+یا ادامه دهید و [راهنماها](./integration/index.md) را دربارهٔ یکپارچه‌سازی uv با نرم‌افزارهای دیگر بخوانید.

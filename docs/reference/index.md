@@ -1,12 +1,12 @@
-# Reference
+# مرجع {#reference}
 
-The reference section provides information about specific parts of uv:
+بخش مرجع، اطلاعاتی دربارهٔ بخش‌های مشخصی از uv ارائه می‌دهد:
 
-- [Commands](./cli.md): A reference for uv's command line interface.
-- [Settings](./settings.md): A reference for uv's configuration schema.
-- [Resolver](./internals/resolver.md): Details about the internals of uv's resolver.
-- [Storage](./storage.md): Information about where uv stores data on your system.
-- [Policies](./policies/index.md): uv's versioning policy, platform support policy, and license.
-- [Contributing](./contributing.md): A guide for contributing to uv.
+- [دستورها](./cli.md): مرجعی برای رابط خط فرمان uv.
+- [تنظیمات](./settings.md): مرجعی برای ساختار پیکربندی uv.
+- [resolver](./internals/resolver.md): جزئیاتی دربارهٔ بخش‌های داخلی resolver در uv.
+- [ذخیره‌سازی](./storage.md): اطلاعاتی دربارهٔ اینکه uv داده‌ها را کجای سیستم شما ذخیره می‌کند.
+- [سیاست‌ها](./policies/index.md): سیاست نسخه‌بندی uv، سیاست پشتیبانی از platform و مجوز.
+- [مشارکت](./contributing.md): راهنمایی برای مشارکت در uv.
 
-Looking for a broader overview? Check out the [concepts](../concepts/index.md) documentation.
+به دنبال یک مرور کلی‌تر هستید؟ مستندات [concepts](../concepts/index.md) را ببینید.

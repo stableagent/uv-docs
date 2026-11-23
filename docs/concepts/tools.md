@@ -1,88 +1,69 @@
-# Tools
+# toolها {#tools}
 
-Tools are Python packages that provide command-line interfaces.
+toolها packageهای Python هستند که رابط‌های خط دستور ارائه می‌دهند.
 
 !!! note
 
-    See the [tools guide](../guides/tools.md) for an introduction to working with the tools
-    interface — this document discusses details of tool management.
+    برای آشنایی با کار با رابط toolها، [راهنمای toolها](../guides/tools.md) را ببینید — این سند جزئیات مدیریت tool را بررسی می‌کند.
 
-## The `uv tool` interface
+## رابط `uv tool` {#the-uv-tool-interface}
 
-uv includes a dedicated interface for interacting with tools. Tools can be invoked without
-installation using `uv tool run`, in which case their dependencies are installed in a temporary
-virtual environment isolated from the current project.
+uv یک رابط اختصاصی برای تعامل با toolها دارد. می‌توان toolها را بدون نصب با `uv tool run` فراخواند؛ در این صورت dependencyهای آن‌ها در یک virtual environment موقت نصب می‌شوند که از project جاری جدا است.
 
-Because it is very common to run tools without installing them, a `uvx` alias is provided for
-`uv tool run` — the two commands are exactly equivalent. For brevity, the documentation will mostly
-refer to `uvx` instead of `uv tool run`.
+از آنجا که اجرای toolها بدون نصب آن‌ها بسیار رایج است، یک نام مستعار `uvx` برای `uv tool run` ارائه شده است — این دو دستور دقیقاً معادل هم هستند. برای اختصار، مستندات بیشتر به `uvx` اشاره می‌کند تا `uv tool run`.
 
-Tools can also be installed with `uv tool install`, in which case their executables are
-[available on the `PATH`](#tool-executables) — an isolated virtual environment is still used, but it
-is not removed when the command completes.
+toolها را می‌توان با `uv tool install` نیز نصب کرد؛ در این صورت فایل‌های اجرایی آن‌ها [در `PATH` در دسترس‌اند](#tool-executables) — همچنان از یک virtual environment جدا استفاده می‌شود، اما وقتی دستور کامل شد، حذف نمی‌شود.
 
-## Execution vs installation
+## اجرا در برابر نصب {#execution-vs-installation}
 
-In most cases, executing a tool with `uvx` is more appropriate than installing the tool. Installing
-the tool is useful if you need the tool to be available to other programs on your system, e.g., if
-some script you do not control requires the tool, or if you are in a Docker image and want to make
-the tool available to users.
+در بیشتر موارد، اجرای یک tool با `uvx` مناسب‌تر از نصب tool است. نصب tool زمانی مفید است که نیاز دارید tool برای برنامه‌های دیگر سیستم شما در دسترس باشد؛ مثلاً اگر scriptای که کنترل آن را ندارید به tool نیاز دارد، یا اگر در یک image Docker هستید و می‌خواهید tool را برای کاربران در دسترس کنید.
 
-## Tool environments
+## environmentهای tool {#tool-environments}
 
-When running a tool with `uvx`, a virtual environment is stored in the uv cache directory and is
-treated as disposable, i.e., if you run `uv cache clean` the environment will be deleted. The
-environment is only cached to reduce the overhead of repeated invocations. If the environment is
-removed, a new one will be created automatically.
+هنگام اجرای یک tool با `uvx`، یک virtual environment در پوشهٔ cache uv ذخیره می‌شود و یک‌بارمصرف تلقی می‌شود؛ یعنی اگر `uv cache clean` را اجرا کنید، environment حذف می‌شود. environment فقط برای کاهش سربار فراخوانی‌های مکرر cache می‌شود. اگر environment حذف شود، یک environment جدید به‌صورت خودکار ساخته می‌شود.
 
-When installing a tool with `uv tool install`, a virtual environment is created in the
-[uv tools directory](../reference/storage.md#tools). The environment will not be removed unless the
-tool is uninstalled. If the environment is manually deleted, the tool will fail to run.
+هنگام نصب یک tool با `uv tool install`، یک virtual environment در [پوشهٔ toolهای uv](../reference/storage.md#tools) ساخته می‌شود. environment حذف نمی‌شود مگر اینکه tool حذف نصب شود. اگر environment به‌صورت دستی حذف شود، tool اجرا نمی‌شود.
 
 !!! important
 
-    Tool environments are _not_ intended to be mutated directly. It is strongly recommended never to
-    mutate a tool environment manually, e.g., with a `pip` operation.
+    environmentهای tool _قرار نیست_ مستقیماً تغییر داده شوند. به‌شدت توصیه می‌شود هرگز یک environment tool را به‌صورت دستی تغییر ندهید، مثلاً با یک عملیات `pip`.
 
-## Tool versions
+## نسخه‌های tool {#tool-versions}
 
-Unless a specific version is requested, `uv tool install` will install the latest available version
-of the requested tool. `uvx` will use the latest available version of the requested tool _on the
-first invocation_. After that, `uvx` will use the cached version of the tool unless a different
-version is requested, the cache is pruned, or the cache is refreshed.
+مگر اینکه نسخهٔ خاصی درخواست شود، `uv tool install` جدیدترین نسخهٔ موجود از tool درخواستی را نصب می‌کند. `uvx` در _اولین فراخوانی_ از جدیدترین نسخهٔ موجود از tool درخواستی استفاده می‌کند. پس از آن، `uvx` از نسخهٔ cacheشدهٔ tool استفاده می‌کند، مگر اینکه نسخهٔ دیگری درخواست شود، cache هرس شود یا cache تازه‌سازی شود.
 
-For example, to run a specific version of Ruff:
+برای مثال، برای اجرای یک نسخهٔ خاص از Ruff:
 
 ```console
 $ uvx ruff@0.6.0 --version
 ruff 0.6.0
 ```
 
-A subsequent invocation of `uvx` will use the latest, not the cached, version.
+فراخوانی بعدی `uvx` از جدیدترین نسخه استفاده می‌کند، نه نسخهٔ cacheشده.
 
 ```console
 $ uvx ruff --version
 ruff 0.6.2
 ```
 
-But, if a new version of Ruff was released, it would not be used unless the cache was refreshed.
+اما اگر نسخهٔ جدیدی از Ruff منتشر شده باشد، استفاده نمی‌شود مگر اینکه cache تازه‌سازی شده باشد.
 
-To request the latest version of Ruff and refresh the cache, use the `@latest` suffix:
+برای درخواست جدیدترین نسخهٔ Ruff و تازه‌سازی cache، از پسوند `@latest` استفاده کنید:
 
 ```console
 $ uvx ruff@latest --version
 0.6.2
 ```
 
-Once a tool is installed with `uv tool install`, `uvx` will use the installed version by default.
+وقتی یک tool با `uv tool install` نصب شد، `uvx` به‌طور پیش‌فرض از نسخهٔ نصب‌شده استفاده می‌کند.
 
-For example, after installing an older version of Ruff:
+برای مثال، پس از نصب نسخهٔ قدیمی‌تر Ruff:
 
 ```console
 $ uv tool install ruff==0.5.0
 ```
 
-The version of `ruff` and `uvx ruff` is the same:
+نسخهٔ `ruff` و `uvx ruff` یکسان است:
 
 ```console
 $ ruff --version
@@ -91,192 +72,165 @@ $ uvx ruff --version
 ruff 0.5.0
 ```
 
-However, you can ignore the installed version by requesting the latest version explicitly, e.g.:
+با این حال، می‌توانید با درخواست صریح جدیدترین نسخه، نسخهٔ نصب‌شده را نادیده بگیرید، مثلاً:
 
 ```console
 $ uvx ruff@latest --version
 0.6.2
 ```
 
-Or, by using the `--isolated` flag, which will avoid refreshing the cache but ignore the installed
-version:
+یا با استفاده از فلگ `--isolated` که از تازه‌سازی cache جلوگیری می‌کند اما نسخهٔ نصب‌شده را نادیده می‌گیرد:
 
 ```console
 $ uvx --isolated ruff --version
 0.6.2
 ```
 
-`uv tool install` will also respect the `{package}@{version}` and `{package}@latest` specifiers, as
-in:
+`uv tool install` همچنین به specifierهای `{package}@{version}` و `{package}@latest` احترام می‌گذارد، مانند:
 
 ```console
 $ uv tool install ruff@latest
 $ uv tool install ruff@0.6.0
 ```
 
-## Upgrading tools
+## ارتقای toolها {#upgrading-tools}
 
-Tool environments may be upgraded via `uv tool upgrade`, or re-created entirely via subsequent
-`uv tool install` operations.
+environmentهای tool را می‌توان با `uv tool upgrade` ارتقا داد یا با عملیات‌های بعدی `uv tool install` کاملاً از نو ساخت.
 
-To upgrade all packages in a tool environment:
+برای ارتقای همهٔ packageهای یک environment tool:
 
 ```console
 $ uv tool upgrade black
 ```
 
-To upgrade a single package in a tool environment:
+برای ارتقای یک package تکی در یک environment tool:
 
 ```console
 $ uv tool upgrade black --upgrade-package click
 ```
 
-Tool upgrades will respect the version constraints provided when installing the tool. For example,
-`uv tool install black >=23,<24` followed by `uv tool upgrade black` will upgrade Black to the
-latest version in the range `>=23,<24`.
+ارتقای toolها به constraintهای نسخهٔ ارائه‌شده هنگام نصب tool احترام می‌گذارد. برای مثال، `uv tool install black >=23,<24` و پس از آن `uv tool upgrade black`، Black را به جدیدترین نسخه در بازهٔ `>=23,<24` ارتقا می‌دهد.
 
-To instead replace the version constraints, reinstall the tool with `uv tool install`:
+برای جایگزین‌کردن constraintهای نسخه، tool را با `uv tool install` دوباره نصب کنید:
 
 ```console
 $ uv tool install black>=24
 ```
 
-Similarly, tool upgrades will retain the settings provided when installing the tool. For example,
-`uv tool install black --prerelease allow` followed by `uv tool upgrade black` will retain the
-`--prerelease allow` setting.
+به‌همین ترتیب، ارتقای toolها تنظیمات ارائه‌شده هنگام نصب tool را حفظ می‌کند. برای مثال، `uv tool install black --prerelease allow` و پس از آن `uv tool upgrade black`، تنظیم `--prerelease allow` را حفظ می‌کند.
 
 !!! note
 
-    Tool upgrades will reinstall the tool executables, even if they have not changed.
+    ارتقای toolها فایل‌های اجرایی tool را دوباره نصب می‌کند، حتی اگر تغییر نکرده باشند.
 
-To reinstall packages during upgrade, use the `--reinstall` and `--reinstall-package` options.
+برای نصب دوبارهٔ packageها هنگام ارتقا، از گزینه‌های `--reinstall` و `--reinstall-package` استفاده کنید.
 
-To reinstall all packages in a tool environment:
+برای نصب دوبارهٔ همهٔ packageهای یک environment tool:
 
 ```console
 $ uv tool upgrade black --reinstall
 ```
 
-To reinstall a single package in a tool environment:
+برای نصب دوبارهٔ یک package تکی در یک environment tool:
 
 ```console
 $ uv tool upgrade black --reinstall-package click
 ```
 
-## Including additional dependencies
+## گنجاندن dependencyهای اضافه {#including-additional-dependencies}
 
-Additional packages can be included during tool execution:
+می‌توان packageهای اضافه را هنگام اجرای tool گنجاند:
 
 ```console
 $ uvx --with <extra-package> <tool>
 ```
 
-And, during tool installation:
+و هنگام نصب tool:
 
 ```console
 $ uv tool install --with <extra-package> <tool-package>
 ```
 
-The `--with` option can be provided multiple times to include additional packages.
+گزینهٔ `--with` را می‌توان چند بار ارائه کرد تا packageهای اضافه گنجانده شوند.
 
-The `--with` option supports package specifications, so a specific version can be requested:
+گزینهٔ `--with` از مشخصات package پشتیبانی می‌کند، پس می‌توان نسخهٔ خاصی را درخواست کرد:
 
 ```console
 $ uvx --with <extra-package>==<version> <tool-package>
 ```
 
-The `-w` shorthand can be used in place of the `--with` option:
+می‌توان از مخفف `-w` به‌جای گزینهٔ `--with` استفاده کرد:
 
 ```console
 $ uvx -w <extra-package> <tool-package>
 ```
 
-If the requested version conflicts with the requirements of the tool package, package resolution
-will fail and the command will error.
+اگر نسخهٔ درخواستی با نیازمندی‌های package tool در تضاد باشد، حل package با شکست مواجه می‌شود و دستور خطا می‌دهد.
 
-## Installing executables from additional packages
+## نصب فایل‌های اجرایی از packageهای اضافه {#installing-executables-from-additional-packages}
 
-When installing a tool, you may want to include executables from additional packages in the same
-tool environment. This is useful when you have related tools that work together or when you want to
-install multiple executables that share dependencies.
+هنگام نصب یک tool، ممکن است بخواهید فایل‌های اجرایی packageهای اضافه را در همان environment tool بگنجانید. این کار زمانی مفید است که toolهای مرتبطی دارید که با هم کار می‌کنند یا زمانی که می‌خواهید چند فایل اجرایی نصب کنید که dependencyهای مشترک دارند.
 
-The `--with-executables-from` option allows you to specify additional packages whose executables
-should be installed alongside the main tool:
+گزینهٔ `--with-executables-from` به شما اجازه می‌دهد packageهای اضافه‌ای را مشخص کنید که فایل‌های اجرایی آن‌ها باید در کنار tool اصلی نصب شوند:
 
 ```console
 $ uv tool install --with-executables-from <package1>,<package2> <tool-package>
 ```
 
-For example, to install Ansible along with executables from `ansible-core` and `ansible-lint`:
+برای مثال، برای نصب Ansible همراه با فایل‌های اجرایی `ansible-core` و `ansible-lint`:
 
 ```console
 $ uv tool install --with-executables-from ansible-core,ansible-lint ansible
 ```
 
-This will install all executables from the `ansible`, `ansible-core`, and `ansible-lint` packages
-into the same tool environment, making them all available on the `PATH`.
+این کار همهٔ فایل‌های اجرایی packageهای `ansible`، `ansible-core` و `ansible-lint` را در همان environment tool نصب می‌کند و همهٔ آن‌ها را در `PATH` در دسترس قرار می‌دهد.
 
-The `--with-executables-from` option can be combined with other installation options:
+گزینهٔ `--with-executables-from` را می‌توان با گزینه‌های نصب دیگر ترکیب کرد:
 
 ```console
 $ uv tool install --with-executables-from ansible-core --with mkdocs-material ansible
 ```
 
-Note that `--with-executables-from` differs from `--with` in that:
+توجه کنید که `--with-executables-from` با `--with` در این موارد فرق می‌کند:
 
-- `--with` includes additional packages as dependencies but does not install their executables
-- `--with-executables-from` includes both the packages as dependencies and installs their
-  executables
+- `--with` packageهای اضافه را به‌عنوان dependency می‌گنجاند اما فایل‌های اجرایی آن‌ها را نصب نمی‌کند
+- `--with-executables-from` هم packageها را به‌عنوان dependency می‌گنجاند و هم فایل‌های اجرایی آن‌ها را نصب می‌کند
 
-## Python versions
+## Python versionها {#python-versions}
 
-Each tool environment is linked to a specific Python version. This uses the same Python version
-[discovery logic](./python-versions.md#discovery-of-python-versions) as other virtual environments
-created by uv, but will ignore non-global Python version requests like `.python-version` files and
-the `requires-python` value from a `pyproject.toml`.
+هر environment tool به یک Python version خاص پیوند خورده است. این کار از همان [منطق کشف Python version](./python-versions.md#discovery-of-python-versions) استفاده می‌کند که دیگر virtual environmentهای ساخته‌شده توسط uv استفاده می‌کنند، اما درخواست‌های Python version غیرسراسری، مانند فایل‌های `.python-version` و مقدار `requires-python` از یک `pyproject.toml`، را نادیده می‌گیرد.
 
-The `--python` option can be used to request a specific version. See the
-[Python version](./python-versions.md) documentation for more details.
+می‌توان از گزینهٔ `--python` برای درخواست یک نسخهٔ خاص استفاده کرد. برای جزئیات بیشتر، مستندات [Python version](./python-versions.md) را ببینید.
 
-If the Python version used by a tool is _uninstalled_, the tool environment will be broken and the
-tool may be unusable.
+اگر Python version استفاده‌شده توسط یک tool _حذف نصب_ شود، environment آن tool خراب می‌شود و ممکن است tool قابل‌استفاده نباشد.
 
-## Tool executables
+## فایل‌های اجرایی tool {#tool-executables}
 
-Tool executables include all console entry points, script entry points, and binary scripts provided
-by a Python package. Tool executables are symlinked into the
-[executable directory](../reference/storage.md#tool-executables) on Unix and copied on Windows.
+فایل‌های اجرایی tool شامل همهٔ entry pointهای کنسول، entry pointهای script و scriptهای باینری ارائه‌شده توسط یک package Python است. فایل‌های اجرایی tool در Unix به‌صورت symlink در [پوشهٔ اجرایی](../reference/storage.md#tool-executables) قرار می‌گیرند و در Windows کپی می‌شوند.
 
 !!! note
 
-    Executables provided by dependencies of tool packages are not installed.
+    فایل‌های اجرایی ارائه‌شده توسط dependencyهای packageهای tool نصب نمی‌شوند.
 
-The [executable directory](../reference/storage.md#executable-directory) must be in the `PATH`
-variable for tool executables to be available from the shell. If it is not in the `PATH`, a warning
-will be displayed. The `uv tool update-shell` command can be used to add the executable directory to
-the `PATH` in common shell configuration files.
+[پوشهٔ اجرایی](../reference/storage.md#executable-directory) باید در متغیر `PATH` باشد تا فایل‌های اجرایی tool از shell در دسترس باشند. اگر در `PATH` نباشد، یک هشدار نمایش داده می‌شود. می‌توان از دستور `uv tool update-shell` برای اضافه‌کردن پوشهٔ اجرایی به `PATH` در فایل‌های پیکربندی رایج shell استفاده کرد.
 
-### Overwriting executables
+### بازنویسی فایل‌های اجرایی {#overwriting-executables}
 
-Installation of tools will not overwrite executables in the executable directory that were not
-previously installed by uv. For example, if `pipx` has been used to install a tool,
-`uv tool install` will fail. The `--force` flag can be used to override this behavior.
+نصب toolها فایل‌های اجرایی موجود در پوشهٔ اجرایی را که قبلاً توسط uv نصب نشده‌اند، بازنویسی نمی‌کند. برای مثال، اگر از `pipx` برای نصب یک tool استفاده شده باشد، `uv tool install` با شکست مواجه می‌شود. می‌توان از فلگ `--force` برای نادیده‌گرفتن این رفتار استفاده کرد.
 
-## Relationship to `uv run`
+## ارتباط با `uv run` {#relationship-to-uv-run}
 
-The invocation `uv tool run <name>` (or `uvx <name>`) is nearly equivalent to:
+فراخوانی `uv tool run <name>` (یا `uvx <name>`) تقریباً معادل این است:
 
 ```console
 $ uv run --no-project --with <name> -- <name>
 ```
 
-However, there are a couple notable differences when using uv's tool interface:
+با این حال، هنگام استفاده از رابط tool uv چند تفاوت قابل‌توجه وجود دارد:
 
-- The `--with` option is not needed — the required package is inferred from the command name.
-- The temporary environment is cached in a dedicated location.
-- The `--no-project` flag is not needed — tools are always run isolated from the project.
-- If a tool is already installed, `uv tool run` will use the installed version but `uv run` will
-  not.
+- به گزینهٔ `--with` نیازی نیست — package موردنیاز از نام دستور استنتاج می‌شود.
+- environment موقت در یک مکان اختصاصی cache می‌شود.
+- به فلگ `--no-project` نیازی نیست — toolها همیشه جدا از project اجرا می‌شوند.
+- اگر یک tool از قبل نصب شده باشد، `uv tool run` از نسخهٔ نصب‌شده استفاده می‌کند اما `uv run` استفاده نمی‌کند.
 
-If the tool should not be isolated from the project, e.g., when running `pytest` or `mypy`, then
-`uv run` should be used instead of `uv tool run`.
+اگر tool نباید از project جدا باشد، مثلاً هنگام اجرای `pytest` یا `mypy`، باید به‌جای `uv tool run` از `uv run` استفاده کرد.

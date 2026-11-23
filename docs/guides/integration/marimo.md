@@ -1,89 +1,93 @@
 ---
-title: Using uv with marimo
+title: استفاده از uv با marimo
 description:
-  A complete guide to using uv with marimo notebooks for interactive computing, script execution,
-  and data apps.
+  راهنمای کامل استفاده از uv با نوت‌بوک‌های marimo برای محاسبات تعاملی، اجرای script و
+  برنامه‌های داده‌ای.
 ---
 
-# Using uv with marimo
+# استفاده از uv با marimo {#using-uv-with-marimo}
 
-[marimo](https://github.com/marimo-team/marimo) is an open-source Python notebook that blends
-interactive computing with the reproducibility and reusability of traditional software, letting you
-version with Git, run as scripts, and share as apps. Because marimo notebooks are stored as pure
-Python scripts, they are able to integrate tightly with uv.
+[marimo](https://github.com/marimo-team/marimo) یک نوت‌بوک متن‌باز Python است که محاسبات تعاملی را
+با قابلیت بازتولید و استفادهٔ مجدد نرم‌افزارهای سنتی در هم می‌آمیزد و به شما امکان می‌دهد با Git
+نسخه‌بندی کنید، به‌صورت script اجرا کنید و به‌عنوان برنامه به اشتراک بگذارید. از آنجا که نوت‌بوک‌های
+marimo به‌صورت scriptهای خالص Python ذخیره می‌شوند، می‌توانند به‌خوبی با uv یکپارچه شوند.
 
-You can readily use marimo as a standalone tool, as self-contained scripts, in projects, and in
-non-project environments.
+می‌توانید marimo را به‌راحتی به‌عنوان یک tool مستقل، به‌صورت scriptهای خودکفا، در projectها و در
+environmentهای غیر project استفاده کنید.
 
-## Using marimo as a standalone tool
+## استفاده از marimo به‌عنوان یک tool مستقل {#using-marimo-as-a-standalone-tool}
 
-For ad-hoc access to marimo notebooks, start a marimo server at any time in an isolated environment
-with:
+برای دسترسی موردی به نوت‌بوک‌های marimo، در هر زمان یک سرور marimo را در یک environment ایزوله با این
+دستور شروع کنید:
 
 ```console
 $ uvx marimo edit
 ```
 
-Start a specific notebook with:
+یک نوت‌بوک مشخص را با این دستور شروع کنید:
 
 ```console
 $ uvx marimo edit my_notebook.py
 ```
 
-## Using marimo with inline script metadata
+## استفاده از marimo با inline script metadata {#using-marimo-with-inline-script-metadata}
 
-Because marimo notebooks are stored as Python scripts, they can encapsulate their own dependencies
-using inline script metadata, via uv's [support for scripts](../../guides/scripts.md). For example,
-to add `numpy` as a dependency to your notebook, use this command:
+از آنجا که نوت‌بوک‌های marimo به‌صورت scriptهای Python ذخیره می‌شوند، می‌توانند dependencyهای خود
+را با استفاده از inline script metadata، از طریق [پشتیبانی uv از scriptها](../../guides/scripts.md)،
+در خود جای دهند. برای مثال، برای افزودن `numpy` به‌عنوان یک dependency به نوت‌بوک خود، از این دستور
+استفاده کنید:
 
 ```console
 $ uv add --script my_notebook.py numpy
 ```
 
-To interactively edit a notebook containing inline script metadata, use:
+برای ویرایش تعاملی یک نوت‌بوک که inline script metadata دارد، از این دستور استفاده کنید:
 
 ```console
 $ uvx marimo edit --sandbox my_notebook.py
 ```
 
-marimo will automatically use uv to start your notebook in an isolated virtual environment with your
-script's dependencies. Packages installed from the marimo UI will automatically be added to the
-notebook's script metadata.
+marimo به‌صورت خودکار از uv استفاده می‌کند تا نوت‌بوک شما را در یک virtual environment ایزوله، با
+dependencyهای script شما، شروع کند. packageهایی که از رابط کاربری marimo نصب شوند، به‌صورت خودکار به
+script metadata مربوط به نوت‌بوک اضافه می‌شوند.
 
-You can optionally run these notebooks as Python scripts, without opening an interactive session:
+به‌صورت اختیاری می‌توانید این نوت‌بوک‌ها را به‌عنوان scriptهای Python اجرا کنید، بدون اینکه یک
+نشست تعاملی باز کنید:
 
 ```console
 $ uv run my_notebook.py
 ```
 
-## Using marimo within a project
+## استفاده از marimo در یک project {#using-marimo-within-a-project}
 
-If you're working within a [project](../../concepts/projects/index.md), you can start a marimo
-notebook with access to the project's virtual environment via the following command (assuming marimo
-is a project dependency):
+اگر در یک [project](../../concepts/projects/index.md) کار می‌کنید، می‌توانید یک نوت‌بوک marimo را
+با دسترسی به virtual environment مربوط به project، با دستور زیر شروع کنید (با این فرض که marimo یک
+dependency مربوط به project است):
 
 ```console
 $ uv run marimo edit my_notebook.py
 ```
 
-To make additional packages available to your notebook, either add them to your project with
-`uv add`, or use marimo's built-in package installation UI, which will invoke `uv add` on your
-behalf.
+برای اینکه packageهای بیشتری در دسترس نوت‌بوک شما قرار بگیرند، یا آن‌ها را با `uv add` به project
+خود اضافه کنید، یا از رابط کاربری داخلی نصب package در marimo استفاده کنید که از طرف شما `uv add`
+را فراخوانی می‌کند.
 
-If marimo is not a project dependency, you can still run a notebook with the following command:
+اگر marimo یک dependency مربوط به project نیست، همچنان می‌توانید یک نوت‌بوک را با دستور زیر اجرا
+کنید:
 
 ```console
 $ uv run --with marimo marimo edit my_notebook.py
 ```
 
-This will let you import your project's modules while editing your notebook. However, packages
-installed via marimo's UI when running in this way will not be added to your project, and may
-disappear on subsequent marimo invocations.
+با این کار می‌توانید moduleهای project خود را هنگام ویرایش نوت‌بوک import کنید. با این حال،
+packageهایی که از طریق رابط کاربری marimo هنگام اجرا به این روش نصب شوند، به project شما اضافه
+نمی‌شوند و ممکن است در فراخوانی‌های بعدی marimo ناپدید شوند.
 
-## Using marimo in a non-project environment
+## استفاده از marimo در یک environment غیر project {#using-marimo-in-a-non-project-environment}
 
-To run marimo in a virtual environment that isn't associated with a
-[project](../../concepts/projects/index.md), add marimo to the environment directly:
+برای اجرای marimo در یک virtual environment که به یک
+[project](../../concepts/projects/index.md) مرتبط نیست، marimo را مستقیماً به environment اضافه
+کنید:
 
 ```console
 $ uv venv
@@ -92,17 +96,18 @@ $ uv pip install marimo
 $ uv run marimo edit
 ```
 
-From here, `import numpy` will work within the notebook, and marimo's UI installer will add packages
-to the environment with `uv pip install` on your behalf.
+از اینجا، دستور `import numpy` در نوت‌بوک کار می‌کند و نصب‌کنندهٔ رابط کاربری marimo، packageها را
+از طرف شما با `uv pip install` به environment اضافه می‌کند.
 
-## Running marimo notebooks as scripts
+## اجرای نوت‌بوک‌های marimo به‌عنوان script {#running-marimo-notebooks-as-scripts}
 
-Regardless of how your dependencies are managed (with inline script metadata, within a project, or
-with a non-project environment), you can run marimo notebooks as scripts with:
+صرف‌نظر از اینکه dependencyهای شما چگونه مدیریت می‌شوند (با inline script metadata، در یک project
+یا با یک environment غیر project)، می‌توانید نوت‌بوک‌های marimo را به‌عنوان script با این دستور اجرا
+کنید:
 
 ```console
 $ uv run my_notebook.py
 ```
 
-This executes your notebook as a Python script, without opening an interactive session in your
-browser.
+این کار نوت‌بوک شما را به‌عنوان یک script مربوط به Python اجرا می‌کند، بدون اینکه یک نشست تعاملی در
+مرورگر شما باز کند.

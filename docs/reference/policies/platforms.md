@@ -1,19 +1,19 @@
-# Platform support
+# پشتیبانی از platform {#platform-support}
 
-uv has Tier 1 support for the following platforms:
+uv از platformهای زیر پشتیبانی Tier 1 دارد:
 
 - macOS (Apple Silicon)
 - macOS (x86_64)
 - Linux (x86_64)
 - Windows (x86_64)
 
-uv is continuously built, tested, and developed against its Tier 1 platforms. Inspired by the Rust
-project, Tier 1 can be thought of as
-["guaranteed to work"](https://doc.rust-lang.org/beta/rustc/platform-support.html#tier-1).
+uv به‌طور مداوم در برابر platformهای Tier 1 خود ساخته، آزمایش و توسعه داده می‌شود. با الهام از
+پروژهٔ Rust، Tier 1 را می‌توان
+["تضمین‌شده برای کار کردن"](https://doc.rust-lang.org/beta/rustc/platform-support.html#tier-1)
+دانست.
 
-uv has Tier 2 support
-(["guaranteed to build"](https://doc.rust-lang.org/beta/rustc/platform-support.html#tier-2-with-host-tools))
-for the following platforms:
+uv از platformهای زیر پشتیبانی Tier 2 دارد
+(["تضمین‌شده برای ساخته شدن"](https://doc.rust-lang.org/beta/rustc/platform-support.html#tier-2-with-host-tools)):
 
 - Linux (PPC64LE)
 - Linux (RISC-V64)
@@ -23,34 +23,33 @@ for the following platforms:
 - Linux (s390x)
 - Windows (arm64)
 
-uv has Tier 3 support
-(["best effort"](https://doc.rust-lang.org/beta/rustc/platform-support.html#tier-3)) for the
-following platforms:
+uv از platformهای زیر پشتیبانی Tier 3 دارد
+(["بهترین تلاش"](https://doc.rust-lang.org/beta/rustc/platform-support.html#tier-3)):
 
 - FreeBSD (x86_64)
 - Windows (i686)
 
-uv provides official binaries on GitHub and pre-built wheels on [PyPI](https://pypi.org/project/uv/)
-for its Tier 1 and Tier 2 platforms.
+uv باینری‌های رسمی را در GitHub و wheelهای از پیش ساخته‌شده را در [PyPI](https://pypi.org/project/uv/)
+برای platformهای Tier 1 و Tier 2 خود ارائه می‌دهد.
 
-Tier 2 platforms are continuously built, but the uv test suite is not run on them and stability may
-vary in practice.
+platformهای Tier 2 به‌طور مداوم ساخته می‌شوند، اما مجموعهٔ آزمایش uv روی آن‌ها اجرا نمی‌شود و
+پایداری آن‌ها در عمل ممکن است متفاوت باشد.
 
-Tier 3 platforms may not be built or tested, but uv will accept patches to fix bugs.
+platformهای Tier 3 ممکن است ساخته یا آزمایش نشوند، اما uv patchهایی را برای رفع باگ‌ها می‌پذیرد.
 
-## Linux versions
+## نسخه‌های Linux {#linux-versions}
 
-On Linux, compatibility is determined by libc version.
+در Linux، سازگاری بر اساس نسخهٔ libc تعیین می‌شود.
 
-uv publishes both glibc-based and musl-based distributions.
+uv هم distributionهای مبتنی بر glibc و هم distributionهای مبتنی بر musl را منتشر می‌کند.
 
-For glibc-based Linux distributions, uv publishes
-[manylinux-compatible](https://peps.python.org/pep-0600/) wheels and corresponding binaries. These
-artifacts depend on glibc being available on the host system. In a manylinux wheel tag, the version
-encodes the minimum supported glibc version for that wheel; for example, `manylinux_2_17_x86_64`
-requires glibc 2.17+.
+برای distributionهای Linux مبتنی بر glibc، uv
+[wheelهای سازگار با manylinux](https://peps.python.org/pep-0600/) و باینری‌های متناظر را منتشر
+می‌کند. این artifactها به در دسترس بودن glibc روی سیستم میزبان وابسته‌اند. در یک wheel tag مربوط
+به manylinux، نسخه حداقل نسخهٔ پشتیبانی‌شدهٔ glibc برای آن wheel را مشخص می‌کند؛ برای مثال،
+`manylinux_2_17_x86_64` به glibc نسخهٔ 2.17+ نیاز دارد.
 
-uv's official glibc-based wheels and binaries are published for the following targets:
+wheelها و باینری‌های رسمی uv مبتنی بر glibc برای targetهای زیر منتشر می‌شوند:
 
 - `x86_64-unknown-linux-gnu` (`manylinux_2_17_x86_64`)
 - `aarch64-unknown-linux-gnu` (`manylinux_2_28_aarch64`)
@@ -60,7 +59,8 @@ uv's official glibc-based wheels and binaries are published for the following ta
 - `riscv64gc-unknown-linux-gnu` (`manylinux_2_31_riscv64`)
 - `s390x-unknown-linux-gnu` (`manylinux_2_17_s390x`)
 
-uv also publishes musl-based wheels and fully statically linked binaries for the following targets:
+uv همچنین wheelهای مبتنی بر musl و باینری‌های کاملاً به‌صورت ایستا لینک‌شده را برای targetهای زیر
+منتشر می‌کند:
 
 - `x86_64-unknown-linux-musl` (`musllinux_1_1_x86_64`)
 - `aarch64-unknown-linux-musl` (`musllinux_1_1_aarch64`)
@@ -69,20 +69,20 @@ uv also publishes musl-based wheels and fully statically linked binaries for the
 - `riscv64gc-unknown-linux-musl` (`musllinux_1_1_riscv64`)
 - `arm-unknown-linux-musleabihf` (`linux_armv6l`)
 
-The wheels are published with [musllinux-compatible](https://peps.python.org/pep-0656/) tags.
-However, the embedded `uv` binaries are fully statically linked and do not require musl libc on the
-host system.
+wheelها با tagهای [سازگار با musllinux](https://peps.python.org/pep-0656/) منتشر می‌شوند. با این
+حال، باینری‌های `uv` جاسازی‌شده کاملاً به‌صورت ایستا لینک‌شده‌اند و به musl libc روی سیستم میزبان
+نیازی ندارند.
 
-The official [Docker images](../../guides/integration/docker.md) include these fully statically
-linked musl uv binaries for amd64 and arm64.
+[ایمیج‌های رسمی Docker](../../guides/integration/docker.md) این باینری‌های uv مبتنی بر musl را که
+کاملاً به‌صورت ایستا لینک‌شده‌اند، برای amd64 و arm64 شامل می‌شوند.
 
-## Windows versions
+## نسخه‌های Windows {#windows-versions}
 
-The minimum supported Windows versions are Windows 10 and Windows Server 2016, following
-[Rust's own Tier 1 support](https://blog.rust-lang.org/2024/02/26/Windows-7.html).
+حداقل نسخه‌های پشتیبانی‌شدهٔ Windows عبارت‌اند از Windows 10 و Windows Server 2016، مطابق با
+[پشتیبانی Tier 1 خود Rust](https://blog.rust-lang.org/2024/02/26/Windows-7.html).
 
-## macOS versions
+## نسخه‌های macOS {#macos-versions}
 
-uv supports macOS 13+ (Ventura).
+uv از macOS نسخهٔ 13+ (Ventura) پشتیبانی می‌کند.
 
-uv is known to work on macOS 12, but requires installation of a `realpath` executable.
+می‌دانیم uv روی macOS 12 کار می‌کند، اما به نصب یک فایل اجرایی `realpath` نیاز دارد.

@@ -1,69 +1,70 @@
-# Reproducible examples
+# مثال‌های قابل تکرار {#reproducible-examples}
 
-## Why reproducible examples are important
+## چرا مثال‌های قابل تکرار مهم هستند {#why-reproducible-examples-are-important}
 
-A minimal reproducible example (MRE) is essential for fixing bugs. Without an example that can be
-used to reproduce the problem, a maintainer cannot debug it or test if it is fixed. If the example
-is not minimal, i.e., if it includes lots of content which is not related to the issue, it can take
-a maintainer much longer to identify the root cause of the problem.
+یک مثال حداقلی قابل تکرار (MRE) برای رفع باگ‌ها ضروری است. بدون مثالی که بتوان با آن مشکل را
+بازتولید کرد، یک نگهدارنده نمی‌تواند آن را اشکال‌زدایی کند یا آزمایش کند که آیا رفع شده است یا نه.
+اگر مثال حداقلی نباشد؛ یعنی اگر محتوای زیادی را شامل شود که به issue مربوط نیست، ممکن است یک
+نگهدارنده برای شناسایی علت ریشه‌ای مشکل زمان بسیار بیشتری صرف کند.
 
-## How to write a reproducible example
+## نحوهٔ نوشتن یک مثال قابل تکرار {#how-to-write-a-reproducible-example}
 
-When writing a reproducible example, the goal is to provide all the context necessary for someone
-else to reproduce your example. This includes:
+هنگام نوشتن یک مثال قابل تکرار، هدف ارائهٔ همهٔ زمینه‌ای است که برای بازتولید مثال شما توسط شخص
+دیگری لازم است. این موارد شامل این‌هاست:
 
-- The platform you're using (e.g., the operating system and architecture)
-- Any relevant system state (e.g., explicitly set environment variables)
-- The version of uv
-- The version of other relevant tools
-- The relevant files (the `uv.lock`, `pyproject.toml`, etc.)
-- The commands to run
+- platform‌ای که استفاده می‌کنید (مثلاً سیستم‌عامل و معماری)
+- هر وضعیت مرتبط با سیستم (مثلاً environment variableهایی که صراحتاً تنظیم شده‌اند)
+- نسخهٔ uv
+- نسخهٔ toolهای مرتبط دیگر
+- فایل‌های مرتبط (`uv.lock`، `pyproject.toml` و غیره)
+- دستورهایی که باید اجرا شوند
 
-To ensure your reproduction is minimal, remove as many dependencies, settings, and files as
-possible. Be sure to test your reproduction before sharing it. We recommend including verbose logs
-from your reproduction; they may differ on your machine in a critical way. Using a
-[Gist](https://gist.github.com) can be helpful for very long logs.
+برای اطمینان از اینکه بازتولید شما حداقلی است، تا حد ممکن dependencyها، تنظیمات و فایل‌ها را حذف
+کنید. حتماً پیش از به اشتراک گذاشتن بازتولید خود، آن را آزمایش کنید. توصیه می‌کنیم logهای مفصل
+(verbose) را از بازتولید خود ضمیمه کنید؛ ممکن است آن‌ها روی ماشین شما به شکلی حیاتی متفاوت باشند.
+استفاده از یک [Gist](https://gist.github.com) برای logهای خیلی طولانی می‌تواند مفید باشد.
 
-Below, we'll cover several specific [strategies](#strategies-for-reproducible-examples) for creating
-and sharing reproducible examples.
+در ادامه، چند [استراتژی](#strategies-for-reproducible-examples) مشخص برای ساخت و به اشتراک گذاشتن
+مثال‌های قابل تکرار را پوشش می‌دهیم.
 
 !!! tip
 
-    There's a great guide to the basics of creating MREs on
-    [Stack Overflow](https://stackoverflow.com/help/minimal-reproducible-example).
+    یک راهنمای عالی دربارهٔ اصول ساخت MRE در
+    [Stack Overflow](https://stackoverflow.com/help/minimal-reproducible-example) وجود دارد.
 
-## Strategies for reproducible examples
+## استراتژی‌هایی برای مثال‌های قابل تکرار {#strategies-for-reproducible-examples}
 
-### Docker image
+### ایمیج Docker {#docker-image}
 
-Writing a Docker image is often the best way to share a reproducible example because it is entirely
-self-contained. This means that the state from the reproducer's system does not affect the problem.
+نوشتن یک ایمیج Docker اغلب بهترین راه برای به اشتراک گذاشتن یک مثال قابل تکرار است، چون کاملاً
+خودکفاست. این یعنی وضعیت سیستم شخص بازتولیدکننده روی مشکل تأثیری ندارد.
 
 !!! note
 
-    Using a Docker image is only feasible if the issue is reproducible on Linux. When using macOS,
-    first check whether the issue also occurs on Linux. Some bugs are specific to the operating
-    system. While using Docker to run Windows containers is feasible, it's not
-    commonplace. These sorts of bugs are expected to be reported as a [script](#script) instead.
+    استفاده از یک ایمیج Docker فقط وقتی امکان‌پذیر است که issue روی Linux قابل بازتولید باشد.
+    هنگام استفاده از macOS، ابتدا بررسی کنید که آیا issue روی Linux هم رخ می‌دهد یا نه. بعضی
+    باگ‌ها مخصوص سیستم‌عامل هستند. با اینکه استفاده از Docker برای اجرای containerهای Windows
+    امکان‌پذیر است، رایج نیست. انتظار می‌رود این نوع باگ‌ها به‌جای آن به‌صورت یک
+    [script](#script) گزارش شوند.
 
-When writing a Docker MRE with uv, it's best to start with one of
-[uv's Docker images](../../guides/integration/docker.md#available-images). When doing so, be sure to
-pin to a specific version of uv.
+هنگام نوشتن یک MRE با Docker و uv، بهتر است با یکی از
+[ایمیج‌های Docker مربوط به uv](../../guides/integration/docker.md#available-images) شروع کنید.
+هنگام انجام این کار، حتماً به یک نسخهٔ مشخص از uv پین کنید.
 
 ```Dockerfile
 FROM ghcr.io/astral-sh/uv:0.13.9-debian-slim
 ```
 
-While Docker images are isolated from the system, the build will use your system's architecture by
-default. When sharing a reproduction, you can explicitly set the platform to ensure a reproducer
-gets the expected behavior. uv publishes images for `linux/amd64` (e.g., Intel or AMD) and
-`linux/arm64` (e.g., Apple M Series or ARM)
+با اینکه ایمیج‌های Docker از سیستم جدا هستند، build به‌طور پیش‌فرض از معماری سیستم شما استفاده
+می‌کند. هنگام به اشتراک گذاشتن یک بازتولید، می‌توانید platform را صراحتاً تنظیم کنید تا مطمئن
+شوید بازتولیدکننده رفتار مورد انتظار را می‌گیرد. uv ایمیج‌هایی را برای `linux/amd64` (مثلاً Intel
+یا AMD) و `linux/arm64` (مثلاً Apple M Series یا ARM) منتشر می‌کند.
 
 ```Dockerfile
 FROM --platform=linux/amd64 ghcr.io/astral-sh/uv:0.13.9-debian-slim
 ```
 
-Docker images are best for reproducing issues that can be constructed with commands, e.g.:
+ایمیج‌های Docker برای بازتولید issueهایی که می‌توان با دستورها ساخت، بهترین‌اند؛ مثلاً:
 
 ```Dockerfile
 FROM --platform=linux/amd64 ghcr.io/astral-sh/uv:0.13.9-debian-slim
@@ -75,7 +76,7 @@ RUN uv sync
 RUN uv run -v python -c "import pydantic"
 ```
 
-However, you can also write files into the image inline:
+با این حال، می‌توانید فایل‌ها را به‌صورت درون‌خطی هم در ایمیج بنویسید:
 
 ```Dockerfile
 FROM --platform=linux/amd64 ghcr.io/astral-sh/uv:0.13.9-debian-slim
@@ -94,22 +95,22 @@ WORKDIR /mre
 RUN uv lock
 ```
 
-If you need to write many files, it's better to create and publish a
-[Git repository](#git-repository). You can combine these approaches and include a `Dockerfile` in
-the repository.
+اگر نیاز دارید فایل‌های زیادی بنویسید، بهتر است یک
+[مخزن Git](#git-repository) بسازید و منتشر کنید. می‌توانید این رویکردها را ترکیب کنید و یک
+`Dockerfile` را در مخزن بگنجانید.
 
-When sharing a Docker reproduction, it's helpful to include the build logs. You can see more output
-from the build steps by disabling caching and the fancy output:
+هنگام به اشتراک گذاشتن یک بازتولید Docker، ضمیمه کردن logهای build مفید است. می‌توانید با
+غیرفعال کردن caching و خروجی فانتزی، خروجی بیشتری از گام‌های build ببینید:
 
 ```console
 docker build . --progress plain --no-cache
 ```
 
-### Script
+### script {#script}
 
-When reporting platform-specific bugs that cannot be reproduced in a [container](#docker-image),
-it's best practice to include a script showing the commands that can be used to reproduce the bug,
-e.g.:
+هنگام گزارش باگ‌های خاص platform که نمی‌توان آن‌ها را در یک [container](#docker-image) بازتولید
+کرد، بهترین کار این است که یک script شامل دستورهایی که می‌توان با آن‌ها باگ را بازتولید کرد،
+ضمیمه کنید؛ مثلاً:
 
 ```bash
 uv init
@@ -118,20 +119,21 @@ uv sync
 uv run -v python -c "import pydantic"
 ```
 
-If your reproduction requires many files, use a [Git repository](#git-repository) to share them.
+اگر بازتولید شما به فایل‌های زیادی نیاز دارد، برای به اشتراک گذاشتن آن‌ها از یک
+[مخزن Git](#git-repository) استفاده کنید.
 
-In addition to the script, include _verbose_ logs (i.e., with the `-v` flag) of the failure and the
-complete error message.
+علاوه بر script، logهای _مفصل_ (verbose) (یعنی با فلگ `-v`) مربوط به خطا و پیام کامل خطا را
+ضمیمه کنید.
 
-Whenever a script relies on external state, be sure to share that information. For example, if you
-wrote the script on Windows, and it uses a Python version that you installed with `choco` and runs
-on PowerShell 6.2, please include that in the report.
+هرگاه یک script به وضعیت خارجی وابسته باشد، حتماً آن اطلاعات را به اشتراک بگذارید. برای مثال،
+اگر script را روی Windows نوشته‌اید و از یک Python version استفاده می‌کند که با `choco` نصب
+کرده‌اید و روی PowerShell 6.2 اجرا می‌شود، لطفاً آن را در گزارش بگنجانید.
 
-### Git repository
+### مخزن Git {#git-repository}
 
-When sharing a Git repository reproduction, include a [script](#script) that reproduces the problem
-or, even better, a [Dockerfile](#docker-image). The first step of the script should be to clone the
-repository and checkout a specific commit:
+هنگام به اشتراک گذاشتن یک بازتولید به‌صورت مخزن Git، یک [script](#script) را ضمیمه کنید که مشکل
+را بازتولید می‌کند یا، حتی بهتر، یک [Dockerfile](#docker-image). گام اول script باید clone کردن
+مخزن و checkout کردن یک commit مشخص باشد:
 
 ```console
 $ git clone https://github.com/<user>/<project>.git
@@ -140,12 +142,12 @@ $ git checkout <commit>
 $ <commands to produce error>
 ```
 
-You can quickly create a new repository in the [GitHub UI](https://github.com/new) or with the `gh`
-CLI:
+می‌توانید به‌سرعت یک مخزن جدید در [رابط کاربری GitHub](https://github.com/new) یا با `gh` در CLI
+بسازید:
 
 ```console
 $ gh repo create uv-mre-1234 --clone
 ```
 
-When using a Git repository for a reproduction, please remember to _minimize_ the contents by
-excluding files or settings that are not required to reproduce your problem.
+هنگام استفاده از یک مخزن Git برای بازتولید، لطفاً به خاطر داشته باشید که محتوا را با حذف فایل‌ها
+یا تنظیماتی که برای بازتولید مشکل شما لازم نیستند، _حداقلی_ کنید.

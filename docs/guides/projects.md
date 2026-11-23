@@ -1,24 +1,24 @@
 ---
-title: Working on projects
+title: کار کردن روی پروژه‌ها
 description:
-  A guide to using uv to create and manage Python projects, including adding dependencies, running
-  commands, and building publishable distributions.
+  راهنمایی برای استفاده از uv جهت ایجاد و مدیریت پروژه‌های Python، از جمله افزودن dependencyها، اجرای
+  دستورها و ساخت distributionهای قابل انتشار.
 ---
 
-# Working on projects
+# کار کردن روی پروژه‌ها {#working-on-projects}
 
-uv supports managing Python projects, which define their dependencies in a `pyproject.toml` file.
+uv از مدیریت پروژه‌های Python پشتیبانی می‌کند؛ پروژه‌هایی که dependencyهای خود را در یک فایل `pyproject.toml` تعریف می‌کنند.
 
-## Creating a new project
+## ایجاد یک پروژهٔ جدید {#creating-a-new-project}
 
-You can create a new Python project using the `uv init` command:
+می‌توانید با دستور `uv init` یک پروژهٔ Python جدید ایجاد کنید:
 
 ```console
 $ uv init hello-world
 $ cd hello-world
 ```
 
-Alternatively, you can initialize a project in the working directory:
+همچنین می‌توانید یک پروژه را در پوشهٔ کاری فعلی مقداردهی اولیه کنید:
 
 ```console
 $ mkdir hello-world
@@ -26,7 +26,7 @@ $ cd hello-world
 $ uv init
 ```
 
-uv will create the following files and directories:
+uv فایل‌ها و پوشه‌های زیر را ایجاد می‌کند:
 
 ```text
 ├── .git/
@@ -39,22 +39,18 @@ uv will create the following files and directories:
         └── __init__.py
 ```
 
-The `pyproject.toml` defines a `hello-world` entrypoint referring to a simple "Hello world" program
-in `__init__.py`. Try it out with `uv run`:
+فایل `pyproject.toml` یک entry point با نام `hello-world` تعریف می‌کند که به یک برنامهٔ سادهٔ «Hello world» در `__init__.py` اشاره دارد. آن را با `uv run` امتحان کنید:
 
 ```console
 $ uv run hello-world
 Hello from hello-world!
 ```
 
-## Project structure
+## ساختار پروژه {#project-structure}
 
-A project consists of a few important parts that work together and allow uv to manage your project.
-In addition to the files created by `uv init`, uv will create a virtual environment and `uv.lock`
-file in the root of your project the first time you run a project command, i.e., `uv run`,
-`uv sync`, or `uv lock`.
+یک پروژه از چند بخش مهم تشکیل شده است که با هم کار می‌کنند و به uv امکان می‌دهند پروژهٔ شما را مدیریت کند. علاوه بر فایل‌هایی که `uv init` ایجاد می‌کند، uv در اولین باری که یک دستور پروژه را اجرا می‌کنید، یعنی `uv run`، `uv sync` یا `uv lock`، یک virtual environment و یک فایل `uv.lock` در ریشهٔ پروژهٔ شما ایجاد می‌کند.
 
-A complete listing would look like:
+فهرست کامل به این شکل خواهد بود:
 
 ```text
 .
@@ -73,9 +69,9 @@ A complete listing would look like:
 └── uv.lock
 ```
 
-### `pyproject.toml`
+### `pyproject.toml` {#pyprojecttoml}
 
-The `pyproject.toml` contains metadata about your project:
+فایل `pyproject.toml` حاوی metadata دربارهٔ پروژهٔ شما است:
 
 ```toml title="pyproject.toml"
 [project]
@@ -97,53 +93,41 @@ requires = ["uv_build>=0.13.9,<0.14"]
 build-backend = "uv_build"
 ```
 
-You'll use this file to specify dependencies, as well as details about the project such as its
-description or license. You can edit this file manually, or use commands like `uv add` and
-`uv remove` to manage your project from the terminal.
+از این فایل برای مشخص کردن dependencyها و همچنین جزئیاتی دربارهٔ پروژه، مانند description یا license آن، استفاده می‌کنید. می‌توانید این فایل را به‌صورت دستی ویرایش کنید، یا از دستورهایی مانند `uv add` و `uv remove` برای مدیریت پروژهٔ خود از ترمینال استفاده کنید.
 
 !!! tip
 
-    See the official [`pyproject.toml` guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)
-    for more details on getting started with the `pyproject.toml` format.
+    برای جزئیات بیشتر دربارهٔ شروع کار با قالب `pyproject.toml`، راهنمای رسمی [`pyproject.toml`](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/) را ببینید.
 
-You'll also use this file to specify uv [configuration options](../concepts/configuration-files.md)
-in a [`[tool.uv]`](../reference/settings.md) section.
+از این فایل همچنین برای مشخص کردن گزینه‌های [پیکربندی](../concepts/configuration-files.md) uv در یک بخش [`[tool.uv]`](../reference/settings.md) استفاده می‌کنید.
 
-### `.python-version`
+### `.python-version` {#python-version}
 
-The `.python-version` file contains the project's default Python version. This file tells uv which
-Python version to use when creating the project's virtual environment.
+فایل `.python-version` حاوی Python version پیش‌فرض پروژه است. این فایل به uv می‌گوید که هنگام ایجاد virtual environment پروژه از کدام Python version استفاده کند.
 
-### `.venv`
+### `.venv` {#venv}
 
-The `.venv` folder contains your project's virtual environment, a Python environment that is
-isolated from the rest of your system. This is where uv will install your project's dependencies.
+پوشهٔ `.venv` حاوی virtual environment پروژهٔ شما است؛ یک Python environment که از بقیهٔ سیستم شما جدا است. uv dependencyهای پروژهٔ شما را در همین‌جا نصب می‌کند.
 
-See the [project environment](../concepts/projects/layout.md#the-project-environment) documentation
-for more details.
+برای جزئیات بیشتر، مستندات [project environment](../concepts/projects/layout.md#the-project-environment) را ببینید.
 
-### `uv.lock`
+### `uv.lock` {#uvlock}
 
-`uv.lock` is a cross-platform lockfile that contains exact information about your project's
-dependencies. Unlike the `pyproject.toml` which is used to specify the broad requirements of your
-project, the lockfile contains the exact resolved versions that are installed in the project
-environment. This file should be checked into version control, allowing for consistent and
-reproducible installations across machines.
+`uv.lock` یک lockfile چندپلتفرمی است که اطلاعات دقیق دربارهٔ dependencyهای پروژهٔ شما را در بر دارد. برخلاف `pyproject.toml` که برای مشخص کردن نیازمندی‌های کلی پروژهٔ شما به کار می‌رود، lockfile نسخه‌های دقیقِ حل‌شده‌ای را در بر دارد که در project environment نصب شده‌اند. این فایل باید در کنترل نسخه ثبت شود تا نصب‌های سازگار و قابل تکرار در ماشین‌های مختلف امکان‌پذیر باشد.
 
-`uv.lock` is a human-readable TOML file but is managed by uv and should not be edited manually.
+`uv.lock` یک فایل TOML خوانا برای انسان است، اما توسط uv مدیریت می‌شود و نباید به‌صورت دستی ویرایش شود.
 
-See the [lockfile](../concepts/projects/layout.md#the-lockfile) documentation for more details.
+برای جزئیات بیشتر، مستندات [lockfile](../concepts/projects/layout.md#the-lockfile) را ببینید.
 
-## Managing dependencies
+## مدیریت dependencies {#managing-dependencies}
 
-You can add dependencies to your `pyproject.toml` with the `uv add` command. This will also update
-the lockfile and project environment:
+می‌توانید با دستور `uv add` dependencyهایی را به `pyproject.toml` خود اضافه کنید. این کار lockfile و project environment را نیز به‌روز می‌کند:
 
 ```console
 $ uv add requests
 ```
 
-You can also specify version constraints or alternative sources:
+همچنین می‌توانید version constraintها یا sourceهای جایگزین را مشخص کنید:
 
 ```console
 $ # Specify a version constraint
@@ -153,51 +137,48 @@ $ # Add a git dependency
 $ uv add git+https://github.com/psf/requests
 ```
 
-If you're migrating from a `requirements.txt` file, you can use `uv add` with the `-r` flag to add
-all dependencies from the file:
+اگر از یک فایل `requirements.txt` مهاجرت می‌کنید، می‌توانید با فلگ `-r` در `uv add` همهٔ dependencyها را از آن فایل اضافه کنید:
 
 ```console
 $ # Add all dependencies from `requirements.txt`.
 $ uv add -r requirements.txt -c constraints.txt
 ```
 
-To remove a package, you can use `uv remove`:
+برای حذف یک package، می‌توانید از `uv remove` استفاده کنید:
 
 ```console
 $ uv remove requests
 ```
 
-To upgrade a package, run `uv lock` with the `--upgrade-package` flag:
+برای ارتقای یک package، دستور `uv lock` را با فلگ `--upgrade-package` اجرا کنید:
 
 ```console
 $ uv lock --upgrade-package requests
 ```
 
-The `--upgrade-package` flag will attempt to update the specified package to the latest compatible
-version, while keeping the rest of the lockfile intact.
+فلگ `--upgrade-package` تلاش می‌کند package مشخص‌شده را به جدیدترین نسخهٔ سازگار به‌روز کند، در حالی که بقیهٔ lockfile دست‌نخورده باقی می‌ماند.
 
-See the documentation on [managing dependencies](../concepts/projects/dependencies.md) for more
-details.
+برای جزئیات بیشتر، مستندات [مدیریت dependencies](../concepts/projects/dependencies.md) را ببینید.
 
-## Viewing your version
+## مشاهدهٔ نسخهٔ خود {#viewing-your-version}
 
-The `uv version` command can be used to read your package's version.
+از دستور `uv version` می‌توان برای خواندن نسخهٔ package شما استفاده کرد.
 
-To get the version of your package, run `uv version`:
+برای گرفتن نسخهٔ package خود، دستور `uv version` را اجرا کنید:
 
 ```console
 $ uv version
 hello-world 0.7.0
 ```
 
-To get the version without the package name, use the `--short` option:
+برای گرفتن نسخه بدون نام package، از گزینهٔ `--short` استفاده کنید:
 
 ```console
 $ uv version --short
 0.7.0
 ```
 
-To get version information in a JSON format, use the `--output-format json` option:
+برای گرفتن اطلاعات نسخه در قالب JSON، از گزینهٔ `--output-format json` استفاده کنید:
 
 ```console
 $ uv version --output-format json
@@ -208,32 +189,26 @@ $ uv version --output-format json
 }
 ```
 
-See the [publishing guide](./package.md#updating-your-version) for details on updating your package
-version.
+برای جزئیات مربوط به به‌روزرسانی نسخهٔ package خود، [راهنمای انتشار](./package.md#updating-your-version) را ببینید.
 
-## Running commands
+## اجرای دستورها {#running-commands}
 
-`uv run` can be used to run arbitrary scripts or commands in your project environment.
+از `uv run` می‌توان برای اجرای اسکریپت‌ها یا دستورهای دلخواه در project environment خود استفاده کرد.
 
-Prior to every `uv run` invocation, uv will verify that the lockfile is up-to-date with the
-`pyproject.toml`, and that the environment is up-to-date with the lockfile, keeping your project
-in-sync without the need for manual intervention. `uv run` guarantees that your command is run in an
-environment with all required dependencies at their locked versions.
+پیش از هر فراخوانی `uv run`، uv بررسی می‌کند که lockfile با `pyproject.toml` به‌روز باشد و environment با lockfile به‌روز باشد، و پروژهٔ شما را بدون نیاز به دخالت دستی همگام نگه می‌دارد. `uv run` تضمین می‌کند که دستور شما در یک environment با همهٔ dependencyهای موردنیاز در نسخه‌های قفل‌شدهٔ آن‌ها اجرا شود.
 
 !!! note
 
-    `uv run` does not remove extraneous packages (those not in the lockfile) from the environment
-    by default. See [handling of extraneous packages](../concepts/projects/sync.md#handling-of-extraneous-packages)
-    for details.
+    `uv run` به‌صورت پیش‌فرض packageهای اضافی (آن‌هایی که در lockfile نیستند) را از environment حذف نمی‌کند. برای جزئیات، [برخورد با packageهای اضافی](../concepts/projects/sync.md#handling-of-extraneous-packages) را ببینید.
 
-For example, to use `flask`:
+برای نمونه، برای استفاده از `flask`:
 
 ```console
 $ uv add flask
 $ uv run -- flask run -p 3000
 ```
 
-Or, to run a script:
+یا برای اجرای یک script:
 
 ```python title="example.py"
 # Require a project dependency
@@ -246,8 +221,7 @@ print("hello world")
 $ uv run example.py
 ```
 
-Alternatively, you can use `uv sync` to manually update the environment then activate it before
-executing a command:
+همچنین می‌توانید از `uv sync` برای به‌روزرسانی دستی environment استفاده کنید و سپس پیش از اجرای یک دستور، آن را فعال کنید:
 
 === "macOS and Linux"
 
@@ -269,18 +243,15 @@ executing a command:
 
 !!! note
 
-    The virtual environment must be active to run scripts and commands in the project without `uv run`. Virtual environment activation differs per shell and platform.
+    برای اجرای اسکریپت‌ها و دستورها در پروژه بدون `uv run`، باید virtual environment فعال باشد. فعال‌سازی virtual environment بسته به shell و platform متفاوت است.
 
-See the documentation on [running commands and scripts](../concepts/projects/run.md) in projects for
-more details.
+برای جزئیات بیشتر، مستندات [اجرای دستورها و اسکریپت‌ها](../concepts/projects/run.md) در پروژه‌ها را ببینید.
 
-## Building distributions
+## ساخت distributionها {#building-distributions}
 
-`uv build` can be used to build source distributions and binary distributions (wheel) for your
-project.
+از `uv build` می‌توان برای ساخت source distributionها و binary distributionها (wheel) برای پروژهٔ شما استفاده کرد.
 
-By default, `uv build` will build the project in the current directory, and place the built
-artifacts in a `dist/` subdirectory:
+به‌صورت پیش‌فرض، `uv build` پروژه را در پوشهٔ جاری می‌سازد و artifactهای ساخته‌شده را در یک زیرپوشهٔ `dist/` قرار می‌دهد:
 
 ```console
 $ uv build
@@ -289,13 +260,10 @@ hello_world-0.1.0-py3-none-any.whl
 hello_world-0.1.0.tar.gz
 ```
 
-See the documentation on [building projects](../concepts/projects/build.md) for more details.
+برای جزئیات بیشتر، مستندات [ساخت پروژه‌ها](../concepts/projects/build.md) را ببینید.
 
-## Next steps
+## گام‌های بعدی {#next-steps}
 
-To learn more about working on projects with uv, see the
-[projects concept](../concepts/projects/index.md) page and the
-[command reference](../reference/cli.md#uv).
+برای یادگیری بیشتر دربارهٔ کار کردن روی پروژه‌ها با uv، صفحهٔ [مفهوم پروژه‌ها](../concepts/projects/index.md) و [مرجع دستورها](../reference/cli.md#uv) را ببینید.
 
-Or, read on to learn how to
-[export a uv lockfile to different formats](../concepts/projects/export.md).
+یا ادامه دهید تا یاد بگیرید چگونه یک [lockfile uv را به قالب‌های دیگر صادر کنید](../concepts/projects/export.md).

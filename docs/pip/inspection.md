@@ -1,41 +1,40 @@
-# Inspecting environments
+# بازرسی environment‌ها {#inspecting-environments}
 
-## Listing installed packages
+## فهرست کردن package‌های نصب‌شده {#listing-installed-packages}
 
-To list all the packages in the environment:
+برای فهرست کردن همهٔ package‌های موجود در environment:
 
 ```console
 $ uv pip list
 ```
 
-To list the packages in a JSON format:
+برای فهرست کردن package‌ها در قالب JSON:
 
 ```console
 $ uv pip list --format json
 ```
 
-To list all the packages in the environment in a `requirements.txt` format:
+برای فهرست کردن همهٔ package‌های موجود در environment در قالب `requirements.txt`:
 
 ```console
 $ uv pip freeze
 ```
 
-## Inspecting a package
+## بازرسی یک package {#inspecting-a-package}
 
-To show information about an installed package, e.g., `numpy`:
+برای نمایش اطلاعات دربارهٔ یک package نصب‌شده، مثلاً `numpy`:
 
 ```console
 $ uv pip show numpy
 ```
 
-Multiple packages can be inspected at once.
+می‌توان چند package را هم‌زمان بازرسی کرد.
 
-## Verifying an environment
+## صحت‌سنجی یک environment {#verifying-an-environment}
 
-It is possible to install packages with conflicting requirements into an environment if installed in
-multiple steps.
+ممکن است package‌هایی با requirement‌های متضاد در یک environment نصب شوند، اگر در چند مرحله نصب شوند.
 
-To check for conflicts or missing dependencies in the environment:
+برای بررسی تداخل‌ها یا dependency‌های گمشده در environment:
 
 ```console
 $ uv pip check

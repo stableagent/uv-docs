@@ -1,86 +1,84 @@
-# TLS certificates
+# گواهی‌های TLS {#tls-certificates}
 
-uv uses TLS to securely communicate with package indexes and other HTTPS servers. TLS certificates
-are used to verify the identity of these servers, ensuring that connections are not intercepted.
+uv از TLS برای برقراری ارتباط امن با indexهای package و دیگر سرورهای HTTPS استفاده می‌کند. گواهی‌های TLS
+برای تأیید هویت این سرورها استفاده می‌شوند و تضمین می‌کنند که اتصال‌ها شنود نمی‌شوند.
 
-## TLS backend
+## backend مربوط به TLS {#tls-backend}
 
-uv uses [`rustls`](https://github.com/rustls/rustls), a memory-safe TLS implementation written in
-Rust, with [`aws-lc-rs`](https://github.com/aws/aws-lc-rs) as the cryptography provider.
+uv از [`rustls`](https://github.com/rustls/rustls)، یک پیاده‌سازی TLS امن از نظر حافظه که به زبان
+Rust نوشته شده است، با [`aws-lc-rs`](https://github.com/aws/aws-lc-rs) به‌عنوان provider رمزنگاری استفاده می‌کند.
 
-uv supports the following X.509 certificate signature algorithms:
+uv از الگوریتم‌های امضای گواهی X.509 زیر پشتیبانی می‌کند:
 
-- ECDSA (P-256, P-384, P-521) with SHA-256, SHA-384, or SHA-512
+- ECDSA (P-256 ،P-384 ،P-521) با SHA-256 ،SHA-384 یا SHA-512
 - Ed25519
-- RSA PKCS#1 v1.5 (2048–8192 bit) with SHA-256, SHA-384, or SHA-512
-- RSA-PSS (2048–8192 bit) with SHA-256, SHA-384, or SHA-512
+- RSA PKCS#1 v1.5 (۲۰۴۸ تا ۸۱۹۲ بیت) با SHA-256 ،SHA-384 یا SHA-512
+- RSA-PSS (۲۰۴۸ تا ۸۱۹۲ بیت) با SHA-256 ،SHA-384 یا SHA-512
 
-## System certificates
+## گواهی‌های سیستم {#system-certificates}
 
-By default, uv uses bundled Mozilla root certificates for TLS verification. In some cases, you may
-want to use the platform's native certificate store instead — for example, if you're relying on a
-corporate trust root (e.g., for a mandatory proxy) that's included in your system's certificate
-store.
+به‌صورت پیش‌فرض، uv از گواهی‌های ریشهٔ Mozilla که همراه آن ارائه می‌شوند برای تأیید TLS استفاده می‌کند. در برخی موارد، ممکن است
+بخواهید به‌جای آن از certificate store بومیِ platform استفاده کنید — برای نمونه، اگر به یک
+ریشهٔ اعتماد سازمانی متکی هستید (برای نمونه، برای یک proxy اجباری) که در certificate store
+سیستم شما گنجانده شده است.
 
-To use system certificates, pass the [`--system-certs`](../../reference/cli.md#uv) flag, set the
-[`UV_SYSTEM_CERTS`](../../reference/environment.md#uv_system_certs) environment variable to `true`,
-or set [`system-certs = true`](../../reference/settings.md#system-certs) in `uv.toml`.
+برای استفاده از گواهی‌های سیستم، فلگ [`--system-certs`](../../reference/cli.md#uv) را ارسال کنید،
+environment variable به نام [`UV_SYSTEM_CERTS`](../../reference/environment.md#uv_system_certs) را روی `true`
+تنظیم کنید یا [`system-certs = true`](../../reference/settings.md#system-certs) را در `uv.toml` تنظیم کنید.
 
-When using system certificates, certificate verification is performed by
-[`rustls-platform-verifier`](https://github.com/rustls/rustls-platform-verifier), which delegates to
-the operating system's certificate verifier.
+هنگام استفاده از گواهی‌های سیستم، تأیید گواهی توسط
+[`rustls-platform-verifier`](https://github.com/rustls/rustls-platform-verifier) انجام می‌شود که کار را به
+تأییدکنندهٔ گواهیِ سیستم عامل واگذار می‌کند.
 
-## Custom certificates
+## گواهی‌های سفارشی {#custom-certificates}
 
-To use custom CA certificates, set the
-[`SSL_CERT_FILE`](../../reference/environment.md#ssl_cert_file) environment variable to the path of
-a PEM-encoded certificate bundle (e.g., `certs.pem`, `ca-bundle.crt`), or set
-[`SSL_CERT_DIR`](../../reference/environment.md#ssl_cert_dir) to one or more directories containing
-PEM-encoded certificate files. Multiple entries are supported, separated using a platform-specific
-delimiter (`:` on Unix, `;` on Windows).
+برای استفاده از گواهی‌های CA سفارشی،
+environment variable به نام [`SSL_CERT_FILE`](../../reference/environment.md#ssl_cert_file) را روی مسیر یک
+بستهٔ گواهی با کدگذاری PEM (برای نمونه، `certs.pem` ،`ca-bundle.crt`) تنظیم کنید یا
+[`SSL_CERT_DIR`](../../reference/environment.md#ssl_cert_dir) را روی یک یا چند پوشهٔ حاوی
+فایل‌های گواهی با کدگذاری PEM تنظیم کنید. چند ورودی پشتیبانی می‌شوند و با یک جداکنندهٔ
+وابسته به platform از هم جدا می‌شوند (`:` در Unix و `;` در Windows).
 
 !!! note
 
-    For a single `uv pip` invocation, pass [`--cert`](../../reference/cli.md#uv-pip) with the path
-    to a PEM-encoded certificate bundle. The bundle replaces uv's default certificate source for
-    that invocation.
+    برای یک فراخوانی واحد از `uv pip`، [`--cert`](../../reference/cli.md#uv-pip) را با مسیر
+    یک بستهٔ گواهی با کدگذاری PEM ارسال کنید. این بسته برای
+    آن فراخوانی، جایگزین منبع گواهی پیش‌فرض uv می‌شود.
 
-Certificates are usually stored with `.pem`, `.crt`, or `.cer` extensions, but uv will attempt to
-read a certificate from any regular file in the provided `SSL_CERT_DIR`.
+گواهی‌ها معمولاً با پسوندهای `.pem` ،`.crt` یا `.cer` ذخیره می‌شوند، اما uv تلاش می‌کند
+گواهی را از هر فایل معمولی در `SSL_CERT_DIR` ارائه‌شده بخواند.
 
-Files that cannot be parsed as PEM certificates are ignored. uv resolves symlinks and ignores
-dangling symlinks.
+فایل‌هایی که نتوان آن‌ها را به‌عنوان گواهی PEM تجزیه کرد نادیده گرفته می‌شوند. uv symlinkها را دنبال می‌کند و
+symlinkهای معلق را نادیده می‌گیرد.
 
-DER-encoded files are not supported.
+فایل‌های با کدگذاری DER پشتیبانی نمی‌شوند.
 
-When set to non-empty values, these environment variables **override** the default certificate
-source entirely — only the provided certificates will be trusted. If a configured file or directory
-does not exist or contains no valid certificates, no default certificates will be trusted.
+وقتی روی مقدارهای غیرخالی تنظیم شوند، این environment variableها منبع گواهی پیش‌فرض را به‌طور کامل **بازنویسی** می‌کنند — فقط گواهی‌های ارائه‌شده مورد اعتماد خواهند بود. اگر یک فایل یا پوشهٔ پیکربندی‌شده وجود نداشته باشد یا گواهی معتبری نداشته باشد، هیچ گواهی پیش‌فرضی مورد اعتماد نخواهد بود.
 
-`SSL_CERT_FILE` can point to a single certificate or a bundle containing multiple certificates.
-`SSL_CERT_DIR` can include multiple directory entries; uv will load all valid certificates from each
-directory.
+`SSL_CERT_FILE` می‌تواند به یک گواهی واحد یا یک بسته حاوی چند گواهی اشاره کند.
+`SSL_CERT_DIR` می‌تواند چند ورودی پوشه را شامل شود؛ uv همهٔ گواهی‌های معتبر را از هر
+پوشه بارگذاری می‌کند.
 
-If client certificate authentication (mTLS) is desired, set the
-[`SSL_CLIENT_CERT`](../../reference/environment.md#ssl_client_cert) environment variable to the path
-of a PEM formatted file containing the certificate followed by the private key.
+اگر احراز هویت با گواهی کلاینت (mTLS) موردنظر است،
+environment variable به نام [`SSL_CLIENT_CERT`](../../reference/environment.md#ssl_client_cert) را روی مسیر
+یک فایل با قالب PEM حاوی گواهی و پس از آن کلید خصوصی تنظیم کنید.
 
-## Insecure hosts
+## hostهای ناامن {#insecure-hosts}
 
-If you're using a setup in which you want to trust a self-signed certificate or otherwise disable
-certificate verification, you can instruct uv to allow insecure connections to dedicated hosts via
-the [`allow-insecure-host`](../../reference/settings.md#allow-insecure-host) configuration option.
-For example, adding the following to `pyproject.toml` will allow insecure connections to
-`example.com`:
+اگر از یک راه‌اندازی استفاده می‌کنید که در آن می‌خواهید به یک گواهی خودامضاشده اعتماد کنید یا به‌صورت دیگری
+تأیید گواهی را غیرفعال کنید، می‌توانید با گزینهٔ پیکربندی [`allow-insecure-host`](../../reference/settings.md#allow-insecure-host)
+به uv دستور دهید اتصال‌های ناامن به hostهای مشخص را مجاز بداند.
+برای نمونه، افزودن مورد زیر به `pyproject.toml` اتصال‌های ناامن به
+`example.com` را مجاز می‌کند:
 
 ```toml
 [tool.uv]
 allow-insecure-host = ["example.com"]
 ```
 
-`allow-insecure-host` expects to receive a hostname (e.g., `localhost`) or hostname-port pair (e.g.,
-`localhost:8080`), and is only applicable to HTTPS connections, as HTTP connections are inherently
-insecure.
+`allow-insecure-host` انتظار دارد یک hostname (برای نمونه، `localhost`) یا یک جفت hostname-port (برای نمونه،
+`localhost:8080`) دریافت کند و فقط برای اتصال‌های HTTPS کاربرد دارد، چون اتصال‌های HTTP ذاتاً
+ناامن هستند.
 
-Use `allow-insecure-host` with caution and only in trusted environments, as it can expose you to
-security risks due to the lack of certificate verification.
+`allow-insecure-host` را با احتیاط و فقط در environmentهای مورداعتماد استفاده کنید، چون به دلیل نبود تأیید گواهی می‌تواند شما را در
+معرض خطرهای امنیتی قرار دهد.

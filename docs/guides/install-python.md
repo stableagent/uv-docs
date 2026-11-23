@@ -1,20 +1,20 @@
 ---
-title: Installing and managing Python
+title: نصب و مدیریت Python
 description:
-  A guide to using uv to install Python, including requesting specific versions, automatic
-  installation, viewing installed versions, and more.
+  راهنمایی برای استفاده از uv جهت نصب Python، شامل درخواست نسخه‌های مشخص، نصب
+  خودکار، مشاهدهٔ نسخه‌های نصب‌شده و موارد دیگر.
 ---
 
-# Installing Python
+# نصب Python {#installing-python}
 
-If Python is already installed on your system, uv will
-[detect and use](#using-existing-python-versions) it without configuration. However, uv can also
-install and manage Python versions. uv [automatically installs](#automatic-python-downloads) missing
-Python versions as needed — you don't need to install Python to get started.
+اگر Python از قبل روی سیستم شما نصب شده باشد، uv بدون هیچ پیکربندی آن را
+[تشخیص می‌دهد و استفاده می‌کند](#using-existing-python-versions). با این حال، uv می‌تواند
+نسخه‌های Python را نیز نصب و مدیریت کند. uv نسخه‌های گمشدهٔ Python را در صورت نیاز به‌صورت
+[خودکار نصب می‌کند](#automatic-python-downloads) — برای شروع نیازی نیست Python را نصب کنید.
 
-## Getting started
+## شروع کار {#getting-started}
 
-To install the latest Python version:
+برای نصب آخرین نسخهٔ Python:
 
 ```console
 $ uv python install
@@ -22,17 +22,17 @@ $ uv python install
 
 !!! note
 
-    Python does not publish official distributable binaries. As such, uv uses distributions from the Astral [`python-build-standalone`](https://github.com/astral-sh/python-build-standalone) project. See the [Python distributions](../concepts/python-versions.md#managed-python-distributions) documentation for more details.
+    Python باینری‌های قابل‌توزیع رسمی منتشر نمی‌کند. به همین دلیل، uv از distributionهای پروژهٔ [`python-build-standalone`](https://github.com/astral-sh/python-build-standalone) شرکت Astral استفاده می‌کند. برای جزئیات بیشتر، مستندات [distributionهای Python](../concepts/python-versions.md#managed-python-distributions) را ببینید.
 
-Once Python is installed, it will be used by `uv` commands automatically. uv also adds the installed
-version to your `PATH`:
+پس از نصب Python، دستورهای `uv` به‌صورت خودکار از آن استفاده می‌کنند. uv همچنین نسخهٔ نصب‌شده
+را به `PATH` شما اضافه می‌کند:
 
 ```console
 $ python3.15
 ```
 
-uv only installs a _versioned_ executable by default. To install `python` and `python3` executables,
-include the experimental `--default` option:
+uv به‌صورت پیش‌فرض فقط یک فایل اجرایی _نسخه‌دار_ نصب می‌کند. برای نصب فایل‌های اجرایی `python` و `python3`،
+گزینهٔ آزمایشی `--default` را اضافه کنید:
 
 ```console
 $ uv python install --default
@@ -40,68 +40,67 @@ $ uv python install --default
 
 !!! tip
 
-    See the documentation on [installing Python executables](../concepts/python-versions.md#installing-python-executables)
-    for more details.
+    برای جزئیات بیشتر، مستندات مربوط به [نصب فایل‌های اجرایی Python](../concepts/python-versions.md#installing-python-executables) را ببینید.
 
-## Installing a specific version
+## نصب یک نسخهٔ مشخص {#installing-a-specific-version}
 
-To install a specific Python version:
+برای نصب یک نسخهٔ مشخص از Python:
 
 ```console
 $ uv python install 3.12
 ```
 
-To install multiple Python versions:
+برای نصب چند نسخهٔ Python:
 
 ```console
 $ uv python install 3.11 3.12
 ```
 
-To install an alternative Python implementation, e.g., PyPy:
+برای نصب یک پیاده‌سازی جایگزین Python، مثلاً PyPy:
 
 ```console
 $ uv python install pypy@3.10
 ```
 
-See the [`python install`](../concepts/python-versions.md#installing-a-python-version) documentation
-for more details.
+برای جزئیات بیشتر، مستندات [`python install`](../concepts/python-versions.md#installing-a-python-version) را
+ببینید.
 
-## Reinstalling Python
+## نصب مجدد Python {#reinstalling-python}
 
-To reinstall uv-managed Python versions, use `--reinstall`, e.g.:
+برای نصب مجدد نسخه‌های Python مدیریت‌شده با uv، از `--reinstall` استفاده کنید، مثلاً:
 
 ```console
 $ uv python install --reinstall
 ```
 
-This will reinstall all previously installed Python versions. Improvements are constantly being
-added to the Python distributions, so reinstalling may resolve bugs even if the Python version does
-not change.
+با این کار، همهٔ نسخه‌های Python که قبلاً نصب شده‌اند دوباره نصب می‌شوند. بهبودها به‌طور مداوم
+به distributionهای Python اضافه می‌شوند، پس نصب مجدد ممکن است حتی اگر نسخهٔ Python تغییر نکند،
+باگ‌ها را برطرف کند.
 
-## Viewing Python installations
+## مشاهدهٔ نصب‌های Python {#viewing-python-installations}
 
-To view available and installed Python versions:
+برای مشاهدهٔ نسخه‌های Python موجود و نصب‌شده:
 
 ```console
 $ uv python list
 ```
 
-See the [`python list`](../concepts/python-versions.md#viewing-available-python-versions)
-documentation for more details.
+برای جزئیات بیشتر، مستندات [`python list`](../concepts/python-versions.md#viewing-available-python-versions)
+را ببینید.
 
-## Automatic Python downloads
+## دانلودهای خودکار Python {#automatic-python-downloads}
 
-Python does not need to be explicitly installed to use uv. By default, uv will automatically
-download Python versions when they are required. For example, the following would download Python
-3.12 if it was not installed:
+برای استفاده از uv نیازی نیست Python به‌صورت صریح نصب شده باشد. به‌صورت پیش‌فرض، uv هنگامی که
+نسخه‌های Python مورد نیاز باشند، آن‌ها را به‌صورت خودکار دانلود می‌کند. برای مثال، دستور زیر در صورت
+نصب نبودن، Python 3.12 را دانلود می‌کند:
 
 ```console
 $ uvx python@3.12 -c "print('hello world')"
 ```
 
-Even if a specific Python version is not requested, uv will download the latest version on demand.
-For example, if there are no Python versions on your system, the following will install Python
-before creating a new virtual environment:
+حتی اگر نسخهٔ مشخصی از Python درخواست نشده باشد، uv آخرین نسخه را در صورت تقاضا دانلود می‌کند.
+برای مثال، اگر هیچ نسخه‌ای از Python روی سیستم شما نباشد، دستور زیر پیش از ایجاد یک virtual environment
+جدید، Python را نصب می‌کند:
 
 ```console
 $ uv venv
@@ -109,44 +108,44 @@ $ uv venv
 
 !!! tip
 
-    Automatic Python downloads can be [easily disabled](../concepts/python-versions.md#disabling-automatic-python-downloads) if you want more control over when Python is downloaded.
+    اگر می‌خواهید کنترل بیشتری بر زمان دانلود Python داشته باشید، دانلودهای خودکار Python را می‌توان به‌راحتی [غیرفعال کرد](../concepts/python-versions.md#disabling-automatic-python-downloads).
 
 <!-- TODO(zanieb): Restore when Python shim management is added
 Note that when an automatic Python installation occurs, the `python` command will not be added to the shell. Use `uv python install-shim` to ensure the `python` shim is installed.
 -->
 
-## Using existing Python versions
+## استفاده از نسخه‌های موجود Python {#using-existing-python-versions}
 
-uv will use existing Python installations if present on your system. There is no configuration
-necessary for this behavior: uv will use the system Python if it satisfies the requirements of the
-command invocation. See the
-[Python discovery](../concepts/python-versions.md#discovery-of-python-versions) documentation for
-details.
+اگر نصب‌های موجود Python روی سیستم شما وجود داشته باشند، uv از آن‌ها استفاده می‌کند. برای این رفتار
+به هیچ پیکربندی‌ای نیاز نیست: uv در صورتی از Python سیستم استفاده می‌کند که نیازمندی‌های فراخوانی
+دستور را برآورده کند. برای جزئیات، مستندات
+[کشف Python](../concepts/python-versions.md#discovery-of-python-versions) را ببینید.
 
-To force uv to use the system Python, provide the `--no-managed-python` flag. See the
-[Python version preference](../concepts/python-versions.md#requiring-or-disabling-managed-python-versions)
-documentation for more details.
+برای اینکه uv را مجبور کنید از Python سیستم استفاده کند، فلگ `--no-managed-python` را بدهید. برای
+جزئیات بیشتر، مستندات
+[ترجیح نسخهٔ Python](../concepts/python-versions.md#requiring-or-disabling-managed-python-versions)
+را ببینید.
 
-## Upgrading Python versions
+## ارتقای نسخه‌های Python {#upgrading-python-versions}
 
-To upgrade a Python version to the latest supported patch release:
+برای ارتقای یک نسخهٔ Python به آخرین انتشار اصلاحی (patch) پشتیبانی‌شده:
 
 ```console
 $ uv python upgrade 3.12
 ```
 
-To upgrade all uv-managed Python versions:
+برای ارتقای همهٔ نسخه‌های Python مدیریت‌شده با uv:
 
 ```console
 $ uv python upgrade
 ```
 
-See the [`python upgrade`](../concepts/python-versions.md#upgrading-python-versions) documentation
-for more details.
+برای جزئیات بیشتر، مستندات [`python upgrade`](../concepts/python-versions.md#upgrading-python-versions)
+را ببینید.
 
-## Next steps
+## گام‌های بعدی {#next-steps}
 
-To learn more about `uv python`, see the [Python version concept](../concepts/python-versions.md)
-page and the [command reference](../reference/cli.md#uv-python).
+برای آشنایی بیشتر با `uv python`، صفحهٔ [مفهوم نسخهٔ Python](../concepts/python-versions.md)
+و [مرجع دستور](../reference/cli.md#uv-python) را ببینید.
 
-Or, read on to learn how to [run scripts](./scripts.md) and invoke Python with uv.
+یا برای یادگیری [اجرای scriptها](./scripts.md) و فراخوانی Python با uv، ادامه دهید.

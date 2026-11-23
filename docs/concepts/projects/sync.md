@@ -1,201 +1,198 @@
-# Locking and syncing
+# قفل کردن و همگام‌سازی {#locking-and-syncing}
 
-Locking is the process of [resolving](../resolution.md) your project's dependencies into a
-[lockfile](./layout.md#the-lockfile). Syncing is the process of installing a subset of packages from
-the lockfile into the [project environment](./layout.md#the-project-environment).
+قفل کردن فرایند [حل کردن](../resolution.md) dependencyهای project شما در یک
+[lockfile](./layout.md#the-lockfile) است. همگام‌سازی فرایند نصب زیرمجموعه‌ای از packageها از
+lockfile در [environment مربوط به project](./layout.md#the-project-environment) است.
 
-## Automatic lock and sync
+## قفل و همگام‌سازی خودکار {#automatic-lock-and-sync}
 
-Locking and syncing are _automatic_ in uv. For example, when `uv run` is used, the project is locked
-and synced before invoking the requested command. This ensures the project environment is always
-up-to-date. Similarly, commands which read the lockfile, such as `uv tree`, will automatically
-update it before running.
+قفل کردن و همگام‌سازی در uv _خودکار_ هستند. برای مثال، هنگامی که از `uv run` استفاده می‌شود، project پیش از فراخوانی دستور درخواستی قفل
+و همگام می‌شود. این کار تضمین می‌کند که environment مربوط به project همیشه
+به‌روز باشد. به‌طور مشابه، دستورهایی که lockfile را می‌خوانند، مانند `uv tree`، به‌طور خودکار
+پیش از اجرا آن را به‌روز می‌کنند.
 
-To disable automatic locking, use the `--locked` option:
+برای غیرفعال کردن قفل کردن خودکار، از گزینهٔ `--locked` استفاده کنید:
 
 ```console
 $ uv run --locked ...
 ```
 
-If the lockfile is not up-to-date, uv will raise an error instead of updating the lockfile.
+اگر lockfile به‌روز نباشد، uv به‌جای به‌روزرسانی lockfile، یک خطا ایجاد می‌کند.
 
-To use the lockfile without checking if it is up-to-date, use the `--frozen` option:
+برای استفاده از lockfile بدون بررسی به‌روز بودن آن، از گزینهٔ `--frozen` استفاده کنید:
 
 ```console
 $ uv run --frozen ...
 ```
 
-Similarly, to run a command without checking if the environment is up-to-date, use the `--no-sync`
-option:
+به‌طور مشابه، برای اجرای یک دستور بدون بررسی به‌روز بودن environment، از گزینهٔ `--no-sync`
+استفاده کنید:
 
 ```console
 $ uv run --no-sync ...
 ```
 
-## Checking the lockfile
+## بررسی lockfile {#checking-the-lockfile}
 
-When considering if the lockfile is up-to-date, uv will check if it matches the project metadata.
-For example, if you add a dependency to your `pyproject.toml`, the lockfile will be considered
-outdated. Similarly, if you change the version constraints for a dependency such that the locked
-version is excluded, the lockfile will be considered outdated. However, if you change the version
-constraints such that the existing locked version is still included, the lockfile will still be
-considered up-to-date.
+هنگام بررسی به‌روز بودن lockfile، uv بررسی می‌کند که آیا با metadata مربوط به project مطابقت دارد یا خیر.
+برای مثال، اگر یک dependency به `pyproject.toml` خود اضافه کنید، lockfile
+منسوخ در نظر گرفته می‌شود. به‌طور مشابه، اگر قیدهای نسخهٔ یک dependency را به‌گونه‌ای تغییر دهید که نسخهٔ قفل‌شده
+حذف شود، lockfile منسوخ در نظر گرفته می‌شود. با این حال، اگر قیدهای نسخه را
+به‌گونه‌ای تغییر دهید که نسخهٔ قفل‌شدهٔ موجود همچنان شامل شود، lockfile همچنان
+به‌روز در نظر گرفته می‌شود.
 
-You can check if the lockfile is up-to-date by passing the `--check` flag to `uv lock`:
+می‌توانید با دادن فلگ `--check` به `uv lock` بررسی کنید که آیا lockfile به‌روز است یا خیر:
 
 ```console
 $ uv lock --check
 ```
 
-This is equivalent to the `--locked` flag for other commands.
+این معادل فلگ `--locked` برای دستورهای دیگر است.
 
 !!! important
 
-    uv will not consider lockfiles outdated when new versions of packages are released — the lockfile
-    needs to be explicitly updated if you want to upgrade dependencies. See the documentation on
-    [upgrading locked package versions](#upgrading-locked-package-versions) for details.
+    uv وقتی نسخه‌های جدیدی از packageها منتشر می‌شوند، lockfileها را منسوخ در نظر نمی‌گیرد — اگر می‌خواهید dependencyها را ارتقا دهید، lockfile
+    باید به‌طور صریح به‌روز شود. برای جزئیات، به مستندات مربوط به
+    [ارتقای نسخه‌های قفل‌شدهٔ package](#upgrading-locked-package-versions) مراجعه کنید.
 
-## Creating the lockfile
+## ایجاد lockfile {#creating-the-lockfile}
 
-While the lockfile is created [automatically](#automatic-lock-and-sync), the lockfile may also be
-explicitly created or updated using `uv lock`:
+در حالی که lockfile به‌صورت [خودکار](#automatic-lock-and-sync) ایجاد می‌شود، lockfile را می‌توان با استفاده از `uv lock` به‌طور صریح نیز
+ایجاد یا به‌روز کرد:
 
 ```console
 $ uv lock
 ```
 
-## Syncing the environment
+## همگام‌سازی environment {#syncing-the-environment}
 
-While the environment is synced [automatically](#automatic-lock-and-sync), it may also be explicitly
-synced using `uv sync`:
+در حالی که environment به‌صورت [خودکار](#automatic-lock-and-sync) همگام می‌شود، می‌توان آن را با استفاده از `uv sync` به‌طور صریح نیز
+همگام کرد:
 
 ```console
 $ uv sync
 ```
 
-Syncing the environment manually is especially useful for ensuring your editor has the correct
-versions of dependencies.
+همگام‌سازی دستی environment به‌ویژه برای اطمینان از اینکه ویرایشگر شما نسخه‌های درست
+dependencyها را دارد، مفید است.
 
-### Editable installation
+### نصب editable {#editable-installation}
 
-When the environment is synced, uv will install the project (and other workspace members) as
-_editable_ packages, such that re-syncing is not necessary for changes to be reflected in the
-environment.
+هنگامی که environment همگام می‌شود، uv project (و دیگر memberهای workspace) را به‌صورت
+packageهای _editable_ نصب می‌کند، به‌گونه‌ای که برای انعکاس تغییرات در
+environment نیازی به همگام‌سازی مجدد نیست.
 
-To opt-out of this behavior, use the `--no-editable` option.
+برای انصراف از این رفتار، از گزینهٔ `--no-editable` استفاده کنید.
 
 !!! note
 
-    If the project does not define a build system, it will not be installed.
-    See the [build systems](./config.md#build-systems) documentation for details.
+    اگر project یک build system تعریف نکند، نصب نخواهد شد.
+    برای جزئیات، به مستندات [build systemها](./config.md#build-systems) مراجعه کنید.
 
-### Handling of extraneous packages
+### مدیریت packageهای اضافی {#handling-of-extraneous-packages}
 
-`uv sync` performs "exact" syncing by default, which means it will remove any packages that are not
-selected for installation.
+`uv sync` به‌طور پیش‌فرض همگام‌سازی «دقیق» (exact) انجام می‌دهد، یعنی هر packageای را که برای نصب انتخاب نشده است، حذف می‌کند.
 
-To retain extraneous packages, use the `--inexact` flag:
+برای حفظ packageهای اضافی، از فلگ `--inexact` استفاده کنید:
 
 ```console
 $ uv sync --inexact
 ```
 
-In contrast, `uv run` uses "inexact" syncing by default, ensuring that all required packages are
-installed but not removing extraneous packages. To enable exact syncing with `uv run`, use the
-`--exact` flag:
+در مقابل، `uv run` به‌طور پیش‌فرض از همگام‌سازی «غیردقیق» (inexact) استفاده می‌کند و تضمین می‌کند که همهٔ packageهای موردنیاز
+نصب شده‌اند اما packageهای اضافی را حذف نمی‌کند. برای فعال کردن همگام‌سازی دقیق با `uv run`، از فلگ
+`--exact` استفاده کنید:
 
 ```console
 $ uv run --exact ...
 ```
 
-### Syncing optional dependencies
+### همگام‌سازی dependencyهای اختیاری {#syncing-optional-dependencies}
 
-uv reads optional dependencies from the `[project.optional-dependencies]` table. These are
-frequently referred to as "extras".
+uv dependencyهای اختیاری را از جدول `[project.optional-dependencies]` می‌خواند. این‌ها
+اغلب با نام «extra» شناخته می‌شوند.
 
-uv does not sync extras by default. Use the `--extra` option to include an extra.
+uv به‌طور پیش‌فرض extraها را همگام نمی‌کند. برای گنجاندن یک extra، از گزینهٔ `--extra` استفاده کنید.
 
 ```console
 $ uv sync --extra foo
 ```
 
-To quickly enable all extras, use the `--all-extras` option.
+برای فعال کردن سریع همهٔ extraها، از گزینهٔ `--all-extras` استفاده کنید.
 
-See the [optional dependencies](./dependencies.md#optional-dependencies) documentation for details
-on how to manage optional dependencies.
+برای جزئیات
+نحوهٔ مدیریت dependencyهای اختیاری، به مستندات [dependencyهای اختیاری](./dependencies.md#optional-dependencies) مراجعه کنید.
 
-### Syncing development dependencies
+### همگام‌سازی dependencyهای توسعه {#syncing-development-dependencies}
 
-uv reads development dependencies from the `[dependency-groups]` table (as defined in
-[PEP 735](https://peps.python.org/pep-0735/)).
+uv dependencyهای توسعه را از جدول `[dependency-groups]` می‌خواند (همان‌طور که در
+[PEP 735](https://peps.python.org/pep-0735/) تعریف شده است).
 
-The `dev` group is special-cased and synced by default. See the
-[default groups](./dependencies.md#default-groups) documentation for details on changing the
-defaults.
+group مربوط به `dev` به‌صورت خاص در نظر گرفته شده و به‌طور پیش‌فرض همگام می‌شود. برای جزئیات تغییر
+پیش‌فرض‌ها، به مستندات
+[groupهای پیش‌فرض](./dependencies.md#default-groups) مراجعه کنید.
 
-The `--no-dev` flag can be used to exclude the `dev` group.
+می‌توان از فلگ `--no-dev` برای حذف group مربوط به `dev` استفاده کرد.
 
-The `--only-dev` flag can be used to install the `dev` group _without_ the project and its
-dependencies.
+می‌توان از فلگ `--only-dev` برای نصب group مربوط به `dev` _بدون_ project و
+dependencyهای آن استفاده کرد.
 
-Additional groups can be included or excluded with the `--all-groups`, `--no-default-groups`,
-`--group <name>`, `--only-group <name>`, and `--no-group <name>` options. The semantics of
-`--only-group` are the same as `--only-dev`: the project will not be included. However,
-`--only-group` will also exclude default groups.
+groupهای اضافی را می‌توان با گزینه‌های `--all-groups`، `--no-default-groups`،
+`--group <name>`، `--only-group <name>` و `--no-group <name>` گنجاند یا حذف کرد. معنای
+`--only-group` همان `--only-dev` است: project گنجانده نمی‌شود. با این حال،
+`--only-group` groupهای پیش‌فرض را نیز حذف می‌کند.
 
-Group exclusions always take precedence over inclusions, so given the command:
+حذف‌های group همیشه بر گنجاندن‌ها اولویت دارند، بنابراین با توجه به دستور:
 
 ```
 $ uv sync --no-group foo --group foo
 ```
 
-The `foo` group would not be installed.
+group مربوط به `foo` نصب نمی‌شود.
 
-See the [development dependencies](./dependencies.md#development-dependencies) documentation for
-details on how to manage development dependencies.
+برای جزئیات
+نحوهٔ مدیریت dependencyهای توسعه، به مستندات [dependencyهای توسعه](./dependencies.md#development-dependencies) مراجعه کنید.
 
-## Upgrading locked package versions
+## ارتقای نسخه‌های قفل‌شدهٔ package {#upgrading-locked-package-versions}
 
-With an existing `uv.lock` file, uv will prefer the previously locked versions of packages when
-running `uv sync` and `uv lock`. Package versions will only change if the project's dependency
-constraints exclude the previous, locked version.
+با وجود یک فایل `uv.lock`، uv هنگام اجرای `uv sync` و `uv lock` نسخه‌های قفل‌شدهٔ پیشین packageها را ترجیح می‌دهد. نسخه‌های package فقط در صورتی تغییر می‌کنند که قیدهای dependency مربوط به project نسخهٔ قفل‌شدهٔ پیشین را حذف کنند.
 
-To upgrade all packages:
+برای ارتقای همهٔ packageها:
 
 ```console
 $ uv lock --upgrade
 ```
 
-To upgrade a single package to the latest version, while retaining the locked versions of all other
-packages:
+برای ارتقای یک package منفرد به آخرین نسخه، در حالی که نسخه‌های قفل‌شدهٔ همهٔ packageهای دیگر
+حفظ می‌شوند:
 
 ```console
 $ uv lock --upgrade-package <package>
 ```
 
-To upgrade a single package to a specific version:
+برای ارتقای یک package منفرد به یک نسخهٔ مشخص:
 
 ```console
 $ uv lock --upgrade-package <package>==<version>
 ```
 
-In all cases, upgrades are limited to the project's dependency constraints. For example, if the
-project defines an upper bound for a package then an upgrade will not go beyond that version.
+در همهٔ موارد، ارتقاها به قیدهای dependency مربوط به project محدود می‌شوند. برای مثال، اگر
+project یک حد بالایی برای یک package تعریف کند، ارتقا از آن نسخه فراتر نمی‌رود.
 
 !!! note
 
-    uv applies similar logic to Git dependencies. For example, if a Git dependency references
-    the `main` branch, uv will prefer the locked commit SHA in an existing `uv.lock` file over
-    the latest commit on the `main` branch, unless the `--upgrade` or `--upgrade-package` flags
-    are used.
+    uv منطق مشابهی را برای dependencyهای Git اعمال می‌کند. برای مثال، اگر یک dependency مربوط به Git به
+    شاخهٔ `main` اشاره کند، uv SHA مربوط به commit قفل‌شده در یک فایل `uv.lock` موجود را بر
+    آخرین commit در شاخهٔ `main` ترجیح می‌دهد، مگر اینکه از فلگ‌های `--upgrade` یا `--upgrade-package`
+    استفاده شود.
 
-These flags can also be provided to `uv sync` or `uv run` to update the lockfile _and_ the
-environment.
+این فلگ‌ها را می‌توان به `uv sync` یا `uv run` نیز داد تا lockfile _و_ environment
+به‌روز شوند.
 
-## Exporting the lockfile
+## خروجی گرفتن از lockfile {#exporting-the-lockfile}
 
-If you need to integrate uv with other tools or workflows, you can export `uv.lock` to different
-formats including `requirements.txt`, `pylock.toml` (PEP 751), and CycloneDX SBOM.
+اگر نیاز دارید uv را با toolها یا workflowهای دیگر یکپارچه کنید، می‌توانید `uv.lock` را به قالب‌های مختلفی
+از جمله `requirements.txt`، `pylock.toml` (PEP 751) و CycloneDX SBOM خروجی بگیرید.
 
 ```console
 $ uv export --format requirements.txt
@@ -203,38 +200,36 @@ $ uv export --format pylock.toml
 $ uv export --format cyclonedx1.5
 ```
 
-See the [export guide](./export.md) for comprehensive documentation on all export formats and their
-use cases.
+برای مستندات جامع دربارهٔ همهٔ قالب‌های خروجی و موارد استفادهٔ آن‌ها، به [راهنمای خروجی گرفتن](./export.md) مراجعه کنید.
 
-## Partial installations
+## نصب‌های جزئی {#partial-installations}
 
-Sometimes it's helpful to perform installations in multiple steps, e.g., for optimal layer caching
-while building a Docker image. `uv sync` has several flags for this purpose.
+گاهی انجام نصب‌ها در چند مرحله مفید است، برای مثال برای بهینه‌سازی کش لایه‌ها
+هنگام ساخت یک image مربوط به Docker. `uv sync` چندین فلگ برای این منظور دارد.
 
-- `--no-install-project`: Do not install the current project
-- `--no-install-workspace`: Do not install any workspace members, including the root project
-- `--no-install-package <NO_INSTALL_PACKAGE>`: Do not install the given package(s)
+- `--no-install-project`: project فعلی را نصب نکنید
+- `--no-install-workspace`: هیچ‌یک از memberهای workspace، از جمله project ریشه را نصب نکنید
+- `--no-install-package <NO_INSTALL_PACKAGE>`: package(های) داده‌شده را نصب نکنید
 
-When these options are used, all the dependencies of the target are still installed. For example,
-`--no-install-project` will omit the _project_ but not any of its dependencies.
+هنگامی که از این گزینه‌ها استفاده می‌شود، همهٔ dependencyهای هدف همچنان نصب می‌شوند. برای مثال،
+`--no-install-project` _project_ را حذف می‌کند اما هیچ‌یک از dependencyهای آن را حذف نمی‌کند.
 
-If used improperly, these flags can result in a broken environment since a package can be missing
-its dependencies.
+اگر این فلگ‌ها به‌درستی استفاده نشوند، می‌توانند به یک environment خراب منجر شوند، زیرا ممکن است یک package
+dependencyهای خود را نداشته باشد.
 
-## Malware checks
+## بررسی‌های بدافزار {#malware-checks}
 
 !!! important
 
-    On-sync malware checking is in [preview](../preview.md), and is subject to change until stabilized.
+    بررسی بدافزار هنگام sync در [پیش‌نمایش](../preview.md) است و تا زمان تثبیت، ممکن است تغییر کند.
 
-While syncing, uv can perform a lightweight scan of your lockfile for known malware by checking it
-against [OSV](https://osv.dev). OSV references MAL advisories from the OpenSSF's
-[malicious packages database](https://github.com/ossf/malicious-packages).
+هنگام همگام‌سازی، uv می‌تواند با بررسی lockfile شما در برابر [OSV](https://osv.dev)، یک اسکن سبک برای بدافزار شناخته‌شده انجام دهد. OSV به هشدارهای MAL از
+[پایگاه دادهٔ packageهای مخرب](https://github.com/ossf/malicious-packages) مربوط به OpenSSF اشاره می‌کند.
 
-If a locked dependency matches a malware advisory, the sync will be terminated.
+اگر یک dependency قفل‌شده با یک هشدار بدافزار مطابقت داشته باشد، sync خاتمه می‌یابد.
 
-To enable malware checks, set `audit.malware-check = true` in your uv settings or set
-`UV_MALWARE_CHECK=1` in your environment.
+برای فعال کردن بررسی‌های بدافزار، `audit.malware-check = true` را در تنظیمات uv خود تنظیم کنید یا
+`UV_MALWARE_CHECK=1` را در environment خود تنظیم کنید.
 
-To use an alternative vulnerability service, set `audit.malware-check-url` in your uv settings or
-set `UV_MALWARE_CHECK_URL` in your environment.
+برای استفاده از یک سرویس آسیب‌پذیری جایگزین، `audit.malware-check-url` را در تنظیمات uv خود تنظیم کنید یا
+`UV_MALWARE_CHECK_URL` را در environment خود تنظیم کنید.

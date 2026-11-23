@@ -1,15 +1,15 @@
-# HTTP credentials
+# credentialهای HTTP {#http-credentials}
 
-uv supports credentials over HTTP when querying package registries.
+uv هنگام درخواست از registryهای package، از credentialها روی HTTP پشتیبانی می‌کند.
 
-Authentication can come from the following sources, in order of precedence:
+احراز هویت می‌تواند از منبع‌های زیر، به ترتیب اولویت، تأمین شود:
 
-- The URL, e.g., `https://<user>:<password>@<hostname>/...`
-- A [netrc](#netrc-files) configuration file
-- The uv credentials store
-- A [keyring provider](#keyring-providers) (off by default)
+- URL، برای نمونه `https://<user>:<password>@<hostname>/...`
+- یک فایل پیکربندی [netrc](#netrc-files)
+- credentials store در uv
+- یک [keyring provider](#keyring-providers) (به‌صورت پیش‌فرض غیرفعال)
 
-Authentication may be used for hosts specified in the following contexts:
+احراز هویت ممکن است برای hostهایی که در بسترهای زیر مشخص شده‌اند استفاده شود:
 
 - `[index]`
 - `index-url`
@@ -17,69 +17,67 @@ Authentication may be used for hosts specified in the following contexts:
 - `find-links`
 - `package @ https://...`
 
-## netrc files
+## فایل‌های netrc {#netrc-files}
 
-[`.netrc`](https://everything.curl.dev/usingcurl/netrc.html) files are a long-standing plain text
-format for storing credentials on a system.
+فایل‌های [`.netrc`](https://everything.curl.dev/usingcurl/netrc.html) یک قالب متنی سادهٔ قدیمی
+برای ذخیرهٔ credentialها در یک سیستم هستند.
 
-Reading credentials from `.netrc` files is always enabled. uv uses the file path in the `NETRC`
-environment variable if it is defined, or `~/.netrc` otherwise.
+خواندن credentialها از فایل‌های `.netrc` همیشه فعال است. uv اگر environment variable به نام `NETRC`
+تعریف شده باشد، از مسیر فایل موجود در آن استفاده می‌کند و در غیر این صورت از `~/.netrc` استفاده می‌کند.
 
-## The uv credentials store
+## مخزن credentialها در uv {#the-uv-credentials-store}
 
-uv can read and write credentials from a store using the [`uv auth` commands](./cli.md).
+uv می‌تواند credentialها را با استفاده از دستورهای [`uv auth`](./cli.md) از یک مخزن بخواند و در آن بنویسد.
 
-Credentials are stored in a plaintext file in uv's state directory, e.g.,
-`~/.local/share/uv/credentials/credentials.toml` on Unix. This file is currently not intended to be
-edited manually.
+credentialها در یک فایل متنی ساده در پوشهٔ state مربوط به uv ذخیره می‌شوند؛ برای نمونه،
+`~/.local/share/uv/credentials/credentials.toml` در Unix. در حال حاضر قرار نیست این فایل به‌صورت
+دستی ویرایش شود.
 
 !!! note
 
-    A secure, system native storage mechanism is in [preview](../preview.md) — it is still
-    experimental and being actively developed. In the future, this will become the default storage
-    mechanism.
+    یک مکانیزم ذخیره‌سازی امن و بومیِ سیستم در [پیش‌نمایش](../preview.md) است — هنوز
+    آزمایشی است و به‌طور فعال در حال توسعه است. در آینده، این مکانیزم به مکانیزم ذخیره‌سازی
+    پیش‌فرض تبدیل خواهد شد.
 
-    When enabled, uv will use the secret storage mechanism native to your operating system. On
-    macOS, it uses the Keychain Services. On Windows, it uses the Windows Credential Manager. On
-    Linux, it uses the DBus-based Secret Service API.
+    وقتی فعال باشد، uv از مکانیزم ذخیره‌سازی secret بومیِ سیستم عامل شما استفاده می‌کند. در
+    macOS، از Keychain Services استفاده می‌کند. در Windows، از Windows Credential Manager استفاده می‌کند. در
+    Linux، از Secret Service API مبتنی بر DBus استفاده می‌کند.
 
-    Currently, uv only searches the native store for credentials it has added to the secret store —
-    it will not retrieve credentials persisted by other applications.
+    در حال حاضر، uv فقط در مخزن بومی به‌دنبال credentialهایی می‌گردد که خودش به مخزن رمزها اضافه کرده است —
+    credentialهایی را که برنامه‌های دیگر ذخیره کرده‌اند بازیابی نمی‌کند.
 
-    Set `UV_PREVIEW_FEATURES=native-auth` to use this storage mechanism.
+    برای استفاده از این مکانیزم ذخیره‌سازی، `UV_PREVIEW_FEATURES=native-auth` را تنظیم کنید.
 
-## Keyring providers
+## keyring providerها {#keyring-providers}
 
-A keyring provider is a concept from `pip` allowing retrieval of credentials from an interface
-matching the popular [keyring](https://github.com/jaraco/keyring) Python package.
+یک keyring provider مفهومی از `pip` است که امکان بازیابی credentialها از یک رابط
+مطابق با package محبوب [keyring](https://github.com/jaraco/keyring) در Python را فراهم می‌کند.
 
-The "subprocess" keyring provider invokes the `keyring` command to fetch credentials. uv does not
-support additional keyring provider types at this time.
+keyring provider از نوع «subprocess» دستور `keyring` را فراخوانی می‌کند تا credentialها را دریافت کند. uv در
+حال حاضر از انواع دیگر keyring provider پشتیبانی نمی‌کند.
 
-Set `--keyring-provider subprocess`, `UV_KEYRING_PROVIDER=subprocess`, or
-`tool.uv.keyring-provider = "subprocess"` to use the provider.
+برای استفاده از provider، `--keyring-provider subprocess` ،`UV_KEYRING_PROVIDER=subprocess` یا
+`tool.uv.keyring-provider = "subprocess"` را تنظیم کنید.
 
-## Persistence of credentials
+## پایداری credentialها {#persistence-of-credentials}
 
-If authentication is found for a single index URL or net location (scheme, host, and port), it will
-be cached for the duration of the command and used for other queries to that index or net location.
-Authentication is not cached across invocations of uv.
+اگر احراز هویت برای یک index URL واحد یا یک net location واحد (scheme، host و port) یافت شود، برای
+مدت اجرای دستور در cache نگه داشته می‌شود و برای درخواست‌های دیگر به آن index یا net location استفاده می‌شود.
+احراز هویت در فراخوانی‌های مختلف uv در cache نگه داشته نمی‌شود.
 
-When using `uv add`, uv _will not_ persist index credentials to the `pyproject.toml` or `uv.lock`.
-These files are often included in source control and distributions, so it is generally unsafe to
-include credentials in them. However, uv _will_ persist credentials for direct URLs, i.e.,
-`package @ https://username:password:example.com/foo.whl`, as there is not currently a way to
-otherwise provide those credentials.
+هنگام استفاده از `uv add`، uv credentialهای index را در `pyproject.toml` یا `uv.lock` ذخیره _نمی‌کند_.
+این فایل‌ها اغلب در کنترل نسخه و توزیع‌ها گنجانده می‌شوند، بنابراین به‌طور کلی گنجاندن credentialها در
+آن‌ها ناامن است. با این حال، uv credentialها را برای URLهای مستقیم ذخیره _می‌کند_؛ یعنی
+`package @ https://username:password:example.com/foo.whl`، چون در حال حاضر راه دیگری برای
+ارائهٔ آن credentialها وجود ندارد.
 
-If credentials were attached to an index URL during `uv add`, uv may fail to fetch dependencies from
-indexes which require authentication on subsequent operations. See the
-[index authentication documentation](../indexes.md#authentication) for details on persistent
-authentication for indexes.
+اگر هنگام `uv add` credentialها به یک index URL متصل شده بودند، ممکن است uv در عملیات بعدی نتواند dependencyها را از
+indexهایی دریافت کند که به احراز هویت نیاز دارند. برای جزئیات دربارهٔ احراز هویت پایدار
+برای indexها، به
+[مستندات احراز هویت index](../indexes.md#authentication) مراجعه کنید.
 
-## Learn more
+## بیشتر بدانید {#learn-more}
 
-See the [index authentication documentation](../indexes.md#authentication) for details on
-authenticating index URLs.
+برای جزئیات دربارهٔ احراز هویت index URLها، به [مستندات احراز هویت index](../indexes.md#authentication) مراجعه کنید.
 
-See the [`pip` compatibility guide](../../pip/compatibility.md#registry-authentication) for details
-on differences from `pip`.
+برای جزئیات دربارهٔ تفاوت‌ها با `pip`، به [راهنمای سازگاری `pip`](../../pip/compatibility.md#registry-authentication) مراجعه کنید.

@@ -1,40 +1,32 @@
-# Using Python environments
+# استفاده از environment‌های Python {#using-python-environments}
 
-Each Python installation has an environment that is active when Python is used. Packages can be
-installed into an environment to make their modules available from your Python scripts. Generally,
-it is considered best practice not to modify a Python installation's environment. This is especially
-important for Python installations that come with the operating system which often manage the
-packages themselves. A virtual environment is a lightweight way to isolate packages from a Python
-installation's environment. Unlike `pip`, uv requires using a virtual environment by default.
+هر نصب Python یک environment دارد که هنگام استفاده از Python فعال است. می‌توان package‌ها را در یک environment نصب کرد تا module‌های آن‌ها از اسکریپت‌های Python شما در دسترس باشند. به‌طور کلی، بهترین روش این است که environment نصب Python را تغییر ندهید. این موضوع به‌ویژه برای نصب‌های Python که همراه سیستم‌عامل عرضه می‌شوند اهمیت دارد، زیرا آن‌ها اغلب خودشان package‌ها را مدیریت می‌کنند. یک virtual environment روشی سبک برای جداسازی package‌ها از environment نصب Python است. برخلاف `pip`، uv به‌صورت پیش‌فرض نیازمند استفاده از یک virtual environment است.
 
-## Creating a virtual environment
+## ساخت یک virtual environment {#creating-a-virtual-environment}
 
-uv supports creating virtual environments, e.g., to create a virtual environment at `.venv`:
+uv از ساخت virtual environment‌ها پشتیبانی می‌کند؛ مثلاً برای ساخت یک virtual environment در مسیر `.venv`:
 
 ```console
 $ uv venv
 ```
 
-A specific name or path can be specified, e.g., to create a virtual environment at `my-name`:
+می‌توان یک نام یا مسیر مشخص را تعیین کرد؛ مثلاً برای ساخت یک virtual environment در مسیر `my-name`:
 
 ```console
 $ uv venv my-name
 ```
 
-A Python version can be requested, e.g., to create a virtual environment with Python 3.11:
+می‌توان یک Python version را درخواست کرد؛ مثلاً برای ساخت یک virtual environment با Python 3.11:
 
 ```console
 $ uv venv --python 3.11
 ```
 
-Note this requires the requested Python version to be available on the system. However, if
-unavailable, uv will download Python for you. See the
-[Python version](../concepts/python-versions.md) documentation for more details.
+توجه کنید که این کار نیازمند در دسترس بودن Python version درخواستی در سیستم است. با این حال، اگر در دسترس نباشد، uv برای شما Python را دانلود می‌کند. برای جزئیات بیشتر، به مستندات [Python version](../concepts/python-versions.md) مراجعه کنید.
 
-## Using a virtual environment
+## استفاده از یک virtual environment {#using-a-virtual-environment}
 
-When using the default virtual environment name, uv will automatically find and use the virtual
-environment during subsequent invocations.
+هنگام استفاده از نام پیش‌فرض virtual environment، uv در فراخوانی‌های بعدی به‌صورت خودکار virtual environment را پیدا و از آن استفاده می‌کند.
 
 ```console
 $ uv venv
@@ -43,7 +35,7 @@ $ # Install a package in the new virtual environment
 $ uv pip install ruff
 ```
 
-The virtual environment can be "activated" to make its packages available:
+می‌توان virtual environment را «فعال» کرد تا package‌های آن در دسترس قرار گیرند:
 
 === "macOS and Linux"
 
@@ -59,8 +51,7 @@ The virtual environment can be "activated" to make its packages available:
 
 !!! note
 
-    The default activation script on Unix is for POSIX compliant shells like `sh`, `bash`, or `zsh`.
-    There are additional activation scripts for common alternative shells.
+    اسکریپت فعال‌سازی پیش‌فرض در Unix برای shell‌های سازگار با POSIX مانند `sh`، `bash` یا `zsh` است. اسکریپت‌های فعال‌سازی دیگری نیز برای shell‌های جایگزین رایج وجود دارد.
 
     === "fish"
 
@@ -81,71 +72,38 @@ The virtual environment can be "activated" to make its packages available:
         $ use .venv\Scripts\activate.nu
         ```
 
-## Deactivating an environment
+## غیرفعال کردن یک environment {#deactivating-an-environment}
 
-To exit a virtual environment, use the `deactivate` command:
+برای خروج از یک virtual environment، از دستور `deactivate` استفاده کنید:
 
 ```console
 $ deactivate
 ```
 
-## Using arbitrary Python environments
+## استفاده از environment‌های دلخواه Python {#using-arbitrary-python-environments}
 
-Since uv has no dependency on Python, it can install into virtual environments other than its own.
-For example, setting `VIRTUAL_ENV=/path/to/venv` will cause uv to install into `/path/to/venv`,
-regardless of where uv is installed. Note that if `VIRTUAL_ENV` is set to a directory that is
-**not** a [PEP 405 compliant](https://peps.python.org/pep-0405/#specification) virtual environment,
-it will be ignored.
+از آنجا که uv هیچ dependencyای به Python ندارد، می‌تواند در virtual environment‌هایی غیر از virtual environment خودش نصب کند. برای مثال، تنظیم `VIRTUAL_ENV=/path/to/venv` باعث می‌شود uv در مسیر `/path/to/venv` نصب کند، صرف‌نظر از اینکه uv کجا نصب شده است. توجه کنید که اگر `VIRTUAL_ENV` به پوشه‌ای تنظیم شود که یک virtual environment **مطابق** [PEP 405](https://peps.python.org/pep-0405/#specification) **نیست**، نادیده گرفته می‌شود.
 
-uv can also install into arbitrary, even non-virtual environments, with the `--python` option. For
-example, `uv pip install --python /path/to/python` will install into the environment linked to the
-`/path/to/python` interpreter regardless of whether or not it is a virtual environment. The
-`--python` option also accepts a path to the root directory of a virtual environment.
+uv همچنین می‌تواند با گزینهٔ `--python` در environment‌های دلخواه، حتی environment‌های غیرمجازی، نصب کند. برای مثال، `uv pip install --python /path/to/python` در environment مرتبط با interpreter مسیر `/path/to/python` نصب می‌کند، صرف‌نظر از اینکه virtual environment باشد یا نه. گزینهٔ `--python` یک مسیر به پوشهٔ ریشهٔ یک virtual environment را نیز می‌پذیرد.
 
-For convenience, `uv pip install --system` will install into the system Python environment. Using
-`--system` is roughly equivalent to `uv pip install --python $(which python)`, but note that
-executables that are linked to virtual environments will be skipped. Although we generally recommend
-using virtual environments for dependency management, `--system` is appropriate in continuous
-integration and containerized environments.
+برای راحتی، `uv pip install --system` در environment سیستم Python نصب می‌کند. استفاده از `--system` تقریباً معادل `uv pip install --python $(which python)` است، اما توجه کنید که فایل‌های اجرایی مرتبط با virtual environment‌ها نادیده گرفته می‌شوند. اگرچه معمولاً توصیه می‌کنیم برای مدیریت dependency‌ها از virtual environment‌ها استفاده کنید، `--system` در environment‌های یکپارچه‌سازی مداوم و کانتینری مناسب است.
 
-The `--system` flag is also used to opt in to mutating system environments. For example, the
-`--python` argument can be used to request a Python version (e.g., `--python 3.12`), and uv will
-search for an interpreter that meets the request. If uv finds a system interpreter (e.g.,
-`/usr/lib/python3.12`), then the `--system` flag is required to allow modification of this
-non-virtual Python environment. Without the `--system` flag, uv will ignore any interpreters that
-are not in virtual environments. Conversely, when the `--system` flag is provided, uv will ignore
-any interpreters that _are_ in virtual environments.
+از فلگ `--system` همچنین برای اعلام موافقت با تغییر environment‌های سیستم استفاده می‌شود. برای مثال، می‌توان از آرگومان `--python` برای درخواست یک Python version استفاده کرد (مثلاً `--python 3.12`) و uv به دنبال interpreterای می‌گردد که با درخواست مطابقت داشته باشد. اگر uv یک interpreter سیستمی پیدا کند (مثلاً `/usr/lib/python3.12`)، آنگاه فلگ `--system` برای اجازهٔ تغییر این environment غیرمجازی Python لازم است. بدون فلگ `--system`، uv همهٔ interpreter‌هایی را که در virtual environment‌ها نیستند نادیده می‌گیرد. برعکس، وقتی فلگ `--system` داده شود، uv همهٔ interpreter‌هایی را که _در_ virtual environment‌ها هستند نادیده می‌گیرد.
 
-Installing into system Python across platforms and distributions is notoriously difficult. uv
-supports the common cases, but will not work in all cases. For example, installing into system
-Python on Debian prior to Python 3.10 is unsupported due to the
-[distribution's patching of `distutils` (but not `sysconfig`)](https://ffy00.github.io/blog/02-python-debian-and-the-install-locations/).
-While we always recommend the use of virtual environments, uv considers them to be required in these
-non-standard environments.
+نصب در Python سیستم در platform‌ها و distribution‌های مختلف به‌طور مشهوری دشوار است. uv از موارد رایج پشتیبانی می‌کند، اما در همهٔ موارد کار نمی‌کند. برای مثال، نصب در Python سیستم در Debian پیش از Python 3.10 به دلیل [وصلهٔ distribution بر `distutils` (اما نه `sysconfig`)](https://ffy00.github.io/blog/02-python-debian-and-the-install-locations/) پشتیبانی نمی‌شود. اگرچه ما همیشه استفاده از virtual environment‌ها را توصیه می‌کنیم، uv در این environment‌های غیراستاندارد آن‌ها را الزامی می‌داند.
 
-If uv is installed in a Python environment, e.g., with `pip`, it can still be used to modify other
-environments. However, when invoked with `python -m uv`, uv will default to using the parent
-interpreter's environment. Invoking uv via Python adds startup overhead and is not recommended for
-general usage.
+اگر uv در یک environment Python نصب شده باشد، مثلاً با `pip`، باز هم می‌توان از آن برای تغییر environment‌های دیگر استفاده کرد. با این حال، هنگام فراخوانی با `python -m uv`، uv به‌صورت پیش‌فرض از environment interpreter والد استفاده می‌کند. فراخوانی uv از طریق Python سربار راه‌اندازی اضافه می‌کند و برای استفادهٔ عمومی توصیه نمی‌شود.
 
-uv itself does not depend on Python, but it does need to locate a Python environment to (1) install
-dependencies into the environment and (2) build source distributions.
+خود uv به Python وابسته نیست، اما برای (۱) نصب dependency‌ها در environment و (۲) build کردن distribution‌های منبع، نیاز دارد یک environment Python را پیدا کند.
 
-## Discovery of Python environments
+## کشف environment‌های Python {#discovery-of-python-environments}
 
-When running a command that mutates an environment such as `uv pip sync` or `uv pip install`, uv
-will search for a virtual environment in the following order:
+هنگام اجرای دستوری که یک environment را تغییر می‌دهد، مانند `uv pip sync` یا `uv pip install`، uv به ترتیب زیر به دنبال یک virtual environment می‌گردد:
 
-- An activated virtual environment based on the `VIRTUAL_ENV` environment variable.
-- An activated Conda environment based on the `CONDA_PREFIX` environment variable.
-- A virtual environment at `.venv` in the current directory, or in the nearest parent directory.
+- یک virtual environment فعال‌شده بر اساس environment variable به نام `VIRTUAL_ENV`.
+- یک environment فعال‌شدهٔ Conda بر اساس environment variable به نام `CONDA_PREFIX`.
+- یک virtual environment در مسیر `.venv` در پوشهٔ فعلی یا در نزدیک‌ترین پوشهٔ والد.
 
-If no virtual environment is found, uv will prompt the user to create one in the current directory
-via `uv venv`.
+اگر هیچ virtual environmentای پیدا نشد، uv از کاربر می‌خواهد که یکی را در پوشهٔ فعلی با `uv venv` بسازد.
 
-If the `--system` flag is included, uv will skip virtual environments and search for an installed
-Python version. Similarly, when running a command that does not mutate the environment such as
-`uv pip compile`, uv does not _require_ a virtual environment — however, a Python interpreter is
-still required. See the documentation on
-[Python discovery](../concepts/python-versions.md#discovery-of-python-versions) for details on the
-discovery of installed Python versions.
+اگر فلگ `--system` داده شود، uv virtual environment‌ها را نادیده می‌گیرد و به دنبال یک Python version نصب‌شده می‌گردد. به همین ترتیب، هنگام اجرای دستوری که environment را تغییر نمی‌دهد، مانند `uv pip compile`، uv به virtual environment _نیاز ندارد_ — با این حال، هنوز به یک interpreter Python نیاز است. برای جزئیات دربارهٔ کشف Python version‌های نصب‌شده، به مستندات [کشف Python](../concepts/python-versions.md#discovery-of-python-versions) مراجعه کنید.

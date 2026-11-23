@@ -1,13 +1,13 @@
-# Troubleshooting build failures
+# عیب‌یابی خطاهای build {#troubleshooting-build-failures}
 
-uv needs to build packages when there is not a compatible wheel (a pre-built distribution of the
-package) available. Building packages can fail for many reasons, some of which may be unrelated to
-uv itself.
+وقتی wheel سازگاری (یک distribution از پیش ساخته‌شده از package) در دسترس نباشد، uv باید packageها
+را build کند. build کردن packageها می‌تواند به دلایل زیادی ناموفق شود که بعضی از آن‌ها ممکن است
+به خود uv مربوط نباشند.
 
-## Recognizing a build failure
+## شناخت یک خطای build {#recognizing-a-build-failure}
 
-An example build failure can be produced by trying to install an old version of numpy on a new,
-unsupported version of Python:
+می‌توان با تلاش برای نصب یک نسخهٔ قدیمی از numpy روی یک نسخهٔ جدید و پشتیبانی‌نشده از Python، یک
+مثال از خطای build تولید کرد:
 
 ```console
 $ uv pip install -p 3.13 'numpy<1.20'
@@ -28,19 +28,19 @@ Resolved 1 package in 62ms
       on `distutils`.
 ```
 
-Notice that the error message is prefaced by "The build backend returned an error".
+توجه کنید که پیام خطا با عبارت "The build backend returned an error" شروع می‌شود.
 
-The build failure includes the `[stderr]` (and `[stdout]`, if present) from the build backend that
-was used for the build. The error logs are not from uv itself.
+خطای build شامل `[stderr]` (و `[stdout]`، در صورت وجود) از build backend‌ای است که برای build
+استفاده شده بود. logهای خطا از خود uv نیستند.
 
-The message following the `╰─▶` is a hint provided by uv, to help resolve common build failures. A
-hint will not be available for all build failures.
+پیام پس از `╰─▶` یک راهنمایی است که uv برای کمک به حل خطاهای رایج build ارائه می‌دهد. برای همهٔ
+خطاهای build راهنمایی در دسترس نخواهد بود.
 
-## Confirming that a build failure is specific to uv
+## تأیید اینکه خطای build مخصوص uv است {#confirming-that-a-build-failure-is-specific-to-uv}
 
-Build failures are usually related to your system and the build backend. It is rare that a build
-failure is specific to uv. You can confirm that the build failure is not related to uv by attempting
-to reproduce it with pip:
+خطاهای build معمولاً به سیستم شما و build backend مربوط‌اند. به‌ندرت پیش می‌آید که یک خطای build
+مخصوص uv باشد. می‌توانید با تلاش برای بازتولید آن با pip تأیید کنید که خطای build به uv مربوط
+نیست:
 
 ```console
 $ uv venv -p 3.13 --seed
@@ -78,42 +78,44 @@ ModuleNotFoundError: No module named 'distutils'
 
 !!! important
 
-    The `--use-pep517` flag should be included with the `pip install` invocation to ensure the same
-    build isolation behavior. uv always uses [build isolation by default](../../pip/compatibility.md#pep-517-build-isolation).
+    فلگ `--use-pep517` باید همراه با فراخوانی `pip install` گنجانده شود تا همان رفتار build
+    isolation تضمین شود. uv همیشه به‌طور پیش‌فرض از
+    [build isolation](../../pip/compatibility.md#pep-517-build-isolation) استفاده می‌کند.
 
-    We also recommend including the `--force-reinstall` and `--no-cache` options when reproducing
-    failures.
+    همچنین توصیه می‌کنیم هنگام بازتولید خطاها، گزینه‌های `--force-reinstall` و `--no-cache` را هم
+    شامل کنید.
 
-Since this build failure occurs in pip too, it is not likely to be a bug with uv.
+از آنجا که این خطای build در pip هم رخ می‌دهد، احتمالاً یک باگ در uv نیست.
 
-If a build failure is reproducible with another installer, you should investigate upstream (in this
-example, `numpy` or `setuptools`), find a way to avoid building the package in the first place, or
-make the necessary adjustments to your system for the build to succeed.
+اگر یک خطای build با یک نصب‌کنندهٔ دیگر هم قابل بازتولید باشد، باید در upstream بررسی کنید (در این
+مثال، `numpy` یا `setuptools`)، راهی برای اجتناب از build کردن package در وهلهٔ اول پیدا کنید، یا
+تنظیمات لازم را در سیستم خود انجام دهید تا build موفق شود.
 
-## Why does uv build a package?
+## چرا uv یک package را build می‌کند؟ {#why-does-uv-build-a-package}
 
-When generating the cross-platform lockfile, uv needs to determine the dependencies of all packages,
-even those only installed on other platforms. uv tries to avoid package builds during resolution. It
-uses a wheel if one exists for that version, then tries to find static metadata in the source
-distribution (mainly pyproject.toml with static `project.version`, `project.dependencies` and
-`project.optional-dependencies` or METADATA v2.2+). If both approaches fail, uv builds the package.
+هنگام تولید lockfile چندplatform‌ای، uv باید dependencyهای همهٔ packageها را تعیین کند، حتی
+آن‌هایی که فقط روی platformهای دیگر نصب می‌شوند. uv تلاش می‌کند در حین resolution از build کردن
+packageها اجتناب کند. اگر برای آن نسخه wheel‌ای وجود داشته باشد از آن استفاده می‌کند، سپس تلاش
+می‌کند metadata ایستا را در source distribution پیدا کند (عمدتاً pyproject.toml با
+`project.version` و `project.dependencies` و `project.optional-dependencies` ایستا یا METADATA
+نسخهٔ 2.2+). اگر هر دو رویکرد ناموفق باشند، uv package را build می‌کند.
 
-When installing, uv needs to have a wheel for the current platform for each package. If no matching
-wheel exists in the index, uv tries to build the source distribution.
+هنگام نصب، uv برای هر package به یک wheel برای platform فعلی نیاز دارد. اگر wheel مطابقتی در index
+وجود نداشته باشد، uv تلاش می‌کند source distribution را build کند.
 
-You can check which wheels exist for a PyPI project under “Download Files”, e.g.,
-[NumPy 2.1.1](https://pypi.org/project/numpy/2.1.1/#files). Wheels with `...-py3-none-any.whl`
-filenames work everywhere, others have the operating system and platform in the filename. In the
-linked `numpy` example, you can see that there are pre-built distributions for Python 3.10 to 3.13
-on macOS, Linux and Windows.
+می‌توانید بررسی کنید کدام wheelها برای یک project در PyPI در بخش «Download Files» وجود دارند؛
+مثلاً [NumPy 2.1.1](https://pypi.org/project/numpy/2.1.1/#files). wheelهایی با نام فایل
+`...-py3-none-any.whl` همه‌جا کار می‌کنند و بقیه سیستم‌عامل و platform را در نام فایل دارند. در
+مثال لینک‌شدهٔ `numpy` می‌توانید ببینید که distributionهای از پیش ساخته‌شده برای Python 3.10 تا
+3.13 روی macOS و Linux و Windows وجود دارد.
 
-## Common build failures
+## خطاهای رایج build {#common-build-failures}
 
-The following examples demonstrate common build failures and how to resolve them.
+مثال‌های زیر، خطاهای رایج build و نحوهٔ حل آن‌ها را نشان می‌دهند.
 
-### Command is not found
+### دستور پیدا نشد {#command-is-not-found}
 
-If the build error mentions a missing command, for example, `gcc`:
+اگر خطای build به یک دستور گمشده اشاره کند، مثلاً `gcc`:
 
 <!-- docker run --platform linux/x86_64 -it ghcr.io/astral-sh/uv:python3.10-trixie-slim /bin/bash -c "uv pip install --system pysha3==1.0.2" -->
 
@@ -138,7 +140,7 @@ If the build error mentions a missing command, for example, `gcc`:
     error: command 'gcc' failed: No such file or directory
 ```
 
-Then, you'll need to install it with your system package manager, e.g., to resolve the error above:
+در این صورت، باید آن را با مدیر package سیستم خود نصب کنید؛ مثلاً برای حل خطای بالا:
 
 ```console
 $ apt install gcc
@@ -146,22 +148,23 @@ $ apt install gcc
 
 !!! tip
 
-    When using the uv-managed Python versions, it's common to need `clang` installed instead of
-    `gcc`.
+    هنگام استفاده از نسخه‌های Python مدیریت‌شده توسط uv، معمولاً به نصب `clang` به‌جای `gcc`
+    نیاز است.
 
-    Many Linux distributions provide a package that includes all the common build dependencies.
-    You can address most build requirements by installing it, e.g., for Debian or Ubuntu:
+    بسیاری از distributionهای Linux یک package ارائه می‌دهند که همهٔ dependencyهای رایج build را
+    شامل می‌شود. می‌توانید بیشتر نیازمندی‌های build را با نصب آن برطرف کنید؛ مثلاً برای Debian
+    یا Ubuntu:
 
     ```console
     $ apt install build-essential
     ```
 
-### Header or library is missing
+### header یا library گم شده است {#header-or-library-is-missing}
 
-If the build error mentions a missing header or library, e.g., a `.h` file, then you'll need to
-install it with your system package manager.
+اگر خطای build به یک header یا library گمشده اشاره کند، مثلاً یک فایل `.h`، باید آن را با مدیر
+package سیستم خود نصب کنید.
 
-For example, installing `pygraphviz` requires Graphviz to be installed:
+برای مثال، نصب `pygraphviz` به نصب Graphviz نیاز دارد:
 
 <!-- docker run --platform linux/x86_64 -it ghcr.io/astral-sh/uv:python3.12-trixie /bin/bash -c "uv pip install --system 'pygraphviz'" -->
 
@@ -193,26 +196,27 @@ For example, installing `pygraphviz` requires Graphviz to be installed:
   hint: This error likely indicates that you need to install a library that provides `graphviz/cgraph.h` for `pygraphviz@1.14`
 ```
 
-To resolve this error on Debian, you'd install the `libgraphviz-dev` package:
+برای حل این خطا در Debian، package با نام `libgraphviz-dev` را نصب می‌کنید:
 
 ```console
 $ apt install libgraphviz-dev
 ```
 
-Note that installing the `graphviz` package is not sufficient, the development headers need to be
-installed.
+توجه کنید که نصب package با نام `graphviz` کافی نیست؛ headerهای توسعه باید نصب شوند.
 
 !!! tip
 
-    To resolve an error where `Python.h` is missing, install the [`python3-dev` package](https://packages.debian.org/trixie/python3-dev).
+    برای حل خطایی که در آن `Python.h` گم شده است،
+    [package با نام `python3-dev`](https://packages.debian.org/trixie/python3-dev) را نصب کنید.
 
-### Module is missing or cannot be imported
+### module گم شده است یا نمی‌توان آن را import کرد {#module-is-missing-or-cannot-be-imported}
 
-If the build error mentions a failing import, consider
-[disabling build isolation](../../concepts/projects/config.md#build-isolation).
+اگر خطای build به یک import ناموفق اشاره کند،
+[غیرفعال کردن build isolation](../../concepts/projects/config.md#build-isolation) را در نظر
+بگیرید.
 
-For example, some packages assume that `pip` is available without declaring it as a build
-dependency:
+برای مثال، بعضی packageها فرض می‌کنند که `pip` بدون اعلام آن به‌عنوان یک build dependency در
+دسترس است:
 
 <!-- docker run --platform linux/x86_64 -it ghcr.io/astral-sh/uv:python3.12-trixie-slim /bin/bash -c "uv pip install --system chumpy" -->
 
@@ -243,27 +247,28 @@ dependency:
     ModuleNotFoundError: No module named 'pip'
 ```
 
-To resolve this error, pre-install the build dependencies then disable build isolation for the
-package:
+برای حل این خطا، ابتدا dependencyهای build را نصب کنید و سپس build isolation را برای package
+غیرفعال کنید:
 
 ```console
 $ uv pip install pip setuptools
 $ uv pip install chumpy --no-build-isolation-package chumpy
 ```
 
-Note you will need to install the missing package, e.g., `pip`, _and_ all the other build
-dependencies of the package, e.g, `setuptools`.
+توجه کنید که باید package گمشده، مثلاً `pip`، _و_ همهٔ dependencyهای build دیگر package، مثلاً
+`setuptools`، را نصب کنید.
 
-### Old version of the package is built
+### نسخهٔ قدیمی package build می‌شود {#old-version-of-the-package-is-built}
 
-If a package fails to build during resolution and the version that failed to build is older than the
-version you want to use, try adding a [constraint](../settings.md#constraint-dependencies) with a
-lower bound (e.g., `numpy>=1.17`). Sometimes, due to algorithmic limitations, the uv resolver tries
-to find a fitting version using unreasonably old packages, which can be prevented by using lower
-bounds.
+اگر یک package در حین resolution در build ناموفق شود و نسخه‌ای که در build ناموفق شده قدیمی‌تر از
+نسخه‌ای باشد که می‌خواهید استفاده کنید، سعی کنید یک
+[constraint](../settings.md#constraint-dependencies) با یک حد پایین اضافه کنید (مثلاً
+`numpy>=1.17`). گاهی به دلیل محدودیت‌های الگوریتمی، resolver مربوط به uv تلاش می‌کند با استفاده
+از packageهای غیرمعقول قدیمی، نسخهٔ مناسبی پیدا کند که می‌توان با استفاده از حدهای پایین از آن
+جلوگیری کرد.
 
-For example, when resolving the following dependencies on Python 3.10, uv attempts to build an old
-version of `apache-beam`.
+برای مثال، هنگام حل dependencyهای زیر روی Python 3.10، uv تلاش می‌کند یک نسخهٔ قدیمی از
+`apache-beam` را build کند.
 
 ```title="requirements.txt"
 dill<0.3.9,>=0.2.2
@@ -281,23 +286,24 @@ apache-beam<=2.49.0
     ...
 ```
 
-Adding a lower bound constraint, e.g., `apache-beam<=2.49.0,>2.30.0`, resolves this build failure as
-uv will avoid using an old version of `apache-beam`.
+افزودن یک constraint با حد پایین، مثلاً `apache-beam<=2.49.0,>2.30.0`، این خطای build را حل
+می‌کند، چون uv از استفاده از نسخهٔ قدیمی `apache-beam` اجتناب می‌کند.
 
-Constraints can also be defined for indirect dependencies using `constraints.txt` files or the
-[`constraint-dependencies`](../settings.md#constraint-dependencies) setting.
+constraintها را می‌توان برای dependencyهای غیرمستقیم هم با استفاده از فایل‌های `constraints.txt`
+یا تنظیم [`constraint-dependencies`](../settings.md#constraint-dependencies) تعریف کرد.
 
-### Old Version of a build dependency is used
+### نسخهٔ قدیمی یک build dependency استفاده می‌شود {#old-version-of-a-build-dependency-is-used}
 
-If a package fails to build because `uv` selects an incompatible or outdated version of a build-time
-dependency, you can enforce constraints specifically for build dependencies. The
-[`build-constraint-dependencies`](../settings.md#build-constraint-dependencies) setting (or an
-analogous `build-constraints.txt` file) can be used to ensure that `uv` selects an appropriate
-version of a given build requirement.
+اگر یک package به این دلیل در build ناموفق شود که `uv` نسخهٔ ناسازگار یا قدیمی‌ای از یک dependency
+زمان build را انتخاب می‌کند، می‌توانید constraintها را به‌طور خاص برای build dependencyها اعمال
+کنید. می‌توان از تنظیم
+[`build-constraint-dependencies`](../settings.md#build-constraint-dependencies) (یا یک فایل
+مشابه `build-constraints.txt`) استفاده کرد تا مطمئن شوید `uv` نسخهٔ مناسبی از یک build requirement
+معین را انتخاب می‌کند.
 
-For example, the issue described in
-[#5551](https://github.com/astral-sh/uv/issues/5551#issuecomment-2256055975) could be addressed by
-specifying a build constraint that excludes `setuptools` version `72.0.0`:
+برای مثال، issue توصیف‌شده در
+[#5551](https://github.com/astral-sh/uv/issues/5551#issuecomment-2256055975) را می‌توان با مشخص
+کردن یک build constraint که نسخهٔ `72.0.0` از `setuptools` را کنار می‌گذارد، حل کرد:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -305,31 +311,33 @@ specifying a build constraint that excludes `setuptools` version `72.0.0`:
 build-constraint-dependencies = ["setuptools!=72.0.0"]
 ```
 
-The build constraint will thus ensure that any package requiring `setuptools` during the build
-process will avoid using the problematic version, preventing build failures caused by incompatible
-build dependencies.
+بنابراین build constraint تضمین می‌کند که هر package‌ای که در فرایند build به `setuptools` نیاز
+دارد، از استفاده از نسخهٔ مشکل‌ساز اجتناب می‌کند و از خطاهای build ناشی از build dependencyهای
+ناسازگار جلوگیری می‌شود.
 
-### Package is only needed for an unused platform
+### package فقط برای یک platform استفاده‌نشده لازم است {#package-is-only-needed-for-an-unused-platform}
 
-If locking fails due to building a package from a platform you do not need to support, consider
-[limiting resolution](../../concepts/projects/config.md#limited-resolution-environments) to your
-supported platforms.
+اگر قفل کردن به دلیل build کردن یک package از platform‌ای که نیازی به پشتیبانی از آن ندارید
+ناموفق شود،
+[محدود کردن resolution](../../concepts/projects/config.md#limited-resolution-environments) به
+platformهای پشتیبانی‌شدهٔ خود را در نظر بگیرید.
 
-### Package does not support all Python versions
+### package از همهٔ نسخه‌های Python پشتیبانی نمی‌کند {#package-does-not-support-all-python-versions}
 
-If you support a large range of Python versions, consider using markers to use older versions for
-older Python versions and newer versions for newer Python versions. For example, `numpy` only
-supports four Python minor versions at a time, so to support a wider range of Python versions, e.g.,
-Python 3.8 to 3.13, the `numpy` requirement needs to be split:
+اگر از بازهٔ بزرگی از نسخه‌های Python پشتیبانی می‌کنید، استفاده از markerها را در نظر بگیرید تا
+برای نسخه‌های قدیمی‌تر Python از نسخه‌های قدیمی‌تر و برای نسخه‌های جدیدتر Python از نسخه‌های
+جدیدتر استفاده کنید. برای مثال، `numpy` در هر زمان فقط از چهار نسخهٔ minor مربوط به Python
+پشتیبانی می‌کند، پس برای پشتیبانی از بازهٔ وسیع‌تری از نسخه‌های Python، مثلاً Python 3.8 تا 3.13،
+requirement مربوط به `numpy` باید تقسیم شود:
 
 ```
 numpy>=1.23; python_version >= "3.10"
 numpy<1.23; python_version < "3.10"
 ```
 
-### Package is only usable on a specific platform
+### package فقط روی یک platform مشخص قابل استفاده است {#package-is-only-usable-on-a-specific-platform}
 
-If locking fails due to building a package that is only usable on another platform, you can
-[provide dependency metadata manually](../settings.md#dependency-metadata) to skip the build. uv can
-not verify this information, so it is important to specify correct metadata when using this
-override.
+اگر قفل کردن به دلیل build کردن package‌ای که فقط روی platform دیگری قابل استفاده است ناموفق شود،
+می‌توانید [metadata مربوط به dependency را به‌صورت دستی ارائه دهید](../settings.md#dependency-metadata)
+تا build را رد کنید. uv نمی‌تواند این اطلاعات را تأید کند، پس مهم است که هنگام استفاده از این
+override، metadata صحیح را مشخص کنید.

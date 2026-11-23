@@ -1,8 +1,8 @@
-# Python support
+# پشتیبانی از Python {#python-support}
 
-## Python versions
+## نسخه‌های Python {#python-versions}
 
-uv has Tier 1 support for the following Python versions:
+uv از نسخه‌های Python زیر پشتیبانی Tier 1 دارد:
 
 - 3.10
 - 3.11
@@ -11,42 +11,42 @@ uv has Tier 1 support for the following Python versions:
 - 3.14
 - 3.15
 
-As with [platforms](./platforms.md), Tier 1 support can be thought of as "guaranteed to work". uv is
-continuously tested against these versions.
+مانند [platformها](./platforms.md)، پشتیبانی Tier 1 را می‌توان "guaranteed to work" دانست. uv
+به‌طور مداوم در برابر این نسخه‌ها آزمایش می‌شود.
 
-uv has Tier 2 support for:
+uv از موارد زیر پشتیبانی Tier 2 دارد:
 
 - 3.6
 - 3.7
 - 3.8
 - 3.9
 
-uv is "expected to work" with these versions. uv is tested against these versions, but they have
-reached their [end-of-life](https://devguide.python.org/versions/) and no longer receive security
-fixes. We do not recommend using these versions.
+انتظار می‌رود uv با این نسخه‌ها "expected to work" باشد. uv در برابر این نسخه‌ها آزمایش می‌شود،
+اما آن‌ها به [پایان عمر](https://devguide.python.org/versions/) خود رسیده‌اند و دیگر اصلاحیه‌های
+امنیتی دریافت نمی‌کنند. استفاده از این نسخه‌ها را توصیه نمی‌کنیم.
 
-uv does not work with Python versions prior to 3.6.
+uv با نسخه‌های Python پیش از 3.6 کار نمی‌کند.
 
-## Python implementations
+## پیاده‌سازی‌های Python {#python-implementations}
 
-uv has Tier 1 support for the following Python implementations:
+uv از پیاده‌سازی‌های Python زیر پشتیبانی Tier 1 دارد:
 
 - CPython
 
-As with [platforms](./platforms.md), Tier 1 support can be thought of as "guaranteed to work". uv
-supports managed installations of these implementations, and the builds are maintained by Astral.
+مانند [platformها](./platforms.md)، پشتیبانی Tier 1 را می‌توان "guaranteed to work" دانست. uv از
+نصب‌های مدیریت‌شدهٔ این پیاده‌سازی‌ها پشتیبانی می‌کند و buildها توسط Astral نگهداری می‌شوند.
 
-uv has Tier 2 support for:
+uv از موارد زیر پشتیبانی Tier 2 دارد:
 
 - PyPy
 - GraalPy
 - Pyodide
 
-uv is "expected to work" with these implementations. uv also supports managed installations of these
-Python implementations, but the builds are not maintained by Astral.
+انتظار می‌رود uv با این پیاده‌سازی‌ها "expected to work" باشد. uv همچنین از نصب‌های مدیریت‌شدهٔ
+این پیاده‌سازی‌های Python پشتیبانی می‌کند، اما buildها توسط Astral نگهداری نمی‌شوند.
 
-uv has Tier 3 support for:
+uv از موارد زیر پشتیبانی Tier 3 دارد:
 
 - Pyston
 
-uv "should work" with these implementations, but stability may vary.
+uv با این پیاده‌سازی‌ها "should work"، اما پایداری آن‌ها ممکن است متفاوت باشد.

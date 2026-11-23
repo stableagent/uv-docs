@@ -1,35 +1,26 @@
-# Python versions
+# نسخه‌های Python {#python-versions}
 
-A Python version is composed of a Python interpreter (i.e. the `python` executable), the standard
-library, and other supporting files.
+یک Python version از یک Python interpreter (یعنی فایل اجرایی `python`)، کتابخانهٔ استاندارد و فایل‌های پشتیبان دیگر تشکیل شده است.
 
-## Managed and system Python installations
+## نصب‌های managed و system Python {#managed-and-system-python-installations}
 
-Since it is common for a system to have an existing Python installation, uv supports
-[discovering](#discovery-of-python-versions) Python versions. However, uv also supports
-[installing Python versions](#installing-a-python-version) itself. To distinguish between these two
-types of Python installations, uv refers to Python versions it installs as _managed_ Python
-installations and all other Python installations as _system_ Python installations.
+از آنجا که معمولاً در یک سیستم یک نصب Python وجود دارد، uv از [کشف](#discovery-of-python-versions) نسخه‌های Python پشتیبانی می‌کند. با این حال، uv از [نصب نسخه‌های Python](#installing-a-python-version) توسط خودش هم پشتیبانی می‌کند. برای تمایز بین این دو نوع نصب Python، uv به نسخه‌های Pythonی که خودش نصب می‌کند _managed_ Python installations و به همهٔ نصب‌های دیگر Python _system_ Python installations می‌گوید.
 
 !!! note
 
-    uv does not distinguish between Python versions installed by the operating system vs those
-    installed and managed by other tools. For example, if a Python installation is managed with
-    `pyenv`, it would still be considered a _system_ Python version in uv.
+    uv بین نسخه‌های Python نصب‌شده توسط سیستم‌عامل و نسخه‌هایی که توسط ابزارهای دیگر نصب و مدیریت می‌شوند تمایزی قائل نمی‌شود. برای مثال، اگر یک نصب Python با `pyenv` مدیریت شود، در uv همچنان یک _system_ Python version محسوب می‌شود.
 
-## Requesting a version
+## درخواست یک نسخه {#requesting-a-version}
 
-A specific Python version can be requested with the `--python` flag in most uv commands. For
-example, when creating a virtual environment:
+می‌توان یک Python version مشخص را با فلگ `--python` در بیشتر دستورهای uv درخواست کرد. برای مثال، هنگام ساخت یک virtual environment:
 
 ```console
 $ uv venv --python 3.11.6
 ```
 
-uv will ensure that Python 3.11.6 is available — downloading and installing it if necessary — then
-create the virtual environment with it.
+uv مطمئن می‌شود که Python 3.11.6 در دسترس است — و در صورت نیاز آن را دانلود و نصب می‌کند — و سپس virtual environment را با آن می‌سازد.
 
-The following Python version request formats are supported:
+قالب‌های زیر برای درخواست Python version پشتیبانی می‌شوند:
 
 - `<version>` (e.g., `3`, `3.12`, `3.12.3`)
 - `<version-specifier>` (e.g., `>=3.12,<3.13`)
@@ -41,117 +32,93 @@ The following Python version request formats are supported:
 - `<implementation><version-specifier>` (e.g., `cpython>=3.12,<3.13`)
 - `<implementation>-<version>-<os>-<arch>-<libc>` (e.g., `cpython-3.12.3-macos-aarch64-none`)
 
-Additionally, a specific system Python interpreter can be requested with:
+علاوه بر این، می‌توان یک system Python interpreter مشخص را با موارد زیر درخواست کرد:
 
 - `<executable-path>` (e.g., `/opt/homebrew/bin/python3`)
 - `<executable-name>` (e.g., `mypython3`)
 - `<install-dir>` (e.g., `/some/environment/`)
 
-Use [`UV_PYTHON_ARCH`](../reference/environment.md#uv_python_arch) to select an architecture
-independently of the Python version. For example, setting `UV_PYTHON_ARCH=x86_64` makes `uv sync`
-use an `x86_64` interpreter while honoring the project's Python version request. A request that
-includes an architecture or names an interpreter executable takes precedence.
+از [`UV_PYTHON_ARCH`](../reference/environment.md#uv_python_arch) برای انتخاب یک معماری مستقل از Python version استفاده کنید. برای مثال، تنظیم `UV_PYTHON_ARCH=x86_64` باعث می‌شود `uv sync` از یک interpreter با معماری `x86_64` استفاده کند و در عین حال درخواست Python version پروژه را رعایت کند. درخواستی که شامل یک معماری باشد یا نام یک فایل اجرایی interpreter را ببرد، اولویت دارد.
 
-By default, uv will automatically download Python versions if they cannot be found on the system.
-This behavior can be
-[disabled with the `python-downloads` option](#disabling-automatic-python-downloads).
+به‌طور پیش‌فرض، اگر نسخه‌های Python در سیستم پیدا نشوند، uv آن‌ها را به‌صورت خودکار دانلود می‌کند. می‌توان این رفتار را [با گزینهٔ `python-downloads` غیرفعال کرد](#disabling-automatic-python-downloads).
 
-### Python version files
+### فایل‌های Python version {#python-version-files}
 
-The `.python-version` file can be used to create a default Python version request. uv searches for a
-`.python-version` file in the working directory and each of its parents. If none is found, uv will
-check the user-level configuration directory. Any of the request formats described above can be
-used, though use of a version number is recommended for interoperability with other tools.
+از فایل `.python-version` می‌توان برای ایجاد یک درخواست پیش‌فرض Python version استفاده کرد. uv در پوشهٔ کاری و هر یک از پوشه‌های والد آن به دنبال فایل `.python-version` می‌گردد. اگر فایلی پیدا نشود، uv پوشهٔ پیکربندی سطح کاربر را بررسی می‌کند. می‌توان از هر یک از قالب‌های درخواست که در بالا توضیح داده شد استفاده کرد، هرچند برای سازگاری با ابزارهای دیگر استفاده از شمارهٔ نسخه توصیه می‌شود.
 
-A `.python-version` file can be created in the current directory with the
-[`uv python pin`](../reference/cli.md#uv-python-pin) command.
+می‌توان با دستور [`uv python pin`](../reference/cli.md#uv-python-pin) یک فایل `.python-version` در پوشهٔ جاری ساخت.
 
-A global `.python-version` file can be created in the user configuration directory with the
-[`uv python pin --global`](../reference/cli.md#uv-python-pin) command.
+می‌توان با دستور [`uv python pin --global`](../reference/cli.md#uv-python-pin) یک فایل `.python-version` سراسری در پوشهٔ پیکربندی کاربر ساخت.
 
-Discovery of `.python-version` files can be disabled with `--no-config`.
+می‌توان کشف فایل‌های `.python-version` را با `--no-config` غیرفعال کرد.
 
-uv will not search for `.python-version` files beyond project or workspace boundaries (except the
-user configuration directory).
+uv فراتر از مرزهای project یا workspace به دنبال فایل‌های `.python-version` نمی‌گردد (به‌جز پوشهٔ پیکربندی کاربر).
 
-## Installing a Python version
+## نصب یک Python version {#installing-a-python-version}
 
-uv bundles a list of downloadable CPython and PyPy distributions for macOS, Linux, and Windows.
+uv فهرستی از distributionهای قابل دانلود CPython و PyPy را برای macOS و Linux و Windows در خود دارد.
 
 !!! tip
 
-    By default, Python versions are automatically downloaded as needed without using
-    `uv python install`.
+    به‌طور پیش‌فرض، نسخه‌های Python در صورت نیاز به‌صورت خودکار دانلود می‌شوند، بدون استفاده از `uv python install`.
 
-To install a Python version at a specific version:
+برای نصب یک Python version در یک نسخهٔ مشخص:
 
 ```console
 $ uv python install 3.12.3
 ```
 
-To install the latest patch version:
+برای نصب آخرین نسخهٔ patch:
 
 ```console
 $ uv python install 3.12
 ```
 
-To install a version that satisfies constraints:
+برای نصب نسخه‌ای که constraintها را برآورده کند:
 
 ```console
 $ uv python install '>=3.8,<3.10'
 ```
 
-To install multiple versions:
+برای نصب چند نسخه:
 
 ```console
 $ uv python install 3.9 3.10 3.11
 ```
 
-To install a specific implementation:
+برای نصب یک پیاده‌سازی مشخص:
 
 ```console
 $ uv python install pypy
 ```
 
-All the [Python version request](#requesting-a-version) formats are supported except those that are
-used for requesting local interpreters such as a file path.
+همهٔ قالب‌های [درخواست Python version](#requesting-a-version) پشتیبانی می‌شوند، به‌جز قالب‌هایی که برای درخواست interpreterهای محلی استفاده می‌شوند، مانند مسیر فایل.
 
-By default `uv python install` will verify that a managed Python version is installed or install the
-latest version. If a `.python-version` file is present, uv will install the Python version listed in
-the file. A project that requires multiple Python versions may define a `.python-versions` file. If
-present, uv will install all the Python versions listed in the file.
+به‌طور پیش‌فرض، `uv python install` بررسی می‌کند که یک managed Python version نصب شده باشد یا آخرین نسخه را نصب می‌کند. اگر فایل `.python-version` وجود داشته باشد، uv نسخهٔ Python فهرست‌شده در فایل را نصب می‌کند. پروژه‌ای که به چند Python version نیاز دارد می‌تواند یک فایل `.python-versions` تعریف کند. اگر این فایل وجود داشته باشد، uv همهٔ نسخه‌های Python فهرست‌شده در فایل را نصب می‌کند.
 
 !!! important
 
-    The available Python versions are frozen for each uv release. To install new Python versions,
-    you may need to upgrade uv.
+    نسخه‌های Python موجود برای هر انتشار uv ثابت هستند. برای نصب نسخه‌های جدید Python، ممکن است لازم باشد uv را ارتقا دهید.
 
-See the [storage documentation](../reference/storage.md#python-versions) for details about where
-installed Python versions are stored.
+برای جزئیات دربارهٔ محل ذخیرهٔ نسخه‌های نصب‌شدهٔ Python، به [مستندات storage](../reference/storage.md#python-versions) مراجعه کنید.
 
-### Installing Python executables
+### نصب فایل‌های اجرایی Python {#installing-python-executables}
 
-uv installs Python executables into your `PATH` by default, e.g., on Unix `uv python install 3.12`
-will install a Python executable into `~/.local/bin`, e.g., as `python3.12`. See the
-[storage documentation](../reference/storage.md#python-executables) for more details about the
-target directory.
+uv به‌طور پیش‌فرض فایل‌های اجرایی Python را در `PATH` شما نصب می‌کند؛ برای مثال، در Unix دستور `uv python install 3.12` یک فایل اجرایی Python را در `~/.local/bin` نصب می‌کند، مثلاً با نام `python3.12`. برای جزئیات بیشتر دربارهٔ پوشهٔ مقصد، به [مستندات storage](../reference/storage.md#python-executables) مراجعه کنید.
 
 !!! tip
 
-    If `~/.local/bin` is not in your `PATH`, you can add it with `uv python update-shell`.
+    اگر `~/.local/bin` در `PATH` شما نیست، می‌توانید آن را با `uv python update-shell` اضافه کنید.
 
-To install `python` and `python3` executables, include the experimental `--default` option:
+برای نصب فایل‌های اجرایی `python` و `python3`، گزینهٔ آزمایشی `--default` را اضافه کنید:
 
 ```console
 $ uv python install 3.12 --default
 ```
 
-When installing Python executables, uv will only overwrite an existing executable if it is managed
-by uv — e.g., if `~/.local/bin/python3.12` exists already uv will not overwrite it without the
-`--force` flag.
+هنگام نصب فایل‌های اجرایی Python، uv یک فایل اجرایی موجود را فقط در صورتی بازنویسی می‌کند که توسط uv مدیریت شود — برای مثال، اگر `~/.local/bin/python3.12` از قبل وجود داشته باشد، uv بدون فلگ `--force` آن را بازنویسی نمی‌کند.
 
-uv will update executables that it manages. However, it will prefer the latest patch version of each
-Python minor version by default. For example:
+uv فایل‌های اجرایی‌ای را که مدیریت می‌کند به‌روزرسانی می‌کند. با این حال، به‌طور پیش‌فرض آخرین نسخهٔ patch هر نسخهٔ فرعی Python را ترجیح می‌دهد. برای مثال:
 
 ```console
 $ uv python install 3.12.7  # Adds `python3.12` to `~/.local/bin`
@@ -159,349 +126,269 @@ $ uv python install 3.12.6  # Does not update `python3.12`
 $ uv python install 3.12.8  # Updates `python3.12` to point to 3.12.8
 ```
 
-## Upgrading Python versions
+## ارتقای نسخه‌های Python {#upgrading-python-versions}
 
 !!! important
 
-    Upgrades are only supported for uv-managed Python versions.
+    ارتقاها فقط برای نسخه‌های Python مدیریت‌شده توسط uv پشتیبانی می‌شوند.
 
-    Upgrades are not currently supported for PyPy, GraalPy, and Pyodide.
+    ارتقاها در حال حاضر برای PyPy و GraalPy و Pyodide پشتیبانی نمی‌شوند.
 
-uv allows transparently upgrading Python versions to the latest patch release, e.g., 3.13.4 to
-3.13.5. uv does not allow transparently upgrading across minor Python versions, e.g., 3.12 to 3.13,
-because changing minor versions can affect dependency resolution.
+uv امکان ارتقای شفاف نسخه‌های Python به آخرین نسخهٔ patch را فراهم می‌کند، مثلاً از 3.13.4 به 3.13.5. uv ارتقای شفاف بین نسخه‌های فرعی Python، مثلاً از 3.12 به 3.13، را مجاز نمی‌داند، زیرا تغییر نسخهٔ فرعی می‌تواند بر resolution وابستگی‌ها تأثیر بگذارد.
 
-uv-managed Python versions can be upgraded to the latest supported patch release with the
-`python upgrade` command:
+نسخه‌های Python مدیریت‌شده توسط uv را می‌توان با دستور `python upgrade` به آخرین نسخهٔ patch پشتیبانی‌شده ارتقا داد:
 
-To upgrade a Python version to the latest supported patch release:
+برای ارتقای یک Python version به آخرین نسخهٔ patch پشتیبانی‌شده:
 
 ```console
 $ uv python upgrade 3.12
 ```
 
-To upgrade all installed Python versions:
+برای ارتقای همهٔ نسخه‌های نصب‌شدهٔ Python:
 
 ```console
 $ uv python upgrade
 ```
 
-After an upgrade, uv will prefer the new version, but will retain the existing version as it may
-still be used by virtual environments.
+پس از ارتقا، uv نسخهٔ جدید را ترجیح می‌دهد، اما نسخهٔ موجود را حفظ می‌کند، زیرا ممکن است همچنان توسط virtual environmentها استفاده شود.
 
-Virtual environments using the Python version will be automatically upgraded to the new patch
-version.
+virtual environmentهایی که از آن Python version استفاده می‌کنند، به‌صورت خودکار به نسخهٔ patch جدید ارتقا پیدا می‌کنند.
 
-If a virtual environment was created with an explicitly requested patch version, e.g.,
-`uv venv -p 3.10.8`, it will not be transparently upgraded to a new version.
+اگر یک virtual environment با یک نسخهٔ patch که صراحتاً درخواست شده ساخته شده باشد، مثلاً `uv venv -p 3.10.8`، به‌صورت شفاف به نسخهٔ جدید ارتقا پیدا نمی‌کند.
 
-### Minor version directories
+### پوشه‌های نسخهٔ فرعی {#minor-version-directories}
 
-Automatic upgrades for virtual environments are implemented using a directory with the Python minor
-version, e.g.:
+ارتقاهای خودکار برای virtual environmentها با استفاده از یک پوشه با نسخهٔ فرعی Python پیاده‌سازی شده‌اند، مثلاً:
 
 ```
 ~/.local/share/uv/python/cpython-3.12-macos-aarch64-none
 ```
 
-which is a symbolic link (on Unix) or junction (on Windows) pointing to a specific patch version:
+که یک symbolic link (در Unix) یا junction (در Windows) است و به یک نسخهٔ patch مشخص اشاره می‌کند:
 
 ```console
 $ readlink ~/.local/share/uv/python/cpython-3.12-macos-aarch64-none
 ~/.local/share/uv/python/cpython-3.12.11-macos-aarch64-none
 ```
 
-If this link is resolved by another tool, e.g., by canonicalizing the Python interpreter path, and
-used to create a virtual environment, it will not be automatically upgraded.
+اگر این لینک توسط ابزار دیگری resolve شود، مثلاً با canonical کردن مسیر Python interpreter، و برای ساخت یک virtual environment استفاده شود، به‌صورت خودکار ارتقا پیدا نمی‌کند.
 
-## Project Python versions
+## نسخه‌های Python پروژه {#project-python-versions}
 
-uv will respect Python requirements defined in `requires-python` in the `pyproject.toml` file during
-project command invocations. The first Python version that is compatible with the requirement will
-be used, unless a version is otherwise requested, e.g., via a `.python-version` file or the
-`--python` flag.
+uv هنگام اجرای دستورهای project به نیازمندی‌های Python تعریف‌شده در `requires-python` در فایل `pyproject.toml` احترام می‌گذارد. اولین Python version سازگار با آن نیازمندی استفاده می‌شود، مگر اینکه نسخه‌ای به شکل دیگری درخواست شده باشد، مثلاً از طریق فایل `.python-version` یا فلگ `--python`.
 
-## Viewing available Python versions
+## مشاهدهٔ نسخه‌های Python موجود {#viewing-available-python-versions}
 
-To list installed and available Python versions:
+برای فهرست کردن نسخه‌های Python نصب‌شده و موجود:
 
 ```console
 $ uv python list
 ```
 
-To filter the Python versions, provide a request, e.g., to show all Python 3.13 interpreters:
+برای فیلتر کردن نسخه‌های Python، یک درخواست بدهید؛ مثلاً برای نمایش همهٔ interpreterهای Python 3.13:
 
 ```console
 $ uv python list 3.13
 ```
 
-Or, to show all PyPy interpreters:
+یا برای نمایش همهٔ interpreterهای PyPy:
 
 ```console
 $ uv python list pypy
 ```
 
-By default, downloads for other platforms and old patch versions are hidden.
+به‌طور پیش‌فرض، دانلودها برای platformهای دیگر و نسخه‌های patch قدیمی پنهان هستند.
 
-To view all versions:
+برای مشاهدهٔ همهٔ نسخه‌ها:
 
 ```console
 $ uv python list --all-versions
 ```
 
-To view Python versions for other platforms:
+برای مشاهدهٔ نسخه‌های Python برای platformهای دیگر:
 
 ```console
 $ uv python list --all-platforms
 ```
 
-To exclude downloads and only show installed Python versions:
+برای حذف دانلودها و نمایش فقط نسخه‌های نصب‌شدهٔ Python:
 
 ```console
 $ uv python list --only-installed
 ```
 
-See the [`uv python list`](../reference/cli.md#uv-python-list) reference for more details.
+برای جزئیات بیشتر به مرجع [`uv python list`](../reference/cli.md#uv-python-list) مراجعه کنید.
 
-## Finding a Python executable
+## یافتن یک فایل اجرایی Python {#finding-a-python-executable}
 
-To find a Python executable, use the `uv python find` command:
+برای یافتن یک فایل اجرایی Python، از دستور `uv python find` استفاده کنید:
 
 ```console
 $ uv python find
 ```
 
-By default, this will display the path to the first available Python executable. See the
-[discovery rules](#discovery-of-python-versions) for details about how executables are discovered.
+به‌طور پیش‌فرض، این دستور مسیر اولین فایل اجرایی Python موجود را نمایش می‌دهد. برای جزئیات دربارهٔ نحوهٔ کشف فایل‌های اجرایی، به [قواعد کشف](#discovery-of-python-versions) مراجعه کنید.
 
-This interface also supports many [request formats](#requesting-a-version), e.g., to find a Python
-executable that has a version of 3.11 or newer:
+این رابط همچنین از بسیاری از [قالب‌های درخواست](#requesting-a-version) پشتیبانی می‌کند؛ مثلاً برای یافتن یک فایل اجرایی Python با نسخهٔ 3.11 یا جدیدتر:
 
 ```console
 $ uv python find '>=3.11'
 ```
 
-By default, `uv python find` will include Python versions from virtual environments. If a `.venv`
-directory is found in the working directory or any of the parent directories or the `VIRTUAL_ENV`
-environment variable is set, it will take precedence over any Python executables on the `PATH`.
+به‌طور پیش‌فرض، `uv python find` نسخه‌های Python از virtual environmentها را هم شامل می‌شود. اگر یک پوشهٔ `.venv` در پوشهٔ کاری یا هر یک از پوشه‌های والد آن پیدا شود یا environment variable مربوط به `VIRTUAL_ENV` تنظیم شده باشد، نسبت به هر فایل اجرایی Python در `PATH` اولویت دارد.
 
-To ignore virtual environments, use the `--system` flag:
+برای نادیده گرفتن virtual environmentها، از فلگ `--system` استفاده کنید:
 
 ```console
 $ uv python find --system
 ```
 
-## Discovery of Python versions
+## کشف نسخه‌های Python {#discovery-of-python-versions}
 
-When searching for a Python version, the following locations are checked:
+هنگام جستجو برای یک Python version، مکان‌های زیر بررسی می‌شوند:
 
-- Managed Python installations in the `UV_PYTHON_INSTALL_DIR`.
-- A Python interpreter on the `PATH` as `python`, `python3`, or `python3.x` on macOS and Linux, or
-  `python.exe` on Windows.
-- On Windows, the Python interpreters in the Windows registry and Microsoft Store Python
-  interpreters (see `py --list-paths`) that match the requested version.
+- نصب‌های managed Python در `UV_PYTHON_INSTALL_DIR`.
+- یک Python interpreter در `PATH` با نام `python`، `python3` یا `python3.x` در macOS و Linux، یا `python.exe` در Windows.
+- در Windows، interpreterهای Python در رجیستری Windows و interpreterهای Python فروشگاه Microsoft (به `py --list-paths` مراجعه کنید) که با نسخهٔ درخواستی مطابقت دارند.
 
-In some cases, uv allows using a Python version from a virtual environment. In this case, the
-virtual environment's interpreter will be checked for compatibility with the request before
-searching for an installation as described above. See the
-[pip-compatible virtual environment discovery](../pip/environments.md#discovery-of-python-environments)
-documentation for details.
+در برخی موارد، uv اجازهٔ استفاده از یک Python version از یک virtual environment را می‌دهد. در این حالت، interpreter مربوط به virtual environment پیش از جستجو برای یک نصب، مطابق توضیحات بالا، از نظر سازگاری با درخواست بررسی می‌شود. برای جزئیات به مستندات [کشف virtual environment سازگار با pip](../pip/environments.md#discovery-of-python-environments) مراجعه کنید.
 
-When performing discovery, non-executable files will be ignored. Each discovered executable is
-queried for metadata to ensure it meets the [requested Python version](#requesting-a-version). If
-the query fails, the executable will be skipped. If the executable satisfies the request, it is used
-without inspecting additional executables.
+هنگام کشف، فایل‌های غیرقابل اجرا نادیده گرفته می‌شوند. از هر فایل اجرایی کشف‌شده metadata پرسیده می‌شود تا مطمئن شوند که [Python version درخواستی](#requesting-a-version) را برآورده می‌کند. اگر پرس‌وجو ناموفق باشد، آن فایل اجرایی رد می‌شود. اگر فایل اجرایی درخواست را برآورده کند، بدون بررسی فایل‌های اجرایی دیگر استفاده می‌شود.
 
-When searching for a managed Python version, uv will prefer newer versions first. When searching for
-a system Python version, uv will use the first compatible version — not the newest version.
+هنگام جستجو برای یک managed Python version، uv ابتدا نسخه‌های جدیدتر را ترجیح می‌دهد. هنگام جستجو برای یک system Python version، uv از اولین نسخهٔ سازگار استفاده می‌کند — نه جدیدترین نسخه.
 
-If a Python version cannot be found on the system, uv will check for a compatible managed Python
-version download.
+اگر یک Python version در سیستم پیدا نشود، uv دانلود یک managed Python version سازگار را بررسی می‌کند.
 
-## Python pre-releases
+## پیش‌انتشارهای Python {#python-pre-releases}
 
-Python pre-releases will not be selected by default. Python pre-releases will be used if there is no
-other available installation matching the request. For example, if only a pre-release version is
-available it will be used but otherwise a stable release version will be used. Similarly, if the
-path to a pre-release Python executable is provided then no other Python version matches the request
-and the pre-release version will be used.
+پیش‌انتشارهای Python به‌طور پیش‌فرض انتخاب نمی‌شوند. پیش‌انتشارهای Python در صورتی استفاده می‌شوند که نصب دیگری مطابق با درخواست در دسترس نباشد. برای مثال، اگر فقط یک نسخهٔ پیش‌انتشار در دسترس باشد، همان استفاده می‌شود، اما در غیر این صورت یک نسخهٔ انتشار پایدار استفاده می‌شود. به همین ترتیب، اگر مسیر یک فایل اجرایی Python پیش‌انتشار داده شود، هیچ Python version دیگری با درخواست مطابقت ندارد و نسخهٔ پیش‌انتشار استفاده می‌شود.
 
-If a pre-release Python version is available and matches the request, uv will not download a stable
-Python version instead.
+اگر یک Python version پیش‌انتشار در دسترس باشد و با درخواست مطابقت داشته باشد، uv به‌جای آن یک Python version پایدار دانلود نمی‌کند.
 
-## Free-threaded Python
+## Python free-threaded {#free-threaded-python}
 
-uv supports discovering and installing
-[free-threaded](https://docs.python.org/3.14/glossary.html#term-free-threading) Python variants in
-CPython 3.13+.
+uv از کشف و نصب گونه‌های [free-threaded](https://docs.python.org/3.14/glossary.html#term-free-threading) Python در CPython 3.13+ پشتیبانی می‌کند.
 
-For Python 3.13, free-threaded Python versions will not be selected by default. Free-threaded Python
-versions will only be selected when explicitly requested, e.g., with `3.13t` or `3.13+freethreaded`.
+برای Python 3.13، نسخه‌های free-threaded Python به‌طور پیش‌فرض انتخاب نمی‌شوند. نسخه‌های free-threaded Python فقط زمانی انتخاب می‌شوند که صراحتاً درخواست شده باشند، مثلاً با `3.13t` یا `3.13+freethreaded`.
 
-For Python 3.14+, uv will allow use of free-threaded Python 3.14+ interpreters without explicit
-selection. The GIL-enabled build of Python will still be preferred, e.g., when performing an
-installation with `uv python install 3.14`. However, e.g., if a free-threaded interpreter comes
-before a GIL-enabled build on the `PATH`, it will be used.
+برای Python 3.14+، uv امکان استفاده از interpreterهای free-threaded Python 3.14+ را بدون انتخاب صریح فراهم می‌کند. بیلد Python با GIL فعال همچنان ترجیح داده می‌شود، مثلاً هنگام نصب با `uv python install 3.14`. با این حال، مثلاً اگر یک interpreter free-threaded در `PATH` پیش از یک بیلد با GIL فعال قرار گیرد، همان استفاده می‌شود.
 
-If both free-threaded and GIL-enabled Python versions are available on the system, you can use the
-`+gil` variant specifier to require the GIL-enabled variant in a project.
+اگر هم نسخه‌های free-threaded و هم نسخه‌های GIL-enabled Python در سیستم در دسترس باشند، می‌توانید از variant specifier مربوط به `+gil` برای الزام گونهٔ GIL-enabled در یک project استفاده کنید.
 
-## Debug Python variants
+## گونه‌های دیباگ Python {#debug-python-variants}
 
-uv supports discovering and installing
-[debug builds](https://docs.python.org/3.14/using/configure.html#debug-build) of Python, i.e., with
-debug assertions enabled.
+uv از کشف و نصب [بیلدهای دیباگ](https://docs.python.org/3.14/using/configure.html#debug-build) Python پشتیبانی می‌کند، یعنی بیلدهایی که assertionهای دیباگ در آن‌ها فعال است.
 
 !!! important
 
-    Debug builds of Python are slower and are not appropriate for general use.
+    بیلدهای دیباگ Python کندتر هستند و برای استفادهٔ عمومی مناسب نیستند.
 
-Debug builds will be used if there is no other available installation matching the request. For
-example, if only a debug version is available it will be used but otherwise a stable release version
-will be used. Similarly, if the path to a debug Python executable is provided then no other Python
-version matches the request and the debug version will be used.
+بیلدهای دیباگ در صورتی استفاده می‌شوند که نصب دیگری مطابق با درخواست در دسترس نباشد. برای مثال، اگر فقط یک نسخهٔ دیباگ در دسترس باشد، همان استفاده می‌شود، اما در غیر این صورت یک نسخهٔ انتشار پایدار استفاده می‌شود. به همین ترتیب، اگر مسیر یک فایل اجرایی دیباگ Python داده شود، هیچ Python version دیگری با درخواست مطابقت ندارد و نسخهٔ دیباگ استفاده می‌شود.
 
-Debug builds of Python can be explicitly requested with, e.g., `3.13d` or `3.13+debug`.
+بیلدهای دیباگ Python را می‌توان صراحتاً درخواست کرد، مثلاً با `3.13d` یا `3.13+debug`.
 
 !!! note
 
-    CPython versions installed by uv usually have debug symbols stripped to reduce the distribution
-    size. These debug builds do not have debug symbols stripped, which can be useful when debugging
-    Python processes with a C-level debugger.
+    نسخه‌های CPython نصب‌شده توسط uv معمولاً برای کاهش اندازهٔ distribution، نمادهای دیباگ را حذف کرده‌اند. این بیلدهای دیباگ نمادهای دیباگ را حذف نکرده‌اند، که می‌تواند هنگام دیباگ کردن فرایندهای Python با یک دیباگر سطح C مفید باشد.
 
-## Disabling automatic Python downloads
+## غیرفعال کردن دانلود خودکار Python {#disabling-automatic-python-downloads}
 
-By default, uv will automatically download Python versions when needed.
+به‌طور پیش‌فرض، uv در صورت نیاز نسخه‌های Python را به‌صورت خودکار دانلود می‌کند.
 
-The [`python-downloads`](../reference/settings.md#python-downloads) option can be used to disable
-this behavior. By default, it is set to `automatic`; set to `manual` to only allow Python downloads
-during `uv python install`.
+از گزینهٔ [`python-downloads`](../reference/settings.md#python-downloads) می‌توان برای غیرفعال کردن این رفتار استفاده کرد. به‌طور پیش‌فرض، مقدار آن `automatic` است؛ آن را روی `manual` تنظیم کنید تا دانلودهای Python فقط هنگام `uv python install` مجاز باشند.
 
 !!! tip
 
-    The `python-downloads` setting can be set in a
-    [persistent configuration file](./configuration-files.md) to change the default behavior, or
-    the `--no-python-downloads` flag can be passed to any uv command.
+    می‌توان تنظیم `python-downloads` را در یک [فایل پیکربندی ماندگار](./configuration-files.md) تنظیم کرد تا رفتار پیش‌فرض تغییر کند، یا فلگ `--no-python-downloads` را به هر دستور uv پاس داد.
 
-## Requiring or disabling managed Python versions
+## الزام یا غیرفعال کردن نسخه‌های managed Python {#requiring-or-disabling-managed-python-versions}
 
-By default, uv will attempt to use Python versions found on the system and only download managed
-Python versions when necessary. To ignore system Python versions, and only use managed Python
-versions, use the `--managed-python` flag:
+به‌طور پیش‌فرض، uv تلاش می‌کند از نسخه‌های Python موجود در سیستم استفاده کند و فقط در صورت نیاز نسخه‌های managed Python را دانلود کند. برای نادیده گرفتن نسخه‌های system Python و استفادهٔ فقط از نسخه‌های managed Python، از فلگ `--managed-python` استفاده کنید:
 
 ```console
 $ uv python list --managed-python
 ```
 
-Similarly, to ignore managed Python versions and only use system Python versions, use the
-`--no-managed-python` flag:
+به همین ترتیب، برای نادیده گرفتن نسخه‌های managed Python و استفادهٔ فقط از نسخه‌های system Python، از فلگ `--no-managed-python` استفاده کنید:
 
 ```console
 $ uv python list --no-managed-python
 ```
 
-To change uv's default behavior in a configuration file, use the
-[`python-preference` setting](#adjusting-python-version-preferences).
+برای تغییر رفتار پیش‌فرض uv در یک فایل پیکربندی، از [تنظیم `python-preference`](#adjusting-python-version-preferences) استفاده کنید.
 
-## Adjusting Python version preferences
+## تنظیم ترجیحات Python version {#adjusting-python-version-preferences}
 
-The [`python-preference`](../reference/settings.md#python-preference) setting determines whether to
-prefer using Python installations that are already present on the system, or those that are
-downloaded and installed by uv.
+تنظیم [`python-preference`](../reference/settings.md#python-preference) تعیین می‌کند که آیا نصب‌های Python موجود در سیستم ترجیح داده شوند یا نصب‌هایی که توسط uv دانلود و نصب می‌شوند.
 
-By default, the `python-preference` is set to `managed` which prefers managed Python installations
-over system Python installations. However, system Python installations are still preferred over
-downloading a managed Python version.
+به‌طور پیش‌فرض، `python-preference` روی `managed` تنظیم شده است که نصب‌های managed Python را بر نصب‌های system Python ترجیح می‌دهد. با این حال، نصب‌های system Python همچنان بر دانلود یک managed Python version ترجیح داده می‌شوند.
 
-The following alternative options are available:
+گزینه‌های جایگزین زیر در دسترس هستند:
 
-- `only-managed`: Only use managed Python installations; never use system Python installations.
-  Equivalent to `--managed-python`.
-- `system`: Prefer system Python installations over managed Python installations.
-- `only-system`: Only use system Python installations; never use managed Python installations.
-  Equivalent to `--no-managed-python`.
+- `only-managed`: فقط از نصب‌های managed Python استفاده کنید؛ هرگز از نصب‌های system Python استفاده نکنید. معادل `--managed-python`.
+- `system`: نصب‌های system Python را بر نصب‌های managed Python ترجیح دهید.
+- `only-system`: فقط از نصب‌های system Python استفاده کنید؛ هرگز از نصب‌های managed Python استفاده نکنید. معادل `--no-managed-python`.
 
 !!! note
 
-    Automatic Python version downloads can be [disabled](#disabling-automatic-python-downloads)
-    without changing the preference.
+    دانلودهای خودکار Python version را می‌توان [غیرفعال کرد](#disabling-automatic-python-downloads) بدون اینکه ترجیح تغییر کند.
 
-## Python implementation support
+## پشتیبانی از پیاده‌سازی‌های Python {#python-implementation-support}
 
-uv supports the CPython, PyPy, Pyodide, and GraalPy Python implementations. If a Python
-implementation is not supported, uv will fail to discover its interpreter.
+uv از پیاده‌سازی‌های CPython و PyPy و Pyodide و GraalPy Python پشتیبانی می‌کند. اگر یک پیاده‌سازی Python پشتیبانی نشود، uv در کشف interpreter آن ناموفق خواهد بود.
 
-The implementations may be requested with either the long or short name:
+می‌توان پیاده‌سازی‌ها را با نام بلند یا کوتاه درخواست کرد:
 
 - CPython: `cpython`, `cp`
 - PyPy: `pypy`, `pp`
 - GraalPy: `graalpy`, `gp`
 - Pyodide: `pyodide`
 
-Implementation name requests are not case-sensitive.
+درخواست‌های نام پیاده‌سازی به بزرگی و کوچکی حروف حساس نیستند.
 
-See the [Python version request](#requesting-a-version) documentation for more details on the
-supported formats.
+برای جزئیات بیشتر دربارهٔ قالب‌های پشتیبانی‌شده، به مستندات [درخواست Python version](#requesting-a-version) مراجعه کنید.
 
-## Managed Python distributions
+## توزیع‌های managed Python {#managed-python-distributions}
 
-uv supports downloading and installing CPython, PyPy, GraalPy, and Pyodide distributions.
+uv از دانلود و نصب distributionهای CPython و PyPy و GraalPy و Pyodide پشتیبانی می‌کند.
 
-### CPython distributions
+### توزیع‌های CPython {#cpython-distributions}
 
-As Python does not publish official distributable CPython binaries, uv instead uses pre-built
-distributions from the Astral
-[`python-build-standalone`](https://github.com/astral-sh/python-build-standalone) project.
-`python-build-standalone` is also used in many other Python projects, like
-[Mise](https://mise.jdx.dev/lang/python.html) and
-[bazelbuild/rules_python](https://github.com/bazelbuild/rules_python).
+از آنجا که Python باینری‌های CPython قابل توزیع رسمی منتشر نمی‌کند، uv در عوض از distributionهای از پیش ساخته‌شدهٔ پروژهٔ [`python-build-standalone`](https://github.com/astral-sh/python-build-standalone) مربوط به Astral استفاده می‌کند. `python-build-standalone` در بسیاری از پروژه‌های دیگر Python هم استفاده می‌شود، مانند [Mise](https://mise.jdx.dev/lang/python.html) و [bazelbuild/rules_python](https://github.com/bazelbuild/rules_python).
 
-The uv Python distributions are self-contained, highly-portable, and performant. While Python can be
-built from source, as in tools like `pyenv`, doing so requires preinstalled system dependencies, and
-creating optimized, performant builds (e.g., with PGO and LTO enabled) is very slow.
+توزیع‌های Python مربوط به uv خودکفا، بسیار قابل‌حمل و کارآمد هستند. هرچند Python را می‌توان از source ساخت، مانند ابزارهایی چون `pyenv`، انجام این کار به dependencyهای سیستمی از پیش نصب‌شده نیاز دارد و ساخت بیلدهای بهینه و کارآمد (مثلاً با فعال بودن PGO و LTO) بسیار کند است.
 
-These distributions have some behavior quirks, generally as a consequence of portability; see the
-[`python-build-standalone` quirks](https://gregoryszorc.com/docs/python-build-standalone/main/quirks.html)
-documentation for details.
+این distributionها برخی رفتارهای خاص دارند، که عموماً نتیجهٔ قابل‌حمل بودن آن‌هاست؛ برای جزئیات به مستندات [ویژگی‌های خاص `python-build-standalone`](https://gregoryszorc.com/docs/python-build-standalone/main/quirks.html) مراجعه کنید.
 
-### PyPy distributions
+### توزیع‌های PyPy {#pypy-distributions}
 
 !!! note
 
-    PyPy versions lag behind CPython and currently only support Python versions up to 3.11.
+    نسخه‌های PyPy از CPython عقب هستند و در حال حاضر فقط از نسخه‌های Python تا 3.11 پشتیبانی می‌کنند.
 
-PyPy distributions are provided by the [PyPy project](https://pypy.org).
+توزیع‌های PyPy توسط [پروژهٔ PyPy](https://pypy.org) ارائه می‌شوند.
 
-### Pyodide distributions
+### توزیع‌های Pyodide {#pyodide-distributions}
 
-Pyodide distributions are provided by the [Pyodide project](https://github.com/pyodide/pyodide).
+توزیع‌های Pyodide توسط [پروژهٔ Pyodide](https://github.com/pyodide/pyodide) ارائه می‌شوند.
 
-Pyodide is a port of CPython for the WebAssembly / Emscripten platform.
+Pyodide یک پورت از CPython برای پلتفرم WebAssembly / Emscripten است.
 
-## Transparent x86_64 emulation on aarch64
+## شبیه‌سازی شفاف x86_64 روی aarch64 {#transparent-x8664-emulation-on-aarch64}
 
-Both macOS and Windows support running x86_64 binaries on aarch64 through transparent emulation.
-This is called [Rosetta 2](https://support.apple.com/en-gb/102527) or
-[Windows on ARM (WoA) emulation](https://learn.microsoft.com/en-us/windows/arm/apps-on-arm-x86-emulation).
-It's possible to use x86_64 uv on aarch64, and also possible to use an x86_64 Python interpreter on
-aarch64. Either uv binary can use either Python interpreter, but a Python interpreter needs packages
-for its architecture, either all x86_64 or all aarch64.
+هم macOS و هم Windows اجرای باینری‌های x86_64 روی aarch64 را از طریق شبیه‌سازی شفاف پشتیبانی می‌کنند. این قابلیت [Rosetta 2](https://support.apple.com/en-gb/102527) یا [شبیه‌سازی Windows on ARM (WoA)](https://learn.microsoft.com/en-us/windows/arm/apps-on-arm-x86-emulation) نامیده می‌شود. می‌توان از uv با معماری x86_64 روی aarch64 استفاده کرد و همچنین می‌توان از یک Python interpreter با معماری x86_64 روی aarch64 استفاده کرد. هر باینری uv می‌تواند از هر Python interpreter استفاده کند، اما یک Python interpreter به packageهایی برای معماری خودش نیاز دارد، یا همه x86_64 یا همه aarch64.
 
-To force use of emulated `x86_64` Python, set
-[`UV_PYTHON_ARCH`](../reference/environment.md#uv_python_arch) to `x86_64` or
-[request an explicit architecture](#requesting-a-version), e.g., `cpython-3.14-windows-x86_64`.
+برای اجبار استفاده از Python شبیه‌سازی‌شدهٔ `x86_64`، [`UV_PYTHON_ARCH`](../reference/environment.md#uv_python_arch) را روی `x86_64` تنظیم کنید یا [یک معماری صریح درخواست کنید](#requesting-a-version)، مثلاً `cpython-3.14-windows-x86_64`.
 
-## Registration in the Windows registry
+## ثبت در رجیستری Windows {#registration-in-the-windows-registry}
 
-On Windows, installation of managed Python versions will register them with the Windows registry as
-defined by [PEP 514](https://peps.python.org/pep-0514/).
+در Windows، نصب نسخه‌های managed Python آن‌ها را طبق [PEP 514](https://peps.python.org/pep-0514/) در رجیستری Windows ثبت می‌کند.
 
-After installation, the Python versions can be selected with the `py` launcher, e.g.:
+پس از نصب، می‌توان نسخه‌های Python را با launcher مربوط به `py` انتخاب کرد، مثلاً:
 
 ```console
 $ uv python install 3.13.1
 $ py -V:Astral/CPython3.13.1
 ```
 
-On uninstall, uv will remove the registry entry for the target version as well as any broken
-registry entries.
+هنگام حذف نصب، uv ورودی رجیستری برای نسخهٔ هدف و همچنین هر ورودی رجیستری خراب را حذف می‌کند.

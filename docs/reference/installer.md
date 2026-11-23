@@ -1,10 +1,10 @@
-# The uv installer
+# نصب‌کنندهٔ uv {#the-uv-installer}
 
-## Changing the installation path
+## تغییر مسیر نصب {#changing-the-installation-path}
 
-By default, uv is installed in the user [executable directory](./storage.md#executable-directory).
+به‌طور پیش‌فرض، uv در [پوشهٔ اجرایی](./storage.md#executable-directory) کاربر نصب می‌شود.
 
-To change the installation path, use `UV_INSTALL_DIR`:
+برای تغییر مسیر نصب، از `UV_INSTALL_DIR` استفاده کنید:
 
 === "macOS and Linux"
 
@@ -20,38 +20,39 @@ To change the installation path, use `UV_INSTALL_DIR`:
 
 !!! note
 
-    Changing the installation path only affects where the uv binary is installed. uv will still store
-    its data (cache, Python installations, tools, etc.) in the default locations. See the
-    [storage reference](./storage.md) for details on these locations and how to customize them.
+    تغییر مسیر نصب فقط روی جایی که باینری uv نصب می‌شود تأثیر می‌گذارد. uv همچنان داده‌هایش
+    (cache، نصب‌های Python، toolها و غیره) را در مکان‌های پیش‌فرض ذخیره می‌کند. برای جزئیات این
+    مکان‌ها و نحوهٔ سفارشی‌سازی آن‌ها، [مرجع storage](./storage.md) را ببینید.
 
-## Disabling shell modifications
+## غیرفعال کردن تغییرات shell {#disabling-shell-modifications}
 
-The installer may also update your shell profiles to ensure the uv binary is on your `PATH`. To
-disable this behavior, use `UV_NO_MODIFY_PATH`. For example:
+نصب‌کننده ممکن است پروفایل‌های shell شما را هم به‌روز کند تا مطمئن شود باینری uv در `PATH` شما
+قرار دارد. برای غیرفعال کردن این رفتار، از `UV_NO_MODIFY_PATH` استفاده کنید. برای مثال:
 
 ```console
 $ curl -LsSf https://astral.sh/uv/install.sh | env UV_NO_MODIFY_PATH=1 sh
 ```
 
-If installed with `UV_NO_MODIFY_PATH`, subsequent operations, like `uv self update`, will not modify
-your shell profiles.
+اگر با `UV_NO_MODIFY_PATH` نصب شده باشد، عملیات‌های بعدی، مثل `uv self update`، پروفایل‌های shell
+شما را تغییر نمی‌دهند.
 
-## Unmanaged installations
+## نصب‌های مدیریت‌نشده {#unmanaged-installations}
 
-In ephemeral environments like CI, use `UV_UNMANAGED_INSTALL` to install uv to a specific path while
-preventing the installer from modifying shell profiles or environment variables:
+در environmentهای موقت مثل CI، از `UV_UNMANAGED_INSTALL` استفاده کنید تا uv را در یک مسیر مشخص
+نصب کنید و در عین حال جلوی تغییر پروفایل‌های shell یا environment variableها توسط نصب‌کننده را
+بگیرید:
 
 ```console
 $ curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/custom/path" sh
 ```
 
-The use of `UV_UNMANAGED_INSTALL` will also disable self-updates (via `uv self update`).
+استفاده از `UV_UNMANAGED_INSTALL` همچنین به‌روزرسانی‌های خودکار (از طریق `uv self update`) را
+غیرفعال می‌کند.
 
-## Passing options to the installation script
+## ارسال گزینه‌ها به script نصب {#passing-options-to-the-installation-script}
 
-Using environment variables is recommended because they are consistent across platforms. However,
-options can be passed directly to the installation script. For example, to see the available
-options:
+استفاده از environment variableها توصیه می‌شود، چون در همهٔ platformها یکسان هستند. با این حال،
+می‌توان گزینه‌ها را مستقیماً به script نصب ارسال کرد. برای مثال، برای دیدن گزینه‌های موجود:
 
 ```console
 $ curl -LsSf https://astral.sh/uv/install.sh | sh -s -- --help

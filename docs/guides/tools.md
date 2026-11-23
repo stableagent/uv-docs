@@ -1,20 +1,20 @@
 ---
-title: Using tools
+title: استفاده از toolها
 description:
-  A guide to using uv to run tools published as Python packages, including one-off invocations with
-  uvx, requesting specific tool versions, installing tools, upgrading tools, and more.
+  راهنمای استفاده از uv برای اجرای toolهای منتشرشده به‌صورت packageهای Python، شامل فراخوانی‌های
+  یک‌باره با uvx، درخواست نسخه‌های خاص tool، نصب toolها، ارتقای toolها و موارد دیگر.
 ---
 
-# Using tools
+# استفاده از toolها {#using-tools}
 
-Many Python packages provide applications that can be used as tools. uv has specialized support for
-easily invoking and installing tools.
+بسیاری از packageهای Python برنامه‌هایی ارائه می‌دهند که می‌توان از آن‌ها به‌عنوان tool استفاده کرد.
+uv پشتیبانی تخصصی برای فراخوانی و نصب آسان toolها دارد.
 
-## Running tools
+## اجرای toolها {#running-tools}
 
-The `uvx` command invokes a tool without installing it.
+دستور `uvx` یک tool را بدون نصب آن فراخوانی می‌کند.
 
-For example, to run `ruff`:
+برای مثال، برای اجرای `ruff`:
 
 ```console
 $ uvx ruff
@@ -22,15 +22,15 @@ $ uvx ruff
 
 !!! note
 
-    This is exactly equivalent to:
+    این دقیقاً معادل این است:
 
     ```console
     $ uv tool run ruff
     ```
 
-    `uvx` is provided as an alias for convenience.
+    `uvx` به‌عنوان یک alias برای راحتی ارائه شده است.
 
-Arguments can be provided after the tool name:
+می‌توان آرگومان‌ها را پس از نام tool ارائه داد:
 
 ```console
 $ uvx pycowsay hello from uv
@@ -46,268 +46,269 @@ $ uvx pycowsay hello from uv
 
 ```
 
-Tools are installed into temporary, isolated environments when using `uvx`.
+هنگام استفاده از `uvx`، toolها در environmentهای موقت و ایزوله نصب می‌شوند.
 
 !!! note
 
-    If you are running a tool in a [_project_](../concepts/projects/index.md) and the tool requires that
-    your project is installed, e.g., when using `pytest` or `mypy`, you'll want to use
-    [`uv run`](./projects.md#running-commands) instead of `uvx`. Otherwise, the tool will be run in
-    a virtual environment that is isolated from your project.
+    اگر در حال اجرای یک tool در یک [_project_](../concepts/projects/index.md) هستید و tool نیاز دارد
+    که project شما نصب شده باشد، مثلاً هنگام استفاده از `pytest` یا `mypy`، بهتر است به‌جای `uvx`
+    از [`uv run`](./projects.md#running-commands) استفاده کنید. در غیر این صورت، tool در یک
+    virtual environment اجرا می‌شود که از project شما ایزوله است.
 
-    If your project has a flat structure, e.g., instead of using a `src` directory for modules,
-    the project itself does not need to be installed and `uvx` is fine. In this case, using
-    `uv run` is only beneficial if you want to pin the version of the tool in the project's
-    dependencies.
+    اگر project شما ساختار تخت دارد، مثلاً به‌جای استفاده از یک پوشهٔ `src` برای moduleها،
+    خود project نیازی به نصب ندارد و `uvx` مناسب است. در این حالت، استفاده از `uv run` تنها زمانی
+    مفید است که بخواهید نسخهٔ tool را در dependencyهای project پین کنید.
 
-## Commands with different package names
+## دستورهایی با نام‌های package متفاوت {#commands-with-different-package-names}
 
-When `uvx ruff` is invoked, uv installs the `ruff` package which provides the `ruff` command.
-However, sometimes the package and command names differ.
+وقتی `uvx ruff` فراخوانی می‌شود، uv package `ruff` را نصب می‌کند که دستور `ruff` را ارائه می‌دهد.
+با این حال، گاهی نام package و دستور متفاوت است.
 
-The `--from` option can be used to invoke a command from a specific package, e.g., `http` which is
-provided by `httpie`:
+گزینهٔ `--from` می‌تواند برای فراخوانی یک دستور از یک package خاص استفاده شود، مثلاً `http` که
+توسط `httpie` ارائه می‌شود:
 
 ```console
 $ uvx --from httpie http
 ```
 
-## Requesting specific versions
+## درخواست نسخه‌های خاص {#requesting-specific-versions}
 
-To run a tool at a specific version, use `command@<version>`:
+برای اجرای یک tool در یک نسخهٔ خاص، از `command@<version>` استفاده کنید:
 
 ```console
 $ uvx ruff@0.3.0 check
 ```
 
-To run a tool at the latest version, use `command@latest`:
+برای اجرای یک tool در آخرین نسخه، از `command@latest` استفاده کنید:
 
 ```console
 $ uvx ruff@latest check
 ```
 
-The `--from` option can also be used to specify package versions, as above:
+گزینهٔ `--from` همچنین می‌تواند برای مشخص کردن نسخه‌های package استفاده شود، مانند بالا:
 
 ```console
 $ uvx --from 'ruff==0.3.0' ruff check
 ```
 
-Or, to constrain to a range of versions:
+یا، برای محدود کردن به یک بازه از نسخه‌ها:
 
 ```console
 $ uvx --from 'ruff>0.2.0,<0.3.0' ruff check
 ```
 
-Note the `@` syntax cannot be used for anything other than an exact version.
+توجه کنید که سینتکس `@` نمی‌تواند برای چیزی به‌جز یک نسخهٔ دقیق استفاده شود.
 
-## Requesting extras
+## درخواست extraها {#requesting-extras}
 
-The `--from` option can be used to run a tool with extras:
+گزینهٔ `--from` می‌تواند برای اجرای یک tool با extraها استفاده شود:
 
 ```console
 $ uvx --from 'mypy[faster-cache,reports]' mypy --xml-report mypy_report
 ```
 
-This can also be combined with version selection:
+این کار همچنین می‌تواند با انتخاب نسخه ترکیب شود:
 
 ```console
 $ uvx --from 'mypy[faster-cache,reports]==1.13.0' mypy --xml-report mypy_report
 ```
 
-## Requesting different sources
+## درخواست sourceهای مختلف {#requesting-different-sources}
 
-The `--from` option can also be used to install from alternative sources.
+گزینهٔ `--from` همچنین می‌تواند برای نصب از sourceهای جایگزین استفاده شود.
 
-For example, to pull from git:
+برای مثال، برای دریافت از git:
 
 ```console
 $ uvx --from git+https://github.com/httpie/cli httpie
 ```
 
-You can also pull the latest commit from a specific named branch:
+همچنین می‌توانید آخرین commit را از یک branch نام‌دار خاص دریافت کنید:
 
 ```console
 $ uvx --from git+https://github.com/httpie/cli@master httpie
 ```
 
-Or pull a specific tag:
+یا یک tag خاص را دریافت کنید:
 
 ```console
 $ uvx --from git+https://github.com/httpie/cli@3.2.4 httpie
 ```
 
-Or even a specific commit:
+یا حتی یک commit خاص را:
 
 ```console
 $ uvx --from git+https://github.com/httpie/cli@2843b87 httpie
 ```
 
-Or with [Git LFS](https://git-lfs.com) support:
+یا با پشتیبانی [Git LFS](https://git-lfs.com):
 
 ```console
 $ uvx --lfs --from git+https://github.com/astral-sh/lfs-cowsay lfs-cowsay
 ```
 
-## Commands with plugins
+## دستورهایی با pluginها {#commands-with-plugins}
 
-Additional dependencies can be included, e.g., to include `mkdocs-material` when running `mkdocs`:
+می‌توان dependencyهای اضافی را لحاظ کرد، مثلاً برای لحاظ کردن `mkdocs-material` هنگام اجرای
+`mkdocs`:
 
 ```console
 $ uvx --with mkdocs-material mkdocs --help
 ```
 
-## Installing tools
+## نصب toolها {#installing-tools}
 
-If a tool is used often, it is useful to install it to a persistent environment and add it to the
-`PATH` instead of invoking `uvx` repeatedly.
+اگر یک tool زیاد استفاده می‌شود، مفید است که آن را در یک environment ماندگار نصب کنید و به `PATH`
+اضافه کنید، به‌جای اینکه `uvx` را مکرراً فراخوانی کنید.
 
 !!! tip
 
-    `uvx` is a convenient alias for `uv tool run`. All of the other commands for interacting with
-    tools require the full `uv tool` prefix.
+    `uvx` یک alias راحت برای `uv tool run` است. همهٔ دستورهای دیگر برای تعامل با toolها به پیشوند
+    کامل `uv tool` نیاز دارند.
 
-To install `ruff`:
+برای نصب `ruff`:
 
 ```console
 $ uv tool install ruff
 ```
 
-When a tool is installed, its executables are placed in a `bin` directory in the `PATH` which allows
-the tool to be run without uv. If it's not on the `PATH`, a warning will be displayed and
-`uv tool update-shell` can be used to add it to the `PATH`.
+وقتی یک tool نصب می‌شود، فایل‌های اجرایی آن در یک پوشهٔ `bin` در `PATH` قرار می‌گیرند که امکان
+اجرای tool را بدون uv فراهم می‌کند. اگر در `PATH` نباشد، یک هشدار نمایش داده می‌شود و می‌توان از
+`uv tool update-shell` برای اضافه کردن آن به `PATH` استفاده کرد.
 
-After installing `ruff`, it should be available:
+پس از نصب `ruff`، باید در دسترس باشد:
 
 ```console
 $ ruff --version
 ```
 
-Unlike `uv pip install`, installing a tool does not make its modules available in the current
-environment. For example, the following command will fail:
+برخلاف `uv pip install`، نصب یک tool، moduleهای آن را در environment فعلی در دسترس قرار نمی‌دهد.
+برای مثال، دستور زیر با خطا مواجه می‌شود:
 
 ```console
 $ python -c "import ruff"
 ```
 
-This isolation is important for reducing interactions and conflicts between dependencies of tools,
-scripts, and projects.
+این ایزوله‌سازی برای کاهش تعامل‌ها و تداخل‌ها میان dependencyهای toolها، scriptها و projectها مهم
+است.
 
-Unlike `uvx`, `uv tool install` operates on a _package_ and will install all executables provided by
-the tool.
+برخلاف `uvx`، دستور `uv tool install` روی یک _package_ عمل می‌کند و همهٔ فایل‌های اجرایی
+ارائه‌شده توسط tool را نصب می‌کند.
 
-For example, the following will install the `http`, `https`, and `httpie` executables:
+برای مثال، مورد زیر فایل‌های اجرایی `http`، `https` و `httpie` را نصب می‌کند:
 
 ```console
 $ uv tool install httpie
 ```
 
-Additionally, package versions can be included without `--from`:
+همچنین، می‌توان نسخه‌های package را بدون `--from` لحاظ کرد:
 
 ```console
 $ uv tool install 'httpie>0.1.0'
 ```
 
-And, similarly, for package sources:
+و به همین ترتیب، برای sourceهای package:
 
 ```console
 $ uv tool install git+https://github.com/httpie/cli
 ```
 
-Or package sources with [Git LFS](https://git-lfs.com):
+یا sourceهای package با [Git LFS](https://git-lfs.com):
 
 ```console
 $ uv tool install --lfs git+https://github.com/astral-sh/lfs-cowsay
 ```
 
-As with `uvx`, installations can include additional packages:
+مانند `uvx`، نصب‌ها می‌توانند packageهای اضافی را نیز شامل شوند:
 
 ```console
 $ uv tool install mkdocs --with mkdocs-material
 ```
 
-Multiple related executables can be installed together in the same tool environment, using the
-`--with-executables-from` flag. For example, the following will install the executables from
-`ansible`, plus those provided by `ansible-core` and `ansible-lint`:
+می‌توان چند فایل اجرایی مرتبط را با هم در همان tool environment نصب کرد، با استفاده از فلگ
+`--with-executables-from`. برای مثال، مورد زیر فایل‌های اجرایی `ansible` را به‌علاوهٔ مواردی که
+توسط `ansible-core` و `ansible-lint` ارائه می‌شوند نصب می‌کند:
 
 ```console
 $ uv tool install --with-executables-from ansible-core,ansible-lint ansible
 ```
 
-## Upgrading tools
+## ارتقای toolها {#upgrading-tools}
 
-To upgrade a tool, use `uv tool upgrade`:
+برای ارتقای یک tool، از `uv tool upgrade` استفاده کنید:
 
 ```console
 $ uv tool upgrade ruff
 ```
 
-Tool upgrades will respect the version constraints provided when installing the tool. For example,
-`uv tool install ruff >=0.3,<0.4` followed by `uv tool upgrade ruff` will upgrade Ruff to the latest
-version in the range `>=0.3,<0.4`.
+ارتقای tool به constraintهای نسخهٔ ارائه‌شده هنگام نصب tool احترام می‌گذارد. برای مثال،
+`uv tool install ruff >=0.3,<0.4` و پس از آن `uv tool upgrade ruff`، Ruff را به آخرین نسخه در بازهٔ
+`>=0.3,<0.4` ارتقا می‌دهد.
 
-To instead replace the version constraints, re-install the tool with `uv tool install`:
+برای جایگزینی constraintهای نسخه، tool را با `uv tool install` دوباره نصب کنید:
 
 ```console
 $ uv tool install ruff>=0.4
 ```
 
-To instead upgrade all tools:
+برای ارتقای همهٔ toolها:
 
 ```console
 $ uv tool upgrade --all
 ```
 
-## Requesting Python versions
+## درخواست Python versionها {#requesting-python-versions}
 
-By default, uv will use your default Python interpreter (the first it finds) when running,
-installing, or upgrading tools. You can specify the Python interpreter to use with the `--python`
-option.
+به‌طور پیش‌فرض، uv هنگام اجرا، نصب یا ارتقای toolها از Python interpreter پیش‌فرض شما (اولین موردی
+که پیدا می‌کند) استفاده می‌کند. می‌توانید Python interpreter مورداستفاده را با گزینهٔ `--python`
+مشخص کنید.
 
-For example, to request a specific Python version when running a tool:
+برای مثال، برای درخواست یک Python version خاص هنگام اجرای یک tool:
 
 ```console
 $ uvx --python 3.10 ruff
 ```
 
-Or, when installing a tool:
+یا، هنگام نصب یک tool:
 
 ```console
 $ uv tool install --python 3.10 ruff
 ```
 
-Or, when upgrading a tool:
+یا، هنگام ارتقای یک tool:
 
 ```console
 $ uv tool upgrade --python 3.10 ruff
 ```
 
-For more details on requesting Python versions, see the
-[Python version](../concepts/python-versions.md#requesting-a-version) concept page.
+برای جزئیات بیشتر دربارهٔ درخواست Python versionها، به صفحهٔ مفهومی
+[Python version](../concepts/python-versions.md#requesting-a-version) مراجعه کنید.
 
-## Legacy Windows Scripts
+## scriptهای قدیمی Windows {#legacy-windows-scripts}
 
-Tools also support running
-[legacy setuptools scripts](https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#scripts).
-These scripts are available via `$(uv tool dir)\<tool-name>\Scripts` when installed.
+toolها همچنین از اجرای
+[scriptهای قدیمی setuptools](https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#scripts)
+پشتیبانی می‌کنند. این scriptها هنگام نصب از طریق `$(uv tool dir)\<tool-name>\Scripts` در دسترس
+هستند.
 
-Currently only legacy scripts with the `.ps1`, `.cmd`, and `.bat` extensions are supported.
+در حال حاضر تنها scriptهای قدیمی با پسوندهای `.ps1`، `.cmd` و `.bat` پشتیبانی می‌شوند.
 
-For example, to run a Command Prompt script:
+برای مثال، برای اجرای یک script در Command Prompt:
 
 ```console
 $ uv tool run --from nuitka==2.6.7 nuitka.cmd --version
 ```
 
-In addition, you don't need to specify the extension. `uvx` will automatically look for files ending
-in `.ps1`, `.cmd`, and `.bat` in that order of execution on your behalf.
+علاوه بر این، نیازی نیست پسوند را مشخص کنید. `uvx` به‌طور خودکار به‌جای شما فایل‌هایی را که به
+`.ps1`، `.cmd` و `.bat` ختم می‌شوند، به همین ترتیب جستجو و اجرا می‌کند.
 
 ```console
 $ uv tool run --from nuitka==2.6.7 nuitka --version
 ```
 
-## Next steps
+## گام‌های بعدی {#next-steps}
 
-To learn more about managing tools with uv, see the [Tools concept](../concepts/tools.md) page and
-the [command reference](../reference/cli.md#uv-tool).
+برای آشنایی بیشتر با مدیریت toolها با uv، به صفحهٔ مفهوم
+[toolها](../concepts/tools.md) و [مرجع دستور](../reference/cli.md#uv-tool) مراجعه کنید.
 
-Or, read on to learn how to [work on projects](./projects.md).
+یا، برای یادگیری [کار روی projectها](./projects.md) ادامه دهید.

@@ -1,94 +1,96 @@
-# Resolver internals
+# بخش‌های داخلی resolver {#resolver-internals}
 
 !!! tip
 
-    This document focuses on the internal workings of uv's resolver. For using uv, see the
-    [resolution concept](../../concepts/resolution.md) documentation.
+    این مستند بر کارکردهای داخلی resolver در uv تمرکز دارد. برای استفاده از uv، مستندات
+    [مفهوم resolution](../../concepts/resolution.md) را ببینید.
 
-## Resolver
+## resolver {#resolver}
 
-As defined in a textbook, resolution, or finding a set of versions to install from a given set of
-requirements, is equivalent to the
-[SAT problem](https://en.wikipedia.org/wiki/Boolean_satisfiability_problem) and thereby NP-complete:
-in the worst case you have to try all possible combinations of all versions of all packages and
-there are no general, fast algorithms. In practice, this is misleading for a number of reasons:
+طبق تعریف کتاب‌های درسی، resolution، یا یافتن مجموعه‌ای از نسخه‌ها برای نصب از روی مجموعه‌ای
+معین از requirementها، معادل
+[مسئلهٔ SAT](https://en.wikipedia.org/wiki/Boolean_satisfiability_problem) است و در نتیجه
+NP-complete است: در بدترین حالت باید همهٔ ترکیب‌های ممکن از همهٔ نسخه‌های همهٔ packageها را
+امتحان کنید و هیچ الگوریتم عمومی و سریعی وجود ندارد. در عمل، این تعریف به چند دلیل گمراه‌کننده
+است:
 
-- The slowest part of resolution in uv is loading package and version metadata, even if it's cached.
-- There are many possible solutions, but some are preferable to others. For example, we generally
-  prefer using the latest version of packages.
-- Package dependencies are complex, e.g., there are contiguous versions ranges — not arbitrary
-  boolean inclusion/exclusions of versions, adjacent releases often have the same or similar
-  requirements, etc.
-- For most resolutions, the resolver doesn't need to backtrack, picking versions iteratively is
-  sufficient. If there are version preferences from a previous resolution, barely any work needs to
-  be done.
-- When resolution fails, more information is needed than a message that there is no solution (as is
-  seen in SAT solvers). Instead, the resolver should produce an understandable error trace that
-  states which packages are involved so the user can remove the conflict.
-- The most important heuristic for performance and user experience is determining the order in which
-  decisions are made through prioritization.
+- کندترین بخش resolution در uv، بارگذاری metadata مربوط به package و نسخه است، حتی اگر cache شده
+  باشد.
+- راه‌حل‌های ممکن زیادی وجود دارد، اما بعضی از آن‌ها بر بعضی دیگر ترجیح دارند. برای مثال، معمولاً
+  ترجیح می‌دهیم از جدیدترین نسخهٔ packageها استفاده کنیم.
+- dependencyهای package پیچیده‌اند؛ مثلاً بازه‌های نسخه پیوسته‌اند — نه شامل/حذف‌های بولیِ دلخواه
+  از نسخه‌ها — و انتشارهای مجاور اغلب requirementهای یکسان یا مشابهی دارند و غیره.
+- برای بیشتر resolutionها، resolver نیازی به backtrack ندارد و انتخاب تکراری نسخه‌ها کافی است.
+  اگر ترجیح‌های نسخه از یک resolution قبلی وجود داشته باشد، تقریباً هیچ کاری لازم نیست.
+- وقتی resolution ناموفق باشد، به اطلاعاتی بیش از یک پیام مبنی بر نبود راه‌حل نیاز است (همان‌طور
+  که در SAT solverها دیده می‌شود). در عوض، resolver باید یک ردیابی خطای قابل فهم تولید کند که
+  مشخص کند کدام packageها درگیر هستند، تا کاربر بتواند تعارض را رفع کند.
+- مهم‌ترین heuristic برای عملکرد و تجربهٔ کاربری، تعیین ترتیبی است که تصمیم‌ها در آن گرفته
+  می‌شوند، از طریق اولویت‌بندی.
 
-uv uses [pubgrub-rs](https://github.com/pubgrub-rs/pubgrub), the Rust implementation of
-[PubGrub](https://nex3.medium.com/pubgrub-2fb6470504f), an incremental version solver. PubGrub in uv
-works in the following steps:
+uv از [pubgrub-rs](https://github.com/pubgrub-rs/pubgrub) استفاده می‌کند، که پیاده‌سازی Rust از
+[PubGrub](https://nex3.medium.com/pubgrub-2fb6470504f) است، یک version solver افزایشی. PubGrub در
+uv در گام‌های زیر کار می‌کند:
 
-- Start with a partial solution that declares which packages versions have been selected and which
-  are undecided. Initially, only a virtual root package is decided.
-- The highest priority package is selected from the undecided packages. Roughly, packages with URLs
-  (including file, git, etc.) have the highest priority, then those with more exact specifiers (such
-  as `==`), then those with less strict specifiers. Inside each category, packages are ordered by
-  when they were first seen (i.e. order in a file), making the resolution deterministic.
-- A version is picked for the selected package. The version must work with all specifiers from the
-  requirements in the partial solution and must not be previously marked as incompatible. The
-  resolver prefers versions from a lockfile (`uv.lock` or `-o requirements.txt`) and those installed
-  in the current environment. Versions are checked from highest to lowest (unless using an
-  alternative [resolution strategy](../../concepts/resolution.md#resolution-strategy)).
-- All requirements of the selected package version are added to the undecided packages. uv
-  prefetches their metadata in the background to improve performance.
-- The process is either repeated with the next package unless a conflict is detected, in which the
-  resolver will backtrack. For example, the partial solution contains, among other packages, `a 2`
-  then `b 2` with the requirements `a 2 -> c 1` and `b 2 -> c 2`. No compatible version of `c` can
-  be found. PubGrub can determine this was caused by `a 2` and `b 2` and add the incompatibility
-  `{a 2, b 2}`, meaning that when either is picked, the other cannot be selected. The partial
-  solution is restored to `a 2` with the tracked incompatibility and the resolver attempts to pick a
-  new version for `b`.
+- با یک راه‌حل جزئی شروع می‌کند که اعلام می‌کند کدام نسخه‌های package انتخاب شده‌اند و کدام‌ها
+  هنوز تصمیم‌گیری نشده‌اند. در ابتدا، فقط یک package ریشهٔ مجازی تصمیم‌گیری شده است.
+- package با بالاترین اولویت از میان packageهای تصمیم‌گیری‌نشده انتخاب می‌شود. به‌طور کلی،
+  packageهای دارای URL (شامل file ،git و غیره) بالاترین اولویت را دارند، بعد آن‌هایی که
+  specifierهای دقیق‌تری دارند (مثل `==`) و بعد آن‌هایی که specifierهای کم‌سخت‌گیرانه‌تری دارند.
+  در هر دسته، packageها بر اساس زمانی که اولین بار دیده شده‌اند مرتب می‌شوند (یعنی ترتیب در یک
+  فایل)، که resolution را قطعی می‌کند.
+- یک نسخه برای package انتخاب‌شده برگزیده می‌شود. نسخه باید با همهٔ specifierهای requirementهای
+  موجود در راه‌حل جزئی سازگار باشد و نباید قبلاً به‌عنوان ناسازگار علامت‌گذاری شده باشد. resolver
+  نسخه‌های موجود در یک lockfile (مثل `uv.lock` یا `-o requirements.txt`) و نسخه‌های نصب‌شده در
+  environment فعلی را ترجیح می‌دهد. نسخه‌ها از بالاترین به پایین‌ترین بررسی می‌شوند (مگر اینکه
+  از یک [استراتژی resolution](../../concepts/resolution.md#resolution-strategy) جایگزین استفاده
+  شود).
+- همهٔ requirementهای نسخهٔ انتخاب‌شدهٔ package به packageهای تصمیم‌گیری‌نشده اضافه می‌شوند. uv
+  برای بهبود عملکرد، metadata آن‌ها را در پس‌زمینه پیش‌واکشی می‌کند.
+- این فرایند با package بعدی تکرار می‌شود، مگر اینکه تعارضی شناسایی شود که در آن صورت resolver
+  به عقب بازمی‌گردد. برای مثال، راه‌حل جزئی، در میان packageهای دیگر، شامل `a 2` و سپس `b 2` با
+  requirementهای `a 2 -> c 1` و `b 2 -> c 2` است. هیچ نسخهٔ سازگاری از `c` پیدا نمی‌شود. PubGrub
+  می‌تواند تشخیص دهد که این موضوع به دلیل `a 2` و `b 2` بوده است و ناسازگاری `{a 2, b 2}` را
+  اضافه کند؛ به این معنا که وقتی یکی از آن‌ها انتخاب شود، دیگری نمی‌تواند انتخاب شود. راه‌حل
+  جزئی به `a 2` با ناسازگاری ردیابی‌شده بازگردانده می‌شود و resolver تلاش می‌کند نسخهٔ جدیدی
+  برای `b` انتخاب کند.
 
-Eventually, the resolver either picks compatible versions for all packages (a successful resolution)
-or there is an incompatibility including the virtual "root" package which defines the versions
-requested by the user. An incompatibility with the root package indicates that whatever versions of
-the root dependencies and their transitive dependencies are picked, there will always be a conflict.
-From the incompatibilities tracked in PubGrub, an error message is constructed to enumerate the
-involved packages.
+در نهایت، resolver یا برای همهٔ packageها نسخه‌های سازگار انتخاب می‌کند (یک resolution موفق) یا
+ناسازگاری‌ای شامل package مجازی "root" وجود دارد که نسخه‌های درخواست‌شده توسط کاربر را تعریف
+می‌کند. ناسازگاری با package ریشه نشان می‌دهد که هر نسخه‌ای از dependencyهای ریشه و dependencyهای
+transitive آن‌ها انتخاب شود، همیشه تعارضی وجود خواهد داشت. از روی ناسازگاری‌های ردیابی‌شده در
+PubGrub، یک پیام خطا ساخته می‌شود تا packageهای درگیر را فهرست کند.
 
 !!! tip
 
-    For more details on the PubGrub algorithm, see [Internals of the PubGrub
-    algorithm](https://pubgrub-rs-guide.pages.dev/internals/intro).
+    برای جزئیات بیشتر دربارهٔ الگوریتم PubGrub، [بخش‌های داخلی الگوریتم
+    PubGrub](https://pubgrub-rs-guide.pages.dev/internals/intro) را ببینید.
 
-In addition to PubGrub's base algorithm, we also use a heuristic that backtracks and switches the
-order of two packages if they have been conflicting too much.
+علاوه بر الگوریتم پایهٔ PubGrub، ما از یک heuristic هم استفاده می‌کنیم که اگر دو package بیش از
+حد با هم تعارض داشته باشند، به عقب بازمی‌گردد و ترتیب آن دو package را جابه‌جا می‌کند.
 
-## Forking
+## انشعاب {#forking}
 
-Python resolvers historically didn't support backtracking, and even with backtracking, resolution
-was usually limited to a single environment with one specific architecture, operating system, Python
-version, and Python implementation. Some packages use contradictory requirements for different
-environments, for example:
+resolverهای Python در گذشته از backtrack پشتیبانی نمی‌کردند و حتی با وجود backtrack، resolution
+معمولاً به یک environment واحد با یک معماری، سیستم‌عامل، Python version و پیاده‌سازی Python مشخص
+محدود بود. بعضی packageها برای environmentهای مختلف requirementهای متناقضی استفاده می‌کنند، برای
+مثال:
 
 ```
 numpy>=2,<3 ; python_version >= "3.11"
 numpy>=1.16,<2 ; python_version < "3.11"
 ```
 
-Since Python only allows one version of each package, a naive resolver would error here. Inspired by
-[Poetry](https://github.com/python-poetry/poetry), uv uses a forking resolver: whenever there are
-multiple requirements for a package with different markers, the resolution is split.
+از آنجا که Python فقط یک نسخه از هر package را مجاز می‌داند، یک resolver ساده در اینجا خطا
+می‌دهد. با الهام از [Poetry](https://github.com/python-poetry/poetry)، uv از یک resolver انشعابی
+استفاده می‌کند: هرگاه requirementهای متعددی برای یک package با markerهای مختلف وجود داشته باشد،
+resolution تقسیم می‌شود.
 
-In the above example, the partial solution would be split into two resolutions, one for
-`python_version >= "3.11"` and one for `python_version < "3.11"`.
+در مثال بالا، راه‌حل جزئی به دو resolution تقسیم می‌شود: یکی برای
+`python_version >= "3.11"` و دیگری برای `python_version < "3.11"`.
 
-If markers overlap or are missing a part of the marker space, the resolver splits additional times —
-there can be many forks per package. For example, given:
+اگر markerها هم‌پوشانی داشته باشند یا بخشی از فضای marker را نداشته باشند، resolver بارهای بیشتری
+تقسیم می‌کند — می‌تواند برای هر package انشعاب‌های زیادی وجود داشته باشد. برای مثال، با فرض:
 
 ```
 flask > 1 ; sys_platform == 'darwin'
@@ -96,241 +98,246 @@ flask > 2 ; sys_platform == 'win32'
 flask
 ```
 
-A fork would be created for `sys_platform == 'darwin'`, for `sys_platform == 'win32'`, and for
-`sys_platform != 'darwin' and sys_platform != 'win32'`.
+یک انشعاب برای `sys_platform == 'darwin'`، یکی برای `sys_platform == 'win32'` و یکی برای
+`sys_platform != 'darwin' and sys_platform != 'win32'` ساخته می‌شود.
 
-Forks can be nested, e.g., each fork is dependent on any previous forks that occurred. Forks with
-identical packages are merged to keep the number of forks low.
+انشعاب‌ها می‌توانند تودرتو باشند؛ مثلاً هر انشعاب به انشعاب‌های قبلی که رخ داده‌اند وابسته است.
+انشعاب‌هایی که packageهای یکسان دارند، ادغام می‌شوند تا تعداد انشعاب‌ها کم بماند.
 
 !!! tip
 
-    Forking can be observed in the logs of `uv lock -v` by looking for
-    `Splitting resolution on ...`, `Solving split ... (requires-python: ...)` and `Split ... resolution
-    took ...`.
+    می‌توان انشعاب را در logهای `uv lock -v` مشاهده کرد؛ به دنبال
+    `Splitting resolution on ...`، `Solving split ... (requires-python: ...)` و
+    `Split ... resolution took ...` باشید.
 
-One difficulty in a forking resolver is that where splits occur is dependent on the order packages
-are seen, which is in turn dependent on the preferences, e.g., from `uv.lock`. So it is possible for
-the resolver to solve the requirements with specific forks, write this to the lockfile, and when the
-resolver is invoked again, a different solution is found because the preferences result in different
-fork points. To avoid this, the `resolution-markers` of each fork and each package that diverges
-between forks is written to the lockfile. When performing a new resolution, the forks from the
-lockfile are used to ensure the resolution is stable. When requirements change, new forks may be
-added to the saved forks.
+یک دشواری در resolver انشعابی این است که محل وقوع تقسیم‌ها به ترتیبی که packageها دیده می‌شوند
+وابسته است و این ترتیب نیز به ترجیح‌ها وابسته است، مثلاً از `uv.lock`. پس ممکن است resolver
+requirementها را با انشعاب‌های مشخصی حل کند، این را در lockfile بنویسد، و وقتی resolver دوباره
+فراخوانی می‌شود، راه‌حل متفاوتی پیدا شود چون ترجیح‌ها به نقطه‌های انشعاب متفاوتی منجر می‌شوند.
+برای جلوگیری از این موضوع، `resolution-markers` هر انشعاب و هر package که بین انشعاب‌ها متفاوت
+است، در lockfile نوشته می‌شود. هنگام انجام یک resolution جدید، انشعاب‌های موجود در lockfile
+استفاده می‌شوند تا از پایداری resolution اطمینان حاصل شود. وقتی requirementها تغییر کنند، ممکن
+است انشعاب‌های جدیدی به انشعاب‌های ذخیره‌شده اضافه شوند.
 
-## Wheel tags
+## برچسب‌های wheel {#wheel-tags}
 
-While uv's resolution is universal with respect to environment markers, this doesn't extend to wheel
-tags. Wheel tags can encode the Python version, Python implementation, operating system, and
-architecture. For example, `torch-2.4.0-cp312-cp312-manylinux2014_aarch64.whl` is only compatible
-with CPython 3.12 on arm64 Linux with `glibc>=2.17` (per the `manylinux2014` policy), while
-`tqdm-4.66.4-py3-none-any.whl` works with all Python 3 versions and interpreters on any operating
-system and architecture. Most projects have a universally compatible source distribution that can be
-used when attempted to install a package that has no compatible wheel, but some packages, such as
-`torch`, don't publish a source distribution. In this case an installation on, e.g., Python 3.13, an
-uncommon operating system, or architecture, will fail and complain that there is no matching wheel.
+با اینکه resolution در uv نسبت به markerهای environment عمومی است، این موضوع به wheel tagها تسری
+نمی‌یابد. wheel tagها می‌توانند Python version، پیاده‌سازی Python، سیستم‌عامل و معماری را
+رمزگذاری کنند. برای مثال، `torch-2.4.0-cp312-cp312-manylinux2014_aarch64.whl` فقط با CPython 3.12
+روی Linux با معماری arm64 و `glibc>=2.17` سازگار است (طبق سیاست `manylinux2014`)، در حالی که
+`tqdm-4.66.4-py3-none-any.whl` با همهٔ نسخه‌های Python 3 و interpreterها روی هر سیستم‌عامل و
+معماری‌ای کار می‌کند. بیشتر projectها یک source distribution سازگار با همه‌چیز دارند که می‌توان از
+آن هنگام تلاش برای نصب package‌ای که wheel سازگاری ندارد استفاده کرد، اما بعضی packageها، مثل
+`torch`، source distribution منتشر نمی‌کنند. در این حالت، نصب روی مثلاً Python 3.13، یک
+سیستم‌عامل غیرمعمول یا یک معماری، ناموفق می‌شود و اعلام می‌کند که wheel مطابقتی وجود ندارد.
 
-## Marker and wheel tag filtering
+## فیلتر کردن بر اساس marker و wheel tag {#marker-and-wheel-tag-filtering}
 
-In every fork, we know what markers are possible. In non-universal resolution, we know their exact
-values. In universal mode, we know at least a constraint for the python requirement, e.g.,
-`requires-python = ">=3.12"` means that `importlib_metadata; python_version < "3.10"` can be
-discarded because it can never be installed. If additionally `tool.uv.environments` is set, we can
-filter out requirements with markers disjoint with those environments. Inside each fork, we can
-additionally filter by the fork markers.
+در هر انشعاب، می‌دانیم چه markerهایی ممکن هستند. در resolution غیرعمومی، مقدارهای دقیق آن‌ها را
+می‌دانیم. در حالت عمومی، دست‌کم یک constraint برای python requirement می‌دانیم؛ مثلاً
+`requires-python = ">=3.12"` به این معناست که
+`importlib_metadata; python_version < "3.10"` را می‌توان کنار گذاشت چون هرگز نمی‌تواند نصب شود.
+اگر علاوه بر این `tool.uv.environments` تنظیم شده باشد، می‌توانیم requirementهایی را که markerهایشان
+با آن environmentها ناسازگار است، فیلتر کنیم. در هر انشعاب، می‌توانیم علاوه بر این بر اساس
+markerهای انشعاب فیلتر کنیم.
 
-There is some redundancy in the marker expressions, where the value of one marker field implies the
-value of another field. Internally, we normalize `python_version` and `python_full_version` as well
-as known values of `platform_system` and `sys_platform` to a shared canonical representation, so
-they can match against each other.
+در عبارت‌های marker مقداری افزونگی وجود دارد؛ جایی که مقدار یک فیلد marker، مقدار فیلد دیگری را
+ایجاب می‌کند. در داخل، ما `python_version` و `python_full_version` و همچنین مقدارهای شناخته‌شدهٔ
+`platform_system` و `sys_platform` را به یک نمایش متعارف مشترک نرمال می‌کنیم تا بتوانند با یکدیگر
+مطابقت داشته باشند.
 
-When we selected a version with a local tag (e.g.,`1.2.3+localtag`) and the wheels don't cover
-support for Windows, Linux and macOS, and there is a base version without tag (e.g.,`1.2.3`) with
-support for a missing platform, we fork trying to extend the platform support by using both the
-version with local tag and without local tag depending on the platform. This helps with packages
-that use the local tag for different hardware accelerators such as torch. While there is no 1:1
-mapping between wheel tags and markers, we can do a mapping for well-known platforms, including
-Windows, Linux and macOS.
+وقتی نسخه‌ای با یک tag محلی انتخاب کرده‌ایم (مثلاً `1.2.3+localtag`) و wheelها پشتیبانی از
+Windows و Linux و macOS را پوشش نمی‌دهند، و یک نسخهٔ پایه بدون tag وجود دارد (مثلاً `1.2.3`) که
+از یک platform جاافتاده پشتیبانی می‌کند، ما انشعاب می‌زنیم و تلاش می‌کنیم با استفاده از هر دو
+نسخه — نسخهٔ دارای tag محلی و نسخهٔ بدون tag محلی — بسته به platform، پشتیبانی از platform را
+گسترش دهیم. این کار به packageهایی کمک می‌کند که از tag محلی برای شتاب‌دهنده‌های سخت‌افزاری
+مختلف، مثل torch، استفاده می‌کنند. با اینکه هیچ نگاشت یک‌به‌یکی بین wheel tagها و markerها وجود
+ندارد، می‌توانیم برای platformهای شناخته‌شده، از جمله Windows و Linux و macOS، یک نگاشت انجام
+دهیم.
 
-## Metadata consistency
+## سازگاری metadata {#metadata-consistency}
 
-uv, similar to poetry, requires that wheels of a single version of a package in a specific index
-have the same dependencies (`Requires-Dist` in `METADATA`), including wheels built from a source
-distribution. More generally, uv assumes that each wheel has the same `METADATA` file in its
-dist-info directory.
+uv، مشابه poetry، نیاز دارد که wheelهای یک نسخهٔ واحد از یک package در یک index مشخص، dependencyهای
+یکسانی داشته باشند (`Requires-Dist` در `METADATA`)، از جمله wheelهایی که از یک source distribution
+ساخته شده‌اند. به‌طور کلی‌تر، uv فرض می‌کند که هر wheel فایل `METADATA` یکسانی در پوشهٔ dist-info
+خود دارد.
 
-numpy 2.3.2 for example has 73 wheels. Without this assumption, uv would have to make 73 network
-requests to fetch its metadata, instead of a single one. Another problem we would have without
-metadata consistency is the lack of a 1:1 mapping between markers and wheel tags. Wheel tags can
-include the glibc version while the PEP 508 markers cannot represent it. If wheels had different
-metadata, a universal resolver would have to track two dimensions simultaneously, PEP 508 markers
-and wheel tags. This would increase complexity a lot, and the correspondence between the two is not
-properly specified. PEP 508 markers have been introduced specifically to allow different
-dependencies between different platform, i.e. to have a single dependency declaration for all
-wheels, such as `project.[optional-]dependencies`. If the markers are not sufficient, we should
-extend PEP 508 markers instead of using a parallel system of wheel tags.
+برای مثال، numpy 2.3.2 دارای ۷۳ wheel است. بدون این فرض، uv باید ۷۳ درخواست شبکه برای دریافت
+metadata آن انجام می‌داد، به‌جای یک درخواست. مشکل دیگری که بدون سازگاری metadata داشتیم، نبود
+نگاشت یک‌به‌یک بین markerها و wheel tagهاست. wheel tagها می‌توانند نسخهٔ glibc را شامل شوند، در
+حالی که markerهای PEP 508 نمی‌توانند آن را نشان دهند. اگر wheelها metadata متفاوتی داشتند، یک
+resolver عمومی باید دو بُعد را هم‌زمان ردیابی می‌کرد: markerهای PEP 508 و wheel tagها. این کار
+پیچیدگی را بسیار افزایش می‌داد و تناظر بین این دو به‌درستی مشخص نشده است. markerهای PEP 508
+به‌طور خاص معرفی شده‌اند تا dependencyهای متفاوت بین platformهای مختلف را ممکن کنند؛ یعنی یک اعلان
+dependency واحد برای همهٔ wheelها، مثل `project.[optional-]dependencies`. اگر markerها کافی
+نباشند، باید markerهای PEP 508 را گسترش دهیم، به‌جای استفاده از یک سیستم موازی از wheel tagها.
 
-Another aspect of metadata consistency is that a source distribution must build into a wheel with
-the same metadata as the wheels, or if there are no wheels, into the same metadata each time. If
-this assumption is violated, sound dependency locking becomes impossible: Consider a package A has a
-source distribution. During resolution, we build A v1 and obtain the dependencies `B>=2,<3`. We lock
-`A==1` and `B==2`. When installing the lockfile on the target machine, we build again and obtain
-dependencies `B>=3,<4` and `C>=1,<2`. The lockfile fails to install: Due to the changed constraints,
-the locked version of `B` is incompatible, and there's no locked candidate for `C`. Re-resolving
-after this would both be a reproducibility problem (the lockfile is effectively ignored) and a
-security concern (`C` has not been reviewed, neither was `B==3`). It's possible to fail on
-installation if that happens, but a late error, possibly during deployment, is a bad user
-experience. There is already a case where uv fails on installation, packages with no source
-distribution and only platform specific wheels incompatible with the current platform. While uv has
-[required environments](../../concepts/resolution.md#required-environments) as mitigation, this
-requires a not well known configuration option, and questions around (un)supported environments are
-one of the most common problem for uv users. A similar situation with source distributions should be
-avoided.
+جنبهٔ دیگری از سازگاری metadata این است که یک source distribution باید به یک wheel با همان metadata
+wheelها build شود، یا اگر wheel‌ای وجود ندارد، هر بار به همان metadata build شود. اگر این فرض نقض
+شود، قفل کردن صحیح dependency غیرممکن می‌شود: فرض کنید package A یک source distribution دارد. در
+حین resolution، A نسخهٔ ۱ را build می‌کنیم و dependencyهای `B>=2,<3` را به دست می‌آوریم. `A==1`
+و `B==2` را قفل می‌کنیم. هنگام نصب lockfile روی ماشین هدف، دوباره build می‌کنیم و dependencyهای
+`B>=3,<4` و `C>=1,<2` را به دست می‌آوریم. نصب lockfile ناموفق می‌شود: به دلیل constraintهای
+تغییرکرده، نسخهٔ قفل‌شدهٔ `B` ناسازگار است و هیچ نامزد قفل‌شده‌ای برای `C` وجود ندارد. حل دوبارهٔ
+resolution پس از این، هم یک مشکل تکرارپذیری خواهد بود (lockfile عملاً نادیده گرفته می‌شود) و هم یک
+نگرانی امنیتی (`C` بررسی نشده است و `B==3` هم بررسی نشده است). ممکن است در صورت وقوع این اتفاق،
+نصب ناموفق شود، اما یک خطای دیرهنگام، احتمالاً در حین استقرار، تجربهٔ کاربری بدی است. در حال حاضر
+موردی وجود دارد که uv در نصب ناموفق می‌شود: packageهایی بدون source distribution و فقط با wheelهای
+خاص platform که با platform فعلی ناسازگارند. با اینکه uv
+[environmentهای لازم](../../concepts/resolution.md#required-environments) را به‌عنوان راه کاهش این
+مشکل دارد، این کار به یک گزینهٔ پیکربندی نه‌چندان شناخته‌شده نیاز دارد و سؤال‌ها دربارهٔ
+environmentهای پشتیبانی‌شده (یا نشده) یکی از رایج‌ترین مشکلات کاربران uv است. باید از وضعیت مشابهی
+با source distributionها جلوگیری شود.
 
-While older versions of torch and tensorflow had inconsistent metadata, all recent versions have
-consistent metadata, and we are not aware of any major package with inconsistent metadata. There is
-however no requirement in the Python packaging standards that metadata must be consistent, and
-requests to enforce this in the standards have been rejected
+با اینکه نسخه‌های قدیمی‌تر torch و tensorflow دارای metadata ناسازگار بودند، همهٔ نسخه‌های اخیر
+دارای metadata سازگار هستند و ما از هیچ package مهمی با metadata ناسازگار اطلاع نداریم. با این
+حال، در استانداردهای بسته‌بندی Python هیچ الزامی وجود ندارد که metadata باید سازگار باشد و
+درخواست‌ها برای اجباری کردن این موضوع در استانداردها رد شده‌اند
 (https://discuss.python.org/t/enforcing-consistent-metadata-for-packages/50008).
 
-There are packages that have native code that links against the native code in another package, such
-as torch. These package may support building against a range of torch versions, but once built, they
-are constrained to a specific torch version, and the runtime torch version must match the build-time
-version. These are currently a pain point across all package managers, as all major package managers
-from pip to uv cache source distribution builds. uv supports multiple builds depending on the
-version of the already installed package using
-[ `tool.uv.extra-build-dependencies`](../../concepts/projects/config.md#augmenting-build-dependencies)
-with `match-runtime = true`. This is a workaround that needs to be made on the user side for each
-affected package, instead of library developers declaring this requirement, which would be possible
-with native standards support.
+packageهایی وجود دارند که کد native دارند و به کد native در package دیگری لینک می‌شوند، مثل
+torch. این packageها ممکن است از build شدن در برابر بازه‌ای از نسخه‌های torch پشتیبانی کنند، اما
+پس از build، به یک نسخهٔ خاص از torch محدود می‌شوند و نسخهٔ torch در زمان اجرا باید با نسخهٔ زمان
+build مطابقت داشته باشد. این موضوع در حال حاضر در همهٔ package managerها یک نقطهٔ درد است، چون
+همهٔ package managerهای مهم، از pip تا uv، buildهای source distribution را cache می‌کنند. uv با
+استفاده از
+[`tool.uv.extra-build-dependencies`](../../concepts/projects/config.md#augmenting-build-dependencies)
+با `match-runtime = true`، از چند build بسته به نسخهٔ package از قبل نصب‌شده پشتیبانی می‌کند. این
+یک راه‌حل موقتی است که باید از طرف کاربر برای هر package تحت تأثیر انجام شود، به‌جای اینکه
+توسعه‌دهندگان کتابخانه این نیاز را اعلام کنند؛ کاری که با پشتیبانی استانداردهای بومی ممکن می‌شد.
 
-## Requires-python
+## Requires-python {#requires-python}
 
-To ensure that a resolution with `requires-python = ">=3.9"` can actually be installed for the
-included Python versions, uv requires that all dependencies have the same minimum Python version.
-Package versions that declare a higher minimum Python version, e.g., `requires-python = ">=3.10"`,
-are rejected, because a resolution with that version can't be installed on Python 3.9. This ensures
-that when you are on an old Python version, you can install old packages, instead of getting newer
-packages that require newer Python syntax or standard library features.
+برای اطمینان از اینکه یک resolution با `requires-python = ">=3.9"` واقعاً می‌تواند برای نسخه‌های
+Python شامل‌شده نصب شود، uv نیاز دارد که همهٔ dependencyها حداقل Python version یکسانی داشته
+باشند. نسخه‌های package که حداقل Python version بالاتری اعلام می‌کنند، مثلاً
+`requires-python = ">=3.10"`، رد می‌شوند، چون resolution با آن نسخه نمی‌تواند روی Python 3.9 نصب
+شود. این کار تضمین می‌کند که وقتی روی یک Python version قدیمی هستید، می‌توانید packageهای قدیمی
+را نصب کنید، به‌جای اینکه packageهای جدیدتری بگیرید که به سینتکس جدیدتر Python یا قابلیت‌های
+کتابخانهٔ استاندارد جدیدتر نیاز دارند.
 
-uv ignores upper-bounds on `requires-python`, with special handling for packages with only
-ABI-specific wheels. For example, if a package declares `requires-python = ">=3.8,<4"`, the `<4`
-part is ignored. There is a detailed discussion with drawbacks and alternatives in
-[#4022](https://github.com/astral-sh/uv/issues/4022) and this
-[DPO thread](https://discuss.python.org/t/requires-python-upper-limits/12663), this section
-summarizes the aspects most relevant to uv's design.
+uv حدهای بالایی روی `requires-python` را نادیده می‌گیرد، با برخورد ویژه برای packageهایی که فقط
+wheelهای خاص ABI دارند. برای مثال، اگر یک package اعلام کند `requires-python = ">=3.8,<4"`، بخش
+`<4` نادیده گرفته می‌شود. بحث مفصلی با معایب و جایگزین‌ها در
+[#4022](https://github.com/astral-sh/uv/issues/4022) و این
+[رشتهٔ DPO](https://discuss.python.org/t/requires-python-upper-limits/12663) وجود دارد؛ این بخش
+جنبه‌های مرتبط‌تر با طراحی uv را خلاصه می‌کند.
 
-For most projects, it's not possible to determine whether they will be compatible with a new version
-before it's released, so blocking newer versions in advance would block users from upgrading or
-testing newer Python versions. The exceptions are packages which use the unstable C ABI or internals
-of CPython such as its bytecode format.
+برای بیشتر projectها، نمی‌توان پیش از انتشار یک نسخهٔ جدید تعیین کرد که آیا با آن سازگار خواهند
+بود یا نه؛ پس مسدود کردن نسخه‌های جدیدتر از پیش، کاربران را از ارتقا یا آزمایش نسخه‌های جدیدتر
+Python بازمی‌دارد. استثناها packageهایی هستند که از C ABI ناپایدار یا بخش‌های داخلی CPython، مثل
+قالب bytecode آن، استفاده می‌کنند.
 
-Introducing a `requires-python` upper bound to a project that previously wasn't using one will not
-prevent the project from being used on a too recent Python version. Instead of failing, the resolver
-will pick an older version without the bound, circumventing the bound.
+افزودن یک حد بالایی `requires-python` به project‌ای که قبلاً از آن استفاده نمی‌کرد، مانع استفاده
+از project روی یک Python version خیلی جدید نمی‌شود. به‌جای ناموفق شدن، resolver نسخهٔ قدیمی‌تری
+را بدون حد انتخاب می‌کند و حد را دور می‌زند.
 
-For the resolution to be as universally installable as possible, uv ensures that the selected
-dependency versions are compatible with the `requires-python` range of the project. For example, for
-a project with `requires-python = ">=3.12"`, uv will not use a dependency version with
-`requires-python = ">=3.13"`, as otherwise the resolution is not installable on Python 3.12, which
-the project declares to support. Applying the same logic to upper bounds means that bumping the
-upper Python version bound on a project makes it compatible with less dependency versions,
-potentially failing to resolve when no version of a dependency supports the required range. (Bumping
-the lower Python version bound has the inverse effect, it only increases the set of supported
-dependency versions.)
+برای اینکه resolution تا حد ممکن به‌طور عمومی قابل نصب باشد، uv تضمین می‌کند که نسخه‌های dependency
+انتخاب‌شده با بازهٔ `requires-python` در project سازگار باشند. برای مثال، برای project‌ای با
+`requires-python = ">=3.12"`، uv از نسخهٔ dependency با `requires-python = ">=3.13"` استفاده
+نمی‌کند، چون در غیر این صورت resolution روی Python 3.12 که project اعلام کرده از آن پشتیبانی
+می‌کند، قابل نصب نیست. به‌کار بردن همان منطق برای حدهای بالایی به این معناست که افزایش حد بالایی
+Python version در یک project، آن را با نسخه‌های dependency کمتری سازگار می‌کند و احتمالاً وقتی هیچ
+نسخه‌ای از یک dependency از بازهٔ موردنیاز پشتیبانی نکند، resolution ناموفق می‌شود. (افزایش حد
+پایینی Python version اثر معکوس دارد؛ فقط مجموعهٔ نسخه‌های dependency پشتیبانی‌شده را افزایش
+می‌دهد.)
 
-Note that this is different for Conda, as the Conda solver also determines the Python version, so it
-can choose a lower Python version instead. Conda can also change metadata after a release, so it can
-update compatibility for a new Python version, while metadata on PyPI cannot be changed once
-published.
+توجه کنید که این موضوع برای Conda متفاوت است، چون Conda solver همچنین Python version را تعیین
+می‌کند، پس می‌تواند به‌جای آن یک Python version پایین‌تر انتخاب کند. Conda همچنین می‌تواند
+metadata را پس از انتشار تغییر دهد، پس می‌تواند سازگاری را برای یک Python version جدید به‌روز
+کند، در حالی که metadata در PyPI پس از انتشار نمی‌تواند تغییر کند.
 
-Ignoring an upper bound is a problem for packages such as numpy which use the version-dependent C
-API of CPython. As of writing, each numpy release support 4 Python minor versions, e.g., numpy 2.0.0
-has wheels for CPython 3.9 through 3.12 and declares `requires-python = ">=3.9"`, while numpy 2.1.0
-has wheels for CPython 3.10 through 3.13 and declares `requires-python = ">=3.10"`. This means that
-when uv resolves a `numpy>=2,<3` requirement in a project with `requires-python = ">=3.9"`, it
-selects numpy 2.0.0 and the lockfile doesn't install on Python 3.13 or newer. To alleviate this,
-whenever uv rejects a version that requires a newer Python version, we fork by splitting the
-resolution markers on that Python version. This behavior can be controlled by `--fork-strategy`. In
-the example case, upon encountering numpy 2.1.0 we fork into Python versions `>=3.9,<3.10` and
-`>=3.10` and resolve two different numpy versions:
+نادیده گرفتن یک حد بالایی برای packageهایی مثل numpy که از C API وابسته به نسخهٔ CPython استفاده
+می‌کنند، مشکل‌ساز است. در زمان نگارش، هر انتشار numpy از ۴ نسخهٔ minor مربوط به Python پشتیبانی
+می‌کند؛ مثلاً numpy 2.0.0 برای CPython 3.9 تا 3.12 دارای wheel است و اعلام می‌کند
+`requires-python = ">=3.9"`، در حالی که numpy 2.1.0 برای CPython 3.10 تا 3.13 دارای wheel است و
+اعلام می‌کند `requires-python = ">=3.10"`. این یعنی وقتی uv یک requirement با `numpy>=2,<3` را در
+project‌ای با `requires-python = ">=3.9"` حل می‌کند، numpy 2.0.0 را انتخاب می‌کند و lockfile روی
+Python 3.13 یا جدیدتر نصب نمی‌شود. برای کاهش این مشکل، هرگاه uv نسخه‌ای را رد کند که به Python
+version جدیدتری نیاز دارد، با تقسیم markerهای resolution روی آن Python version، انشعاب می‌زنیم.
+این رفتار را می‌توان با `--fork-strategy` کنترل کرد. در مثال موردنظر، هنگام برخورد با numpy 2.1.0
+به Python versionهای `>=3.9,<3.10` و `>=3.10` انشعاب می‌زنیم و دو نسخهٔ متفاوت numpy را حل
+می‌کنیم:
 
 ```
 numpy==2.0.0; python_version >= "3.9" and python_version < "3.10"
 numpy==2.1.0; python_version >= "3.10"
 ```
 
-There's one case where uv does consider the upper bound: When the project uses an upper bound on
-requires Python, such as `requires-python = "==3.13.*"` for an application that only deploys to
-Python 3.13. uv prunes wheels from the lockfile that are outside the range (e.g., `cp312` and
-`cp314`) in a post-processing step, which does not influence the resolution itself.
+یک مورد وجود دارد که uv حد بالایی را در نظر می‌گیرد: وقتی project از یک حد بالایی روی requires
+Python استفاده می‌کند، مثل `requires-python = "==3.13.*"` برای application‌ای که فقط روی Python
+3.13 مستقر می‌شود. uv در یک گام پس‌پردازش، wheelهایی را که خارج از بازه هستند (مثلاً `cp312` و
+`cp314`) از lockfile حذف می‌کند؛ کاری که خود resolution را تحت تأثیر قرار نمی‌دهد.
 
-## URL dependencies
+## dependencyهای URL {#url-dependencies}
 
-In uv, a dependency can either be a registry dependency, a package with a version specifier or the
-plain package name, or a URL dependency. All requirements in the form `{name} @ {url}` are URL
-dependencies, and also all dependencies that have a `git`,` url`, `path`, or `workspace` source.
+در uv، یک dependency می‌تواند یک registry dependency، یک package با یک version specifier یا نام
+سادهٔ package، یا یک URL dependency باشد. همهٔ requirementها به شکل `{name} @ {url}`، URL dependency
+هستند و همچنین همهٔ dependencyهایی که source از نوع `git`، `url`، `path` یا `workspace` دارند.
 
-When a URL is declared for a package, uv pins the package to this URL, and the version this URL
-implies. If there are two conflicting URLs for a package, the resolver errors, as a URL can only be
-declared as something akin to an exact `==` pin, and not as list of URLs. A list of URLs is
-supported through [flat indexes](../../concepts/indexes.md#flat-indexes) instead.
+وقتی یک URL برای یک package اعلام شود، uv آن package را به این URL و نسخه‌ای که این URL ایجاب
+می‌کند، پین می‌کند. اگر دو URL متناقض برای یک package وجود داشته باشد، resolver خطا می‌دهد، چون
+یک URL فقط می‌تواند به‌عنوان چیزی شبیه به یک پین دقیق `==` اعلام شود، نه به‌عنوان فهرستی از
+URLها. فهرستی از URLها در عوض از طریق
+[flat indexها](../../concepts/indexes.md#flat-indexes) پشتیبانی می‌شود.
 
-uv requires that URLs are either declared directly (in the project, in a
-[workspace member](../../concepts/projects/workspaces.md), in a
-[constraint](../../concepts/resolution.md#dependency-constraints), or in an
-[override](../../concepts/resolution.md#dependency-overrides), any location that is discovered
-directly), or by other URL dependencies. uv discovers all URL dependencies and their transitive URL
-dependencies ahead of the resolution and pins all packages to the URLs and the versions they imply.
+uv نیاز دارد که URLها یا مستقیماً اعلام شوند (در project، در یک
+[عضو workspace](../../concepts/projects/workspaces.md)، در یک
+[constraint](../../concepts/resolution.md#dependency-constraints) یا در یک
+[override](../../concepts/resolution.md#dependency-overrides)؛ هر مکانی که مستقیماً کشف شود) یا
+توسط URL dependencyهای دیگر. uv همهٔ URL dependencyها و URL dependencyهای transitive آن‌ها را پیش
+از resolution کشف می‌کند و همهٔ packageها را به URLها و نسخه‌هایی که ایجاب می‌کنند، پین می‌کند.
 
-uv does not allow URLs in index packages. This has two reasons: One is a security and predictability
-aspect, that forbids registry distributions to point to non-registry distributions and helps
-auditing which URLs can be accessed. For example, when only using one index URL and no URL
-dependencies, uv will not install any package from outside the index.
+uv اجازهٔ URL در index packageها را نمی‌دهد. این موضوع دو دلیل دارد: یکی جنبهٔ امنیتی و
+پیش‌بینی‌پذیری است که distributionهای registry را از اشاره به distributionهای غیر registry منع
+می‌کند و به بررسی اینکه کدام URLها قابل دسترسی هستند کمک می‌کند. برای مثال، وقتی فقط از یک index
+URL استفاده می‌کنید و هیچ URL dependency‌ای ندارید، uv هیچ package‌ای را از خارج از index نصب
+نمی‌کند.
 
-The other is that URLs can add additional versions to the resolution. Say the root package depends
-on foo, bar, and baz, all registry dependencies. foo depends on `bar >= 2`, but bar only has version
-1 on the index. With the incremental approach, this is an error: foo cannot be fulfilled, there is a
-resolver error. If URLs on index packages were allowed, it could be that there is a version of baz
-declares a dependency on baz-core and that has a version that declares
-`bar @ https://example.com/bar-2-py3-none-any.whl` adding a version of bar that makes requirements
-resolve. If a dependency can add new versions, discarding any version in the resolver would require
-looking at all possible versions of all direct and transitive dependencies. This breaks the core
-assumption incremental resolvers make that the set of versions for a package is static and would
-require to always fetch the metadata for all possibly reachable version.
+دلیل دیگر این است که URLها می‌توانند نسخه‌های بیشتری به resolution اضافه کنند. فرض کنید package
+ریشه به foo و bar و baz وابسته است که همه registry dependency هستند. foo به `bar >= 2` وابسته
+است، اما bar فقط نسخهٔ ۱ را روی index دارد. با رویکرد افزایشی، این یک خطاست: foo نمی‌تواند
+برآورده شود و یک خطای resolver رخ می‌دهد. اگر URL روی index packageها مجاز بود، ممکن بود نسخه‌ای
+از baz وجود داشته باشد که dependency‌ای روی baz-core اعلام می‌کند و آن نسخه‌ای دارد که
+`bar @ https://example.com/bar-2-py3-none-any.whl` را اعلام می‌کند و نسخه‌ای از bar اضافه می‌کند
+که requirementها را حل می‌کند. اگر یک dependency بتواند نسخه‌های جدید اضافه کند، کنار گذاشتن هر
+نسخه‌ای در resolver نیازمند بررسی همهٔ نسخه‌های ممکن از همهٔ dependencyهای مستقیم و transitive
+خواهد بود. این کار فرض اصلی‌ای را که resolverهای افزایشی می‌کنند — اینکه مجموعهٔ نسخه‌ها برای یک
+package ثابت است — می‌شکند و نیازمند این خواهد بود که همیشه metadata همهٔ نسخه‌های احتمالاً قابل
+دسترسی را دریافت کنیم.
 
-## Prioritization
+## اولویت‌بندی {#prioritization}
 
-Prioritization is important for both performance and for better resolutions.
+اولویت‌بندی هم برای عملکرد و هم برای resolutionهای بهتر مهم است.
 
-If we try many versions we have to later discard, resolution is slow, both because we have to read
-metadata we didn't need and because we have to track a lot of (conflict) information for this
-discarded subtree.
+اگر نسخه‌های زیادی را امتحان کنیم که بعداً باید کنار بگذاریم، resolution کند می‌شود؛ هم چون باید
+metadata‌ای را بخوانیم که به آن نیاز نداشتیم و هم چون باید اطلاعات (تعارض) زیادی را برای این
+زیردرخت کنارگذاشته‌شده ردیابی کنیم.
 
-There are expectations about which solution uv should choose, even if the version constraints allow
-multiple solutions. Generally, a desirable solution prioritizes use the highest versions for direct
-dependencies over those for indirect dependencies, it avoids backtracking to very old versions and
-can be installed on a target machine.
+انتظاراتی دربارهٔ اینکه uv کدام راه‌حل را باید انتخاب کند وجود دارد، حتی اگر constraintهای نسخه
+چند راه‌حل را مجاز بدانند. به‌طور کلی، یک راه‌حل مطلوب، استفاده از بالاترین نسخه‌ها را برای
+dependencyهای مستقیم بر dependencyهای غیرمستقیم ترجیح می‌دهد، از backtrack به نسخه‌های خیلی قدیمی
+پرهیز می‌کند و می‌تواند روی یک ماشین هدف نصب شود.
 
-Internally, uv represents each package with a given package name as a number of virtual packages,
-for example, one package for each activated extra, for dependency groups, or for having a marker.
-While PubGrub needs to choose a version for each virtual package, uv's prioritization works on the
-package name level.
+در داخل، uv هر package با یک نام package معین را به‌صورت تعدادی package مجازی نشان می‌دهد؛ مثلاً
+یک package برای هر extra فعال‌شده، برای dependency groupها یا برای داشتن یک marker. با اینکه
+PubGrub باید برای هر package مجازی یک نسخه انتخاب کند، اولویت‌بندی uv در سطح نام package کار
+می‌کند.
 
-Whenever we encounter a requirement on a package, we match it to a priority. The root package and
-URL requirements have the highest priority, then singleton requirements with the `==` operator, as
-their version can be directly determined, then highly conflicting packages (next paragraph), and
-finally all other packages. Inside each category, packages are sorted by when they were first
-encountered, creating a breadth first search that prioritizes direct dependencies including
-workspace dependencies over transitive dependencies.
+هرگاه با یک requirement روی یک package مواجه شویم، آن را با یک اولویت تطبیق می‌دهیم. package ریشه
+و requirementهای URL بالاترین اولویت را دارند، بعد requirementهای تکی با عملگر `==`، چون نسخهٔ
+آن‌ها را می‌توان مستقیماً تعیین کرد، بعد packageهای بسیار متعارض (پاراگراف بعدی) و در نهایت همهٔ
+packageهای دیگر. در هر دسته، packageها بر اساس زمانی که اولین بار با آن‌ها مواجه شده‌ایم مرتب
+می‌شوند و یک جستجوی اول‌سطح (breadth first search) ایجاد می‌کنند که dependencyهای مستقیم، از جمله
+dependencyهای workspace، را بر dependencyهای transitive ترجیح می‌دهد.
 
-A common problem is that we have a package A with a higher priority than package B, and B is only
-compatible with older versions of A. We decide the latest version for package A. Each time we decide
-a version for B, it is immediately discarded due to the conflict with A. We have to try all possible
-versions of B, until we have either exhausted the possible range (slow), pick a very old version
-that doesn't depend on A, but most likely isn't compatible with the project either (bad) or fail to
-build a very old version (bad). Once we see such conflict happen five time, we set A and B to
-special highly-conflicting priority levels, and set them so that B is decided before A. We then
-manually backtrack to a state before deciding A, in the next iteration now deciding B instead of A.
-See [#8157](https://github.com/astral-sh/uv/issues/8157) and
-[#9843](https://github.com/astral-sh/uv/pull/9843) for a more detailed description with real world
-examples.
+یک مشکل رایج این است که package A اولویتی بالاتر از package B دارد و B فقط با نسخه‌های قدیمی‌تر A
+سازگار است. ما جدیدترین نسخه را برای package A تعیین می‌کنیم. هر بار که نسخه‌ای برای B تعیین
+می‌کنیم، بلافاصله به دلیل تعارض با A کنار گذاشته می‌شود. باید همهٔ نسخه‌های ممکن B را امتحان کنیم
+تا یا بازهٔ ممکن را تمام کنیم (کند)، یا یک نسخهٔ خیلی قدیمی را انتخاب کنیم که به A وابسته نیست اما
+به احتمال زیاد با project هم سازگار نیست (بد)، یا در build کردن یک نسخهٔ خیلی قدیمی ناموفق شویم
+(بد). وقتی چنین تعارضی را پنج بار ببینیم، A و B را در سطح‌های اولویت ویژهٔ بسیار متعارض قرار
+می‌دهیم و آن‌ها را طوری تنظیم می‌کنیم که B پیش از A تعیین شود. سپس به‌صورت دستی به حالتی پیش از
+تعیین A بازمی‌گردیم و در تکرار بعدی، به‌جای A، B را تعیین می‌کنیم. برای توصیف مفصل‌تر با مثال‌های
+واقعی، [#8157](https://github.com/astral-sh/uv/issues/8157) و
+[#9843](https://github.com/astral-sh/uv/pull/9843) را ببینید.

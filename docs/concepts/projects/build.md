@@ -1,26 +1,25 @@
-# Building distributions
+# ساخت distributionها {#building-distributions}
 
-To distribute your project to others (e.g., to upload it to an index like PyPI), you'll need to
-build it into a distributable format.
+برای توزیع project خود به دیگران (برای مثال، برای بارگذاری آن در یک index مانند PyPI)، باید آن را
+به یک قالب قابل‌توزیع بسازید.
 
-Python projects are typically distributed as both source distributions (sdists) and binary
-distributions (wheels). The former is typically a `.tar.gz` or `.zip` file containing the project's
-source code along with some additional metadata, while the latter is a `.whl` file containing
-pre-built artifacts that can be installed directly.
+projectهای Python معمولاً هم به‌صورت source distributionها (sdist) و هم به‌صورت binary
+distributionها (wheel) توزیع می‌شوند. مورد اول معمولاً یک فایل `.tar.gz` یا `.zip` است که شامل کد منبع project
+همراه با مقداری metadata اضافی است، در حالی که مورد دوم یک فایل `.whl` است که شامل
+artifactهای از پیش ساخته‌شده‌ای است که می‌توان آن‌ها را مستقیماً نصب کرد.
 
 !!! important
 
-    When using `uv build`, uv acts as a [build frontend](https://peps.python.org/pep-0517/#terminology-and-goals)
-    and only determines the Python version to use and invokes the build backend. The details of
-    the builds, such as the included files and the distribution filenames, are determined by the build
-    backend, as defined in [`[build-system]`](./config.md#build-systems). Information about build
-    configuration can be found in the respective tool's documentation.
+    هنگام استفاده از `uv build`، uv به‌عنوان یک [build frontend](https://peps.python.org/pep-0517/#terminology-and-goals)
+    عمل می‌کند و فقط نسخهٔ Python مورد استفاده را تعیین می‌کند و build backend را فراخوانی می‌کند. جزئیات
+    buildها، مانند فایل‌های گنجانده‌شده و نام فایل‌های distribution، توسط build
+    backend تعیین می‌شوند، همان‌طور که در [`[build-system]`](./config.md#build-systems) تعریف شده است. اطلاعات مربوط به پیکربندی build
+    را می‌توان در مستندات tool مربوطه یافت.
 
-## Using `uv build`
+## استفاده از `uv build` {#using-uv-build}
 
-`uv build` can be used to build both source distributions and binary distributions for your project.
-By default, `uv build` will build the project in the current directory, and place the built
-artifacts in a `dist/` subdirectory:
+می‌توان از `uv build` برای ساخت هم source distributionها و هم binary distributionها برای project شما استفاده کرد.
+به‌طور پیش‌فرض، `uv build` project را در پوشهٔ فعلی می‌سازد و artifactهای ساخته‌شده را در یک زیرپوشهٔ `dist/` قرار می‌دهد:
 
 ```console
 $ uv build
@@ -29,43 +28,43 @@ example-0.1.0-py3-none-any.whl
 example-0.1.0.tar.gz
 ```
 
-You can build the project in a different directory by providing a path to `uv build`, e.g.,
+می‌توانید project را در یک پوشهٔ متفاوت با دادن یک مسیر به `uv build` بسازید، برای مثال
 `uv build path/to/project`.
 
-`uv build` will first build a source distribution, and then build a binary distribution (wheel) from
-that source distribution.
+`uv build` ابتدا یک source distribution می‌سازد و سپس یک binary distribution (wheel) را از
+آن source distribution می‌سازد.
 
-You can limit `uv build` to building a source distribution with `uv build --sdist`, a binary
-distribution with `uv build --wheel`, or build both distributions from source with
-`uv build --sdist --wheel`.
+می‌توانید `uv build` را با `uv build --sdist` به ساخت یک source distribution، با `uv build --wheel` به ساخت یک binary
+distribution، یا با
+`uv build --sdist --wheel` به ساخت هر دو distribution از منبع محدود کنید.
 
-## Build constraints
+## قیدهای build {#build-constraints}
 
-`uv build` accepts `--build-constraint`, which can be used to constrain the versions of any build
-requirements during the build process. When coupled with `--require-hashes`, uv will enforce that
-the requirements used to build the project match specific, known hashes, for reproducibility.
+`uv build` گزینهٔ `--build-constraint` را می‌پذیرد که می‌توان از آن برای محدود کردن نسخه‌های هر requirement مربوط به build
+در طول فرایند build استفاده کرد. هنگامی که با `--require-hashes` همراه شود، uv اجبار می‌کند که
+requirementهای مورد استفاده برای ساخت project با hashهای مشخص و شناخته‌شده مطابقت داشته باشند، برای تکرارپذیری.
 
-For example, given the following `constraints.txt`:
+برای مثال، با داشتن فایل `constraints.txt` زیر:
 
 ```text
 setuptools==68.2.2 --hash=sha256:b454a35605876da60632df1a60f736524eb73cc47bbc9f3f1ef1b644de74fd2a
 ```
 
-Running the following would build the project with the specified version of `setuptools`, and verify
-that the downloaded `setuptools` distribution matches the specified hash:
+اجرای دستور زیر project را با نسخهٔ مشخص‌شدهٔ `setuptools` می‌سازد و بررسی
+می‌کند که distribution دانلودشدهٔ `setuptools` با hash مشخص‌شده مطابقت دارد:
 
 ```console
 $ uv build --build-constraint constraints.txt --require-hashes
 ```
 
-To require hashes for every build dependency, including transitive dependencies, use
-`--require-build-hashes` instead.
+برای الزام hash برای هر dependency مربوط به build، از جمله dependencyهای transitive، به‌جای آن از
+`--require-build-hashes` استفاده کنید.
 
-### Project build dependency hashes
+### hashهای dependency مربوط به build در project {#project-build-dependency-hashes}
 
-For example, to verify build dependencies during project resolution and installation, add hashes to
-[`build-constraint-dependencies`](../../reference/settings.md#build-constraint-dependencies) in your
-workspace's `pyproject.toml`:
+برای مثال، برای بررسی dependencyهای build در طول resolution و نصب project، hashها را به
+[`build-constraint-dependencies`](../../reference/settings.md#build-constraint-dependencies) در
+`pyproject.toml` مربوط به workspace خود اضافه کنید:
 
 ```toml
 [tool.uv]
@@ -75,36 +74,33 @@ build-constraint-dependencies = [
 ]
 ```
 
-uv checks supplied hashes when it downloads pinned build dependencies. Constraints without hashes,
-such as `wheel<1`, are also allowed. To require a hash for every build dependency, including
-transitive dependencies, set
-[`require-build-hashes = true`](../../reference/settings.md#require-build-hashes) under `[tool.uv]`
-or pass `--require-build-hashes`.
+uv هنگام دانلود dependencyهای build که pin شده‌اند، hashهای ارائه‌شده را بررسی می‌کند. قیدهای بدون hash،
+مانند `wheel<1`، نیز مجاز هستند. برای الزام hash برای هر dependency مربوط به build، از جمله
+dependencyهای transitive،
+[`require-build-hashes = true`](../../reference/settings.md#require-build-hashes) را زیر `[tool.uv]`
+تنظیم کنید یا `--require-build-hashes` را بدهید.
 
-You'll need to pin each build dependency to an exact version (or use a direct URL) and provide a
-hash. Hashes can also come from URL fragments in `build-system.requires`, but not from requirements
-returned by a build backend.
+باید هر dependency مربوط به build را به یک نسخهٔ دقیق ثابت کنید (یا از یک URL مستقیم استفاده کنید) و یک
+hash ارائه دهید. hashها همچنین می‌توانند از fragmentهای URL در `build-system.requires` بیایند، اما نه از requirementهایی که
+توسط یک build backend برگردانده می‌شوند.
 
-When build isolation is disabled, uv uses the installed build dependencies without checking their
-hashes. uv also does not recheck already-installed packages or previously built wheels. The bundled
-`uv_build` backend does not need a hash because it is part of the uv executable.
+هنگامی که build isolation غیرفعال است، uv از dependencyهای build نصب‌شده بدون بررسی hashهای آن‌ها استفاده می‌کند. uv همچنین packageهای از قبل نصب‌شده یا wheelهای ساخته‌شدهٔ پیشین را دوباره بررسی نمی‌کند. backend همراه `uv_build` به hash نیاز ندارد زیرا بخشی از فایل اجرایی uv است.
 
 !!! note
 
-    `--require-build-hashes` is experimental. Use `--preview-features build-dependency-hashes` to
-    suppress the warning.
+    `--require-build-hashes` آزمایشی است. برای سرکوب هشدار، از `--preview-features build-dependency-hashes` استفاده کنید.
 
-## Preventing publish to PyPI
+## جلوگیری از publish در PyPI {#preventing-publish-to-pypi}
 
-If you have internal packages that you do not want to be published, you can mark them as private:
+اگر packageهای داخلی دارید که نمی‌خواهید منتشر شوند، می‌توانید آن‌ها را به‌عنوان خصوصی علامت‌گذاری کنید:
 
 ```toml
 [project]
 classifiers = ["Private :: Do Not Upload"]
 ```
 
-This setting makes PyPI reject your uploaded package from publishing. It does not affect security or
-privacy settings on alternative registries.
+این تنظیم باعث می‌شود PyPI package بارگذاری‌شدهٔ شما را از انتشار رد کند. این تنظیم بر تنظیمات امنیتی یا
+حریم خصوصی در registryهای جایگزین تأثیری ندارد.
 
-We also recommend only generating [per-project PyPI API tokens](https://pypi.org/help/#apitoken):
-Without a PyPI token matching the project, it can't be accidentally published.
+همچنین توصیه می‌کنیم فقط [توکن‌های API مربوط به PyPI برای هر project](https://pypi.org/help/#apitoken) را تولید کنید:
+بدون یک توکن PyPI مطابق با project، نمی‌توان آن را به‌اشتباه منتشر کرد.

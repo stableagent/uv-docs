@@ -1,19 +1,20 @@
 ---
-title: Using uv in GitHub Actions
+title: استفاده از uv در GitHub Actions
 description:
-  A guide to using uv in GitHub Actions, including installation, setting up Python, installing
-  dependencies, and more.
+  راهنمای استفاده از uv در GitHub Actions، شامل نصب، راه‌اندازی Python، نصب dependencyها و موارد
+  دیگر.
 ---
 
-# Using uv in GitHub Actions
+# استفاده از uv در GitHub Actions {#using-uv-in-github-actions}
 
-## Installation
+## نصب {#installation}
 
-For use with GitHub Actions, we recommend the official
-[`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) action, which installs uv, adds it to
-PATH, (optionally) persists the cache, and more, with support for all uv-supported platforms.
+برای استفاده با GitHub Actions، action رسمی
+[`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) را توصیه می‌کنیم که uv را نصب
+می‌کند، آن را به PATH اضافه می‌کند، (به‌صورت اختیاری) cache را پایدار نگه می‌دارد و موارد دیگر، با
+پشتیبانی از همهٔ platformهای پشتیبانی‌شده توسط uv.
 
-To install the latest version of uv:
+برای نصب آخرین نسخهٔ uv:
 
 ```yaml title="example.yml" hl_lines="11 12"
 name: Example
@@ -30,7 +31,7 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
 ```
 
-It is considered best practice to pin to a specific uv version, e.g., with:
+بهترین روش این است که به یک نسخهٔ مشخص از uv پین کنید، مثلاً با:
 
 ```yaml title="example.yml" hl_lines="14 15"
 name: Example
@@ -50,9 +51,9 @@ jobs:
           version: "0.13.9"
 ```
 
-## Setting up Python
+## راه‌اندازی Python {#setting-up-python}
 
-Python can be installed with the `python install` command:
+می‌توان Python را با دستور `python install` نصب کرد:
 
 ```yaml title="example.yml" hl_lines="14 15"
 name: Example
@@ -72,14 +73,14 @@ jobs:
         run: uv python install
 ```
 
-This will respect the Python version pinned in the project.
+این دستور به نسخهٔ Python پین‌شده در project احترام می‌گذارد.
 
-Alternatively, the official GitHub `setup-python` action can be used. This can be faster, because
-GitHub caches the Python versions alongside the runner.
+به‌جای آن، می‌توان از action رسمی GitHub با نام `setup-python` استفاده کرد. این کار می‌تواند
+سریع‌تر باشد، زیرا GitHub نسخه‌های Python را در کنار runner در cache نگه می‌دارد.
 
-Set the
+گزینهٔ
 [`python-version-file`](https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#using-the-python-version-file-input)
-option to use the pinned version for the project:
+را تنظیم کنید تا از نسخهٔ پین‌شده برای project استفاده شود:
 
 ```yaml title="example.yml" hl_lines="14"
 name: Example
@@ -101,8 +102,8 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
 ```
 
-Or, specify the `pyproject.toml` file to ignore the pin and use the latest version compatible with
-the project's `requires-python` constraint:
+یا فایل `pyproject.toml` را مشخص کنید تا پین نادیده گرفته شود و از آخرین نسخهٔ سازگار با constraint
+مربوط به `requires-python` در project استفاده شود:
 
 ```yaml title="example.yml" hl_lines="14"
 name: Example
@@ -124,11 +125,11 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
 ```
 
-## Multiple Python versions
+## چند نسخهٔ Python {#multiple-python-versions}
 
-When using a matrix to test multiple Python versions, set the Python version using
-`astral-sh/setup-uv`, which will override the Python version specification in the `pyproject.toml`
-or `.python-version` files:
+هنگام استفاده از یک matrix برای تست چند نسخهٔ Python، نسخهٔ Python را با استفاده از
+`astral-sh/setup-uv` تنظیم کنید که مشخصهٔ نسخهٔ Python را در فایل‌های `pyproject.toml` یا
+`.python-version` بازنویسی می‌کند:
 
 ```yaml title="example.yml" hl_lines="17 18"
 jobs:
@@ -151,7 +152,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
 ```
 
-If not using the `setup-uv` action, you can set the `UV_PYTHON` environment variable:
+اگر از action مربوط به `setup-uv` استفاده نمی‌کنید، می‌توانید environment variable مربوط به
+`UV_PYTHON` را تنظیم کنید:
 
 ```yaml title="example.yml" hl_lines="12"
 jobs:
@@ -170,10 +172,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 ```
 
-## Syncing and running
+## Sync کردن و اجرا کردن {#syncing-and-running}
 
-Once uv and Python are installed, the project can be installed with `uv sync` and commands can be
-run in the environment with `uv run`:
+وقتی uv و Python نصب شدند، می‌توان project را با `uv sync` نصب کرد و دستورها را با `uv run` در
+environment اجرا کرد:
 
 ```yaml title="example.yml" hl_lines="15 17-22"
 name: Example
@@ -199,16 +201,16 @@ jobs:
 
 !!! tip
 
-    The
-    [`UV_PROJECT_ENVIRONMENT` setting](../../concepts/projects/config.md#project-environment-path) can
-    be used to install to the system Python environment instead of creating a virtual environment.
+    می‌توان از
+    [تنظیم `UV_PROJECT_ENVIRONMENT`](../../concepts/projects/config.md#project-environment-path)
+    برای نصب در system environment مربوط به Python به‌جای ساختن یک virtual environment استفاده کرد.
 
-## Caching
+## کش کردن {#caching}
 
-It may improve CI times to store uv's cache across workflow runs.
+ممکن است ذخیرهٔ cache مربوط به uv در اجراهای workflow، زمان CI را بهبود دهد.
 
-The [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) has built-in support for
-persisting the cache:
+action مربوط به [`astral-sh/setup-uv`](https://github.com/astral-sh/setup-uv) پشتیبانی داخلی برای
+پایدار نگه داشتن cache دارد:
 
 ```yaml title="example.yml"
 - name: Enable caching
@@ -217,7 +219,7 @@ persisting the cache:
     enable-cache: true
 ```
 
-Alternatively, you can manage the cache manually with the `actions/cache` action:
+به‌جای آن، می‌توانید cache را به‌صورت دستی با action مربوط به `actions/cache` مدیریت کنید:
 
 ```yaml title="example.yml"
 jobs:
@@ -244,21 +246,22 @@ jobs:
         run: uv cache prune --ci
 ```
 
-The `uv cache prune --ci` command is used to reduce the size of the cache and is optimized for CI.
-Its effect on performance is dependent on the packages being installed.
+دستور `uv cache prune --ci` برای کاهش اندازهٔ cache استفاده می‌شود و برای CI بهینه شده است. تأثیر
+آن بر عملکرد به packageهایی که نصب می‌شوند، بستگی دارد.
 
 !!! tip
 
-    If using `uv pip`, use `requirements.txt` instead of `uv.lock` in the cache key.
+    اگر از `uv pip` استفاده می‌کنید، به‌جای `uv.lock` از `requirements.txt` در کلید cache استفاده
+    کنید.
 
 !!! note
 
     [post-job-hook]: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/running-scripts-before-or-after-a-job
 
-    When using non-ephemeral, self-hosted runners the default cache directory can grow unbounded.
-    In this case, it may not be optimal to share the cache between jobs. Instead, move the cache
-    inside the GitHub Workspace and remove it once the job finishes using a
-    [Post Job Hook][post-job-hook].
+    هنگام استفاده از runnerهای self-hosted غیر موقت، پوشهٔ پیش‌فرض cache می‌تواند بدون حد رشد کند.
+    در این صورت، ممکن است به‌اشتراک‌گذاشتن cache بین jobها بهینه نباشد. به‌جای آن، cache را به داخل
+    GitHub Workspace منتقل کنید و پس از پایان job با استفاده از یک
+    [Post Job Hook][post-job-hook] آن را حذف کنید.
 
     ```yaml
     install_job:
@@ -267,23 +270,24 @@ Its effect on performance is dependent on the packages being installed.
         UV_CACHE_DIR: ${{ github.workspace }}/.cache/uv
     ```
 
-    Using a post job hook requires setting the `ACTIONS_RUNNER_HOOK_JOB_STARTED` environment
-    variable on the self-hosted runner to the path of a cleanup script such as the one shown below.
+    استفاده از post job hook نیازمند تنظیم environment variable مربوط به
+    `ACTIONS_RUNNER_HOOK_JOB_STARTED` روی runner مربوط به self-hosted، به مسیر یک script مربوط به
+    پاک‌سازی مانند script زیر است.
 
     ```sh title="clean-uv-cache.sh"
     #!/usr/bin/env sh
     uv cache clean
     ```
 
-## Using `uv pip`
+## استفاده از `uv pip` {#using-uv-pip}
 
-If using the `uv pip` interface instead of the uv project interface, uv requires a virtual
-environment by default. To allow installing packages into the system environment, use the `--system`
-flag on all `uv` invocations or set the `UV_SYSTEM_PYTHON` variable.
+اگر به‌جای interface مربوط به project در uv از رابط مربوط به `uv pip` استفاده می‌کنید، uv
+به‌طور پیش‌فرض به یک virtual environment نیاز دارد. برای اجازهٔ نصب packageها در system environment،
+فلگ `--system` را در همهٔ فراخوانی‌های `uv` به کار ببرید یا متغیر `UV_SYSTEM_PYTHON` را تنظیم کنید.
 
-The `UV_SYSTEM_PYTHON` variable can be defined at different scopes.
+متغیر `UV_SYSTEM_PYTHON` را می‌توان در دامنه‌های مختلف تعریف کرد.
 
-Opt-in for the entire workflow by defining it at the top level:
+با تعریف آن در سطح بالایی، برای کل workflow فعالش کنید:
 
 ```yaml title="example.yml"
 env:
@@ -292,7 +296,7 @@ env:
 jobs: ...
 ```
 
-Or, opt-in for a specific job in the workflow:
+یا برای یک job مشخص در workflow فعالش کنید:
 
 ```yaml title="example.yml"
 jobs:
@@ -302,7 +306,7 @@ jobs:
     ...
 ```
 
-Or, opt-in for a specific step in a job:
+یا برای یک step مشخص در یک job فعالش کنید:
 
 ```yaml title="example.yml"
 steps:
@@ -312,23 +316,23 @@ steps:
       UV_SYSTEM_PYTHON: 1
 ```
 
-To opt-out again, the `--no-system` flag can be used in any uv invocation.
+برای غیرفعال‌کردن دوبارهٔ آن، می‌توان در هر فراخوانی uv از فلگ `--no-system` استفاده کرد.
 
-## Private repos
+## مخزن‌های خصوصی {#private-repos}
 
-If your project has [dependencies](../../concepts/projects/dependencies.md#git) on private GitHub
-repositories, you will need to configure a [personal access token (PAT)][PAT] to allow uv to fetch
-them.
+اگر project شما [dependency](../../concepts/projects/dependencies.md#git)هایی روی مخزن‌های خصوصی
+GitHub دارد، باید یک [personal access token (PAT)][PAT] پیکربندی کنید تا uv بتواند آن‌ها را fetch
+کند.
 
-After creating a PAT that has read access to the private repositories, add it as a [repository
-secret].
+پس از ساختن یک PAT که دسترسی خواندن به مخزن‌های خصوصی را دارد، آن را به‌عنوان یک [repository
+secret] اضافه کنید.
 
-Then, you can use the [`gh`](https://cli.github.com/) CLI (which is installed in GitHub Actions
-runners by default) to configure a
-[credential helper for Git](../../concepts/authentication/git.md#git-credential-helpers) to use the
-PAT for queries to repositories hosted on `github.com`.
+سپس، می‌توانید از CLI مربوط به [`gh`](https://cli.github.com/) (که به‌طور پیش‌فرض در runnerهای
+GitHub Actions نصب شده است) برای پیکربندی یک
+[credential helper برای Git](../../concepts/authentication/git.md#git-credential-helpers) استفاده
+کنید تا از PAT برای درخواست‌ها به مخزن‌های میزبانی‌شده در `github.com` استفاده شود.
 
-For example, if you called your repository secret `MY_PAT`:
+برای مثال، اگر repository secret خود را `MY_PAT` نامیدید:
 
 ```yaml title="example.yml"
 steps:
@@ -343,24 +347,24 @@ steps:
 [repository secret]:
   https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository
 
-## Publishing to PyPI
+## منتشر کردن در PyPI {#publishing-to-pypi}
 
-uv can be used to build and publish your package to PyPI from GitHub Actions. We provide a
-standalone example alongside this guide in
-[astral-sh/trusted-publishing-examples](https://github.com/astral-sh/trusted-publishing-examples).
-The workflow uses [Trusted Publishing](https://docs.pypi.org/trusted-publishers/), so no credentials
-need to be configured.
+می‌توان از uv برای build و منتشر کردن package خود در PyPI از GitHub Actions استفاده کرد. ما یک مثال
+مستقل در کنار این راهنما در
+[astral-sh/trusted-publishing-examples](https://github.com/astral-sh/trusted-publishing-examples)
+ارائه می‌دهیم. این workflow از [Trusted Publishing](https://docs.pypi.org/trusted-publishers/)
+استفاده می‌کند، پس نیازی به پیکربندی credential نیست.
 
-In the example workflow, we use a script to test that the source distribution and the wheel are both
-functional and we didn't miss any files. This step is recommended, but optional.
+در workflow نمونه، از یک script برای تست اینکه source distribution و wheel هر دو کار می‌کنند و
+فایلی را جا نینداخته‌ایم، استفاده می‌کنیم. این مرحله توصیه می‌شود، اما اختیاری است.
 
 !!! important
 
-    This example workflow uses two separate jobs (`build` and `publish`) so that the publishing
-    step (which has access to a publishing credential via `id-token: write`) does not share its
-    permissions with the building step. This reduces the surface for supply chain attacks.
+    این workflow نمونه از دو job جداگانه (`build` و `publish`) استفاده می‌کند تا مرحلهٔ publish
+    (که از طریق `id-token: write` به یک publishing credential دسترسی دارد) مجوزهای خود را با مرحلهٔ
+    build به اشتراک نگذارد. این کار سطح حملهٔ مربوط به supply chain را کاهش می‌دهد.
 
-First, add a release workflow to your project:
+ابتدا، یک release workflow به project خود اضافه کنید:
 
 ```yaml title=".github/workflows/release.yml"
 name: "Publish release to PyPI"
@@ -431,23 +435,23 @@ jobs:
         run: uv publish
 ```
 
-Then, create the environment defined in the workflow in the GitHub repository under "Settings" ->
-"Environments".
+سپس، environment تعریف‌شده در workflow را در مخزن GitHub، در بخش «Settings» -> «Environments»
+ایجاد کنید.
 
-![GitHub settings dialog showing how to add the "pypi" environment under "Settings" -> "Environments"](../../assets/github-add-environment.png)
+![کادر محاوره‌ای تنظیمات GitHub که نشان می‌دهد چگونه environment مربوط به «pypi» را در بخش «Settings» -> «Environments» اضافه کنید](../../assets/github-add-environment.png)
 
-Add a [Trusted Publisher](https://docs.pypi.org/trusted-publishers/adding-a-publisher/) to your PyPI
-project in the project settings under "Publishing". Ensure that all fields match with your GitHub
-configuration.
+یک [Trusted Publisher](https://docs.pypi.org/trusted-publishers/adding-a-publisher/) به project
+مربوط به PyPI خود در تنظیمات project، در بخش «Publishing» اضافه کنید. مطمئن شوید همهٔ فیلدها با
+پیکربندی GitHub شما مطابقت دارند.
 
-![PyPI project publishing settings dialog showing how to set all fields for a trusted publisher configuration](../../assets/pypi-add-trusted-publisher.png)
+![کادر محاوره‌ای تنظیمات انتشار project مربوط به PyPI که نشان می‌دهد چگونه همهٔ فیلدها را برای یک پیکربندی trusted publisher تنظیم کنید](../../assets/pypi-add-trusted-publisher.png)
 
-After saving:
+پس از ذخیره:
 
-![PyPI project publishing settings dialog showing the configured trusted publishing settings](../../assets/pypi-with-trusted-publisher.png)
+![کادر محاوره‌ای تنظیمات انتشار project مربوط به PyPI که تنظیمات پیکربندی‌شدهٔ trusted publishing را نشان می‌دهد](../../assets/pypi-with-trusted-publisher.png)
 
-Finally, tag a release and push it. Make sure it starts with `v` to match the pattern in the
-workflow.
+در پایان، یک release را tag کنید و آن را push کنید. مطمئن شوید با `v` شروع می‌شود تا با الگوی
+موجود در workflow مطابقت داشته باشد.
 
 ```console
 $ git tag -a v0.1.0 -m v0.1.0

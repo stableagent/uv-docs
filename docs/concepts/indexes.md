@@ -1,14 +1,10 @@
-# Package indexes
+# ایندکس‌های package {#package-indexes}
 
-By default, uv uses the [Python Package Index (PyPI)](https://pypi.org) for dependency resolution
-and package installation. However, uv can be configured to use other package indexes, including
-private indexes, via the `[[tool.uv.index]]` configuration option (and `--index`, the analogous
-command-line option).
+به‌طور پیش‌فرض، uv برای resolution وابستگی‌ها و نصب package از [Python Package Index (PyPI)](https://pypi.org) استفاده می‌کند. با این حال، می‌توان uv را طوری پیکربندی کرد که از indexهای package دیگر، از جمله indexهای خصوصی، استفاده کند؛ این کار از طریق گزینهٔ پیکربندی `[[tool.uv.index]]` (و `--index`، گزینهٔ خط فرمان متناظر با آن) انجام می‌شود.
 
-## Defining an index
+## تعریف یک index {#defining-an-index}
 
-To include an additional index when resolving dependencies, add a `[[tool.uv.index]]` entry to your
-`pyproject.toml`:
+برای گنجاندن یک index اضافی هنگام resolution وابستگی‌ها، یک ورودی `[[tool.uv.index]]` به فایل `pyproject.toml` خود اضافه کنید:
 
 ```toml
 [[tool.uv.index]]
@@ -18,13 +14,9 @@ name = "pytorch"
 url = "https://download.pytorch.org/whl/cpu"
 ```
 
-Indexes are prioritized in the order in which they’re defined, such that the first index listed in
-the configuration file is the first index consulted when resolving dependencies, with indexes
-provided via the command line taking precedence over those in the configuration file.
+indexها به ترتیبی که تعریف شده‌اند اولویت‌بندی می‌شوند، به‌طوری که اولین index فهرست‌شده در فایل پیکربندی، اولین indexای است که هنگام resolution وابستگی‌ها مورد مراجعه قرار می‌گیرد و indexهایی که از طریق خط فرمان ارائه می‌شوند بر indexهای موجود در فایل پیکربندی اولویت دارند.
 
-By default, uv includes the Python Package Index (PyPI) as the "default" index, i.e., the index used
-when a package is not found on any other index. To exclude PyPI from the list of indexes, set
-`default = true` on another index entry (or use the `--default-index` command-line option):
+به‌طور پیش‌فرض، uv فهرست Python Package Index (PyPI) را به‌عنوان index «پیش‌فرض» شامل می‌شود، یعنی indexای که وقتی یک package در هیچ index دیگری پیدا نشد استفاده می‌شود. برای حذف PyPI از فهرست indexها، روی یک ورودی index دیگر `default = true` را تنظیم کنید (یا از گزینهٔ خط فرمان `--default-index` استفاده کنید):
 
 ```toml
 [[tool.uv.index]]
@@ -33,15 +25,11 @@ url = "https://download.pytorch.org/whl/cpu"
 default = true
 ```
 
-The default index is always treated as lowest priority, regardless of its position in the list of
-indexes.
+index پیش‌فرض همیشه کمترین اولویت را دارد، صرف‌نظر از موقعیت آن در فهرست indexها.
 
-Index names may only contain alphanumeric characters, dashes, underscores, and periods, and must be
-valid ASCII.
+نام‌های index فقط می‌توانند شامل کاراکترهای الفبایی-عددی، خط‌تیره، زیرخط و نقطه باشند و باید ASCII معتبر باشند.
 
-When providing an index on the command line (with `--index` or `--default-index`) or through an
-environment variable (`UV_INDEX` or `UV_DEFAULT_INDEX`), use its URL, a configured name, or the
-`<name>=<url>` syntax:
+هنگام ارائهٔ یک index در خط فرمان (با `--index` یا `--default-index`) یا از طریق یک environment variable (با `UV_INDEX` یا `UV_DEFAULT_INDEX`)، از URL آن، یک نام پیکربندی‌شده، یا سینتکس `<name>=<url>` استفاده کنید:
 
 ```shell
 # On the command line.
@@ -50,29 +38,23 @@ $ uv lock --index pytorch=https://download.pytorch.org/whl/cpu
 $ UV_INDEX=pytorch=https://download.pytorch.org/whl/cpu uv lock
 ```
 
-With `--preview-features index-by-name`, configured index names take precedence over matching paths.
+با `--preview-features index-by-name`، نام‌های index پیکربندی‌شده بر مسیرهای منطبق اولویت دارند.
 
-## Proxy indexes
+## ایندکس‌های proxy {#proxy-indexes}
 
 !!! note
 
-    Proxy indexes are in [preview](./preview.md) and may change in future releases.
-    Pass `--preview-features proxy-index` or set
-    `preview-features = ["proxy-index"]` in your uv configuration to silence the preview warning.
+    ایندکس‌های proxy در وضعیت [پیش‌نمایش](./preview.md) هستند و ممکن است در انتشارهای آینده تغییر کنند.
+    برای بی‌صدا کردن هشدار پیش‌نمایش، `--preview-features proxy-index` را پاس دهید یا
+    `preview-features = ["proxy-index"]` را در پیکربندی uv خود تنظیم کنید.
 
-Proxy indexes route package resolution and downloads through an alternative registry without
-changing the upstream index and package download URLs recorded in lockfiles.
+ایندکس‌های proxy، resolution و دانلود package را از طریق یک registry جایگزین هدایت می‌کنند، بدون اینکه index بالادستی و URLهای دانلود package ثبت‌شده در lockfileها را تغییر دهند.
 
-This is useful when a local policy requires some contributors to use a registry that excludes newly
-published packages, while others use the upstream index directly. Configuring the relationship
-between the proxy and upstream index lets both groups share a lockfile without changing its URLs.
+این کار زمانی مفید است که یک سیاست محلی از برخی مشارکت‌کنندگان بخواهد از یک registry استفاده کنند که packageهای تازه منتشرشده را حذف می‌کند، در حالی که دیگران مستقیماً از index بالادستی استفاده می‌کنند. پیکربندی رابطهٔ بین proxy و index بالادستی به هر دو گروه اجازه می‌دهد بدون تغییر URLهای آن، یک lockfile مشترک داشته باشند.
 
-To configure a proxy index, add a `[[tool.uv.proxy-index]]` entry with `proxy-for` set to the
-upstream index's name. The proxy's `url` tells uv where to look up packages, and its
-`artifact-base-url` tells uv where to download them. In `uv.toml`, use `[[proxy-index]]` instead.
+برای پیکربندی یک proxy index، یک ورودی `[[tool.uv.proxy-index]]` با مقدار `proxy-for` برابر با نام index بالادستی اضافه کنید. مقدار `url` مربوط به proxy به uv می‌گوید packageها را کجا جستجو کند و مقدار `artifact-base-url` آن به uv می‌گوید آن‌ها را از کجا دانلود کند. در فایل `uv.toml`، به‌جای آن از `[[proxy-index]]` استفاده کنید.
 
-To use a PyPI proxy across projects, add both entries to your user-level
-[`uv.toml`](./configuration-files.md):
+برای استفاده از یک proxy مربوط به PyPI در چند پروژه، هر دو ورودی را به فایل [`uv.toml`](./configuration-files.md) سطح کاربر خود اضافه کنید:
 
 ```toml title="uv.toml"
 [[index]]
@@ -89,18 +71,13 @@ proxy-for = "pypi"
 
 !!! note
 
-    PyPI's `artifact-base-url` defaults to `https://files.pythonhosted.org/packages/`.
+    مقدار پیش‌فرض `artifact-base-url` مربوط به PyPI برابر با `https://files.pythonhosted.org/packages/` است.
 
-When downloading a file recorded in `uv.lock`, uv rewrites its URL to use the proxy without looking
-it up in the proxy's package listing. Hiding the file from the listing does not block the download:
-the proxy must reject the download itself. uv can still reuse a cached copy.
+هنگام دانلود یک فایل ثبت‌شده در `uv.lock`، uv بدون اینکه آن را در فهرست package مربوط به proxy جستجو کند، URL آن را بازنویسی می‌کند تا از proxy استفاده شود. پنهان کردن فایل از فهرست، دانلود را مسدود نمی‌کند: خود proxy باید دانلود را رد کند. uv همچنان می‌تواند از یک نسخهٔ cacheشده استفاده کند.
 
-When installing from `pylock.toml`, uv can use the proxy only if `packages.index` identifies the
-upstream index for that package. Without this field, uv downloads directly from the recorded
-artifact URL. `uv pip compile --format pylock.toml` records the upstream URL in `packages.index`
-when it selects a file from a proxied index.
+هنگام نصب از `pylock.toml`، uv فقط در صورتی می‌تواند از proxy استفاده کند که فیلد `packages.index` index بالادستی مربوط به آن package را مشخص کند. بدون این فیلد، uv مستقیماً از URL ثبت‌شدهٔ artifact دانلود می‌کند. دستور `uv pip compile --format pylock.toml` هنگامی که یک فایل را از یک index دارای proxy انتخاب می‌کند، URL بالادستی را در `packages.index` ثبت می‌کند.
 
-To proxy a different index, give the upstream index a `name` and an `artifact-base-url`:
+برای proxy کردن یک index متفاوت، به index بالادستی یک `name` و یک `artifact-base-url` بدهید:
 
 ```toml title="uv.toml"
 [[index]]
@@ -115,28 +92,17 @@ artifact-base-url = "https://proxy.example.com/files/"
 proxy-for = "private"
 ```
 
-An index can have at most one proxy. Package files must have the same path after each index's
-`artifact-base-url`. For example, `https://downloads.example.com/packages/example/package.whl` maps
-to `https://proxy.example.com/files/example/package.whl`. Proxies that change package file paths are
-not supported. uv does not check the upstream path when locking, so a proxy that changes it can
-produce a lockfile that works only through the proxy. To check, try a frozen install without the
-proxy in a fresh environment with an empty cache.
+یک index حداکثر می‌تواند یک proxy داشته باشد. فایل‌های package باید پس از `artifact-base-url` هر index مسیر یکسانی داشته باشند. برای مثال، `https://downloads.example.com/packages/example/package.whl` به `https://proxy.example.com/files/example/package.whl` نگاشت می‌شود. proxyهایی که مسیر فایل‌های package را تغییر می‌دهند پشتیبانی نمی‌شوند. uv هنگام قفل کردن (locking) مسیر بالادستی را بررسی نمی‌کند، بنابراین یک proxy که آن را تغییر دهد می‌تواند یک lockfile تولید کند که فقط از طریق proxy کار می‌کند. برای بررسی، یک نصب frozen را بدون proxy در یک environment تازه با یک cache خالی امتحان کنید.
 
-uv requires a supported hash for each proxied artifact it writes to `uv.lock` or `pylock.toml`,
-including when exporting an existing `uv.lock`. `uv sync --frozen` can install a proxied artifact if
-the existing `uv.lock` has no hash for it, but verifies the hash when one is present.
+uv برای هر artifact دارای proxy که در `uv.lock` یا `pylock.toml` می‌نویسد، یک hash پشتیبانی‌شده لازم دارد، از جمله هنگام خروجی گرفتن از یک `uv.lock` موجود. دستور `uv sync --frozen` می‌تواند یک artifact دارای proxy را نصب کند اگر `uv.lock` موجود برای آن hash نداشته باشد، اما وقتی hash وجود داشته باشد، آن را اعتبارسنجی می‌کند.
 
-With the `wheel-variants` preview enabled, uv fetches `*-variants.json` metadata from the URL
-advertised by the proxy. The `artifact-base-url` mapping does not apply to this metadata.
+با فعال بودن پیش‌نمایش `wheel-variants`، uv فرادادهٔ `*-variants.json` را از URL تبلیغ‌شده توسط proxy دریافت می‌کند. نگاشت `artifact-base-url` برای این فراداده اعمال نمی‌شود.
 
-If artifact downloads require authentication on a different host, configure the credentials on
-`artifact-base-url`.
+اگر دانلودهای artifact به احراز هویت در یک هاست متفاوت نیاز دارند، credentialها را روی `artifact-base-url` پیکربندی کنید.
 
-## Pinning a package to an index
+## پین کردن یک package به یک index {#pinning-a-package-to-an-index}
 
-A package can be pinned to a specific index by specifying the index in its `tool.uv.sources` entry.
-To pin a package to a proxied index, use the upstream index's name. For example, to ensure that
-`torch` is _always_ installed from the `pytorch` index, add the following to your `pyproject.toml`:
+می‌توان یک package را با مشخص کردن index در ورودی `tool.uv.sources` آن، به یک index مشخص پین کرد. برای پین کردن یک package به یک index دارای proxy، از نام index بالادستی استفاده کنید. برای مثال، برای اطمینان از اینکه `torch` _همیشه_ از index مربوط به `pytorch` نصب می‌شود، موارد زیر را به فایل `pyproject.toml` خود اضافه کنید:
 
 ```toml
 [tool.uv.sources]
@@ -147,8 +113,7 @@ name = "pytorch"
 url = "https://download.pytorch.org/whl/cpu"
 ```
 
-Similarly, to pull from a different index based on the platform, you can provide a list of sources
-disambiguated by environment markers:
+به همین ترتیب، برای دریافت از یک index متفاوت بر اساس platform، می‌توانید فهرستی از sourceها را ارائه دهید که با environment markerها از هم متمایز شده‌اند:
 
 ```toml title="pyproject.toml"
 [project]
@@ -169,9 +134,7 @@ name = "pytorch-cu130"
 url = "https://download.pytorch.org/whl/cu130"
 ```
 
-An index can be marked as `explicit = true` to prevent packages from being installed from that index
-unless explicitly pinned to it. For example, to ensure that `torch` is installed from the `pytorch`
-index, but all other packages are installed from PyPI, add the following to your `pyproject.toml`:
+می‌توان یک index را با `explicit = true` علامت‌گذاری کرد تا از نصب packageها از آن index جلوگیری شود، مگر اینکه صراحتاً به آن پین شده باشند. برای مثال، برای اطمینان از اینکه `torch` از index مربوط به `pytorch` نصب می‌شود اما همهٔ packageهای دیگر از PyPI نصب می‌شوند، موارد زیر را به فایل `pyproject.toml` خود اضافه کنید:
 
 ```toml
 [tool.uv.sources]
@@ -183,59 +146,41 @@ url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 ```
 
-Named indexes referenced via `tool.uv.sources` must be defined within the project's `pyproject.toml`
-file; indexes provided via the command-line, environment variables, or user-level configuration will
-not be recognized.
+indexهای نام‌دار که از طریق `tool.uv.sources` ارجاع داده می‌شوند باید در فایل `pyproject.toml` پروژه تعریف شده باشند؛ indexهایی که از طریق خط فرمان، environment variableها یا پیکربندی سطح کاربر ارائه می‌شوند شناخته نمی‌شوند.
 
-If an index is marked as both `default = true` and `explicit = true`, it will be treated as an
-explicit index (i.e., only usable via `tool.uv.sources`) while also removing PyPI as the default
-index.
+اگر یک index هم با `default = true` و هم با `explicit = true` علامت‌گذاری شود، به‌عنوان یک index صریح در نظر گرفته می‌شود (یعنی فقط از طریق `tool.uv.sources` قابل استفاده است) و در عین حال PyPI را به‌عنوان index پیش‌فرض حذف می‌کند.
 
-## Searching across multiple indexes
+## جستجو در چند index {#searching-across-multiple-indexes}
 
-By default, uv will stop at the first index on which a given package is available, and limit
-resolutions to those present on that first index (`first-index`).
+به‌طور پیش‌فرض، uv در اولین indexای که یک package داده‌شده در آن موجود است توقف می‌کند و resolutionها را به موارد موجود در همان index اول محدود می‌کند (`first-index`).
 
-For example, if an internal index is specified via `[[tool.uv.index]]`, uv's behavior is such that
-if a package exists on that internal index, it will _always_ be installed from that internal index,
-and never from PyPI. The intent is to prevent "dependency confusion" attacks, in which an attacker
-publishes a malicious package on PyPI with the same name as an internal package, thus causing the
-malicious package to be installed instead of the internal package. See, for example,
-[the `torchtriton` attack](https://pytorch.org/blog/compromised-nightly-dependency/) from
-December 2022.
+برای مثال، اگر یک index داخلی از طریق `[[tool.uv.index]]` مشخص شود، رفتار uv به‌گونه‌ای است که اگر یک package در آن index داخلی وجود داشته باشد، _همیشه_ از همان index داخلی نصب می‌شود و هرگز از PyPI نصب نمی‌شود. هدف این است که از حملات «dependency confusion» جلوگیری شود، حملاتی که در آن‌ها یک مهاجم یک package مخرب را با همان نام یک package داخلی در PyPI منتشر می‌کند و در نتیجه باعث می‌شود package مخرب به‌جای package داخلی نصب شود. برای مثال، به [حملهٔ `torchtriton`](https://pytorch.org/blog/compromised-nightly-dependency/) از دسامبر ۲۰۲۲ مراجعه کنید.
 
-To opt in to alternate index behaviors, use the `--index-strategy` command-line option, or the
-`UV_INDEX_STRATEGY` environment variable, which supports the following values:
+برای انتخاب رفتارهای جایگزین index، از گزینهٔ خط فرمان `--index-strategy` یا environment variable مربوط به `UV_INDEX_STRATEGY` استفاده کنید که مقادیر زیر را پشتیبانی می‌کند:
 
-- `first-index` (default): Search for each package across all indexes, limiting the candidate
-  versions to those present in the first index that contains the package.
-- `unsafe-first-match`: Search for each package across all indexes, but prefer the first index with
-  a compatible version, even if newer versions are available on other indexes.
-- `unsafe-best-match`: Search for each package across all indexes, and select the best version from
-  the combined set of candidate versions.
+- `first-index` (پیش‌فرض): هر package را در همهٔ indexها جستجو کنید و نسخه‌های نامزد را به موارد موجود در اولین indexای که شامل package است محدود کنید.
+- `unsafe-first-match`: هر package را در همهٔ indexها جستجو کنید، اما اولین index با یک نسخهٔ سازگار را ترجیح دهید، حتی اگر نسخه‌های جدیدتری در indexهای دیگر موجود باشند.
+- `unsafe-best-match`: هر package را در همهٔ indexها جستجو کنید و بهترین نسخه را از مجموعهٔ ترکیبی نسخه‌های نامزد انتخاب کنید.
 
-While `unsafe-best-match` is the closest to pip's behavior, it exposes users to the risk of
-"dependency confusion" attacks.
+با اینکه `unsafe-best-match` نزدیک‌ترین رفتار به رفتار pip است، کاربران را در معرض خطر حملات «dependency confusion» قرار می‌دهد.
 
-## Authentication
+## احراز هویت {#authentication}
 
-Most private package indexes require authentication to access packages, typically via a username and
-password (or access token).
+بیشتر indexهای خصوصی package برای دسترسی به packageها به احراز هویت نیاز دارند، معمولاً از طریق نام کاربری و رمز عبور (یا توکن دسترسی).
 
 !!! tip
 
-    See the dedicated guides for authenticating with specific private index providers:
+    برای احراز هویت با ارائه‌دهنده‌های خاص index خصوصی، به راهنماهای اختصاصی مراجعه کنید:
     [Azure Artifacts](../guides/integration/azure.md),
     [Google Artifact Registry](../guides/integration/google.md),
-    [AWS CodeArtifact](../guides/integration/aws.md), and
+    [AWS CodeArtifact](../guides/integration/aws.md) و
     [JFrog Artifactory](../guides/integration/jfrog.md).
 
-### Providing credentials directly
+### ارائهٔ مستقیم credentialها {#providing-credentials-directly}
 
-Credentials can be provided directly via environment variables or by embedding them in the URL.
+می‌توان credentialها را مستقیماً از طریق environment variableها یا با جاسازی آن‌ها در URL ارائه داد.
 
-For example, given an index named `internal-proxy` that requires a username (`public`) and password
-(`koala`), define the index (without credentials) in your `pyproject.toml`:
+برای مثال، با فرض یک index با نام `internal-proxy` که به نام کاربری (`public`) و رمز عبور (`koala`) نیاز دارد، index را (بدون credential) در فایل `pyproject.toml` خود تعریف کنید:
 
 ```toml
 [[tool.uv.index]]
@@ -243,19 +188,18 @@ name = "internal-proxy"
 url = "https://example.com/simple"
 ```
 
-From there, you can set the `UV_INDEX_INTERNAL_PROXY_USERNAME` and
-`UV_INDEX_INTERNAL_PROXY_PASSWORD` environment variables, where `INTERNAL_PROXY` is the uppercase
-version of the index name, with non-alphanumeric characters replaced by underscores:
+از آنجا می‌توانید environment variableهای `UV_INDEX_INTERNAL_PROXY_USERNAME` و
+`UV_INDEX_INTERNAL_PROXY_PASSWORD` را تنظیم کنید، که در آن‌ها `INTERNAL_PROXY` نسخهٔ بزرگ‌شدهٔ
+نام index است و کاراکترهای غیرالفبایی-عددی با زیرخط جایگزین شده‌اند:
 
 ```sh
 export UV_INDEX_INTERNAL_PROXY_USERNAME=public
 export UV_INDEX_INTERNAL_PROXY_PASSWORD=koala
 ```
 
-By providing credentials via environment variables, you can avoid storing sensitive information in
-the plaintext `pyproject.toml` file.
+با ارائهٔ credentialها از طریق environment variableها، می‌توانید از ذخیرهٔ اطلاعات حساس در فایل متنی سادهٔ `pyproject.toml` جلوگیری کنید.
 
-Alternatively, credentials can be embedded directly in the index definition:
+به‌عنوان جایگزین، می‌توان credentialها را مستقیماً در تعریف index جاسازی کرد:
 
 ```toml
 [[tool.uv.index]]
@@ -263,26 +207,19 @@ name = "internal"
 url = "https://public:koala@pypi-proxy.corp.dev/simple"
 ```
 
-For security purposes, credentials are _never_ stored in the `uv.lock` file; as such, uv _must_ have
-access to the authenticated URL at installation time.
+به دلایل امنیتی، credentialها _هرگز_ در فایل `uv.lock` ذخیره نمی‌شوند؛ به همین دلیل، uv در زمان نصب _باید_ به URL احراز هویت‌شده دسترسی داشته باشد.
 
-### Using credential providers
+### استفاده از ارائه‌دهنده‌های credential {#using-credential-providers}
 
-In addition to providing credentials directly, uv supports discovery of credentials from netrc and
-keyring. See the [HTTP authentication](./authentication/http.md) documentation for details on
-setting up specific credential providers.
+علاوه بر ارائهٔ مستقیم credentialها، uv از کشف credentialها از netrc و keyring پشتیبانی می‌کند. برای جزئیات دربارهٔ راه‌اندازی ارائه‌دهنده‌های خاص credential، به مستندات [احراز هویت HTTP](./authentication/http.md) مراجعه کنید.
 
-By default, uv will attempt an unauthenticated request before querying providers. If the request
-fails, uv will search for credentials. If credentials are found, an authenticated request will be
-attempted.
+به‌طور پیش‌فرض، uv پیش از پرس‌وجو از ارائه‌دهنده‌ها، یک درخواست بدون احراز هویت را امتحان می‌کند. اگر درخواست ناموفق باشد، uv به دنبال credentialها می‌گردد. اگر credentialها پیدا شوند، یک درخواست احراز هویت‌شده امتحان می‌شود.
 
 !!! note
 
-    If a username is set, uv will search for credentials before making an unauthenticated request.
+    اگر نام کاربری تنظیم شده باشد، uv پیش از ارسال یک درخواست بدون احراز هویت به دنبال credentialها می‌گردد.
 
-Some indexes (e.g., GitLab) will forward unauthenticated requests to a public index, like PyPI —
-which means that uv will not search for credentials. This behavior can be changed per-index, using
-the `authenticate` setting. For example, to always search for credentials:
+برخی indexها (مثلاً GitLab) درخواست‌های بدون احراز هویت را به یک index عمومی، مانند PyPI، هدایت می‌کنند — به این معنی که uv به دنبال credentialها نمی‌گردد. می‌توان این رفتار را برای هر index با استفاده از تنظیم `authenticate` تغییر داد. برای مثال، برای اینکه همیشه به دنبال credentialها بگردد:
 
 ```toml hl_lines="4"
 [[tool.uv.index]]
@@ -291,22 +228,15 @@ url = "https://example.com/simple"
 authenticate = "always"
 ```
 
-When `authenticate` is set to `always`, uv will eagerly search for credentials and error if
-credentials cannot be found.
+وقتی `authenticate` روی `always` تنظیم شود، uv مشتاقانه به دنبال credentialها می‌گردد و اگر credentialها پیدا نشوند خطا می‌دهد.
 
-### Ignoring error codes
+### نادیده گرفتن کدهای خطا {#ignoring-error-codes}
 
-When using the [first-index strategy](#searching-across-multiple-indexes), uv will stop searching
-across indexes if an HTTP 401 Unauthorized or HTTP 403 Forbidden status code is encountered. The one
-exception is that uv will ignore 403s when searching the `pytorch` index (since this index returns a
-403 when a package is not present).
+هنگام استفاده از [استراتژی first-index](#searching-across-multiple-indexes)، اگر کد وضعیت HTTP 401 Unauthorized یا HTTP 403 Forbidden دریافت شود، uv جستجو در indexها را متوقف می‌کند. تنها استثنا این است که uv هنگام جستجو در index مربوط به `pytorch` کدهای 403 را نادیده می‌گیرد (زیرا این index وقتی یک package وجود ندارد، کد 403 برمی‌گرداند).
 
-By default, uv will also stop resolution if an HTTP error is encountered when fetching distribution
-metadata or an archive from an index. Ignoring that error marks the affected package version as
-unavailable, allowing the resolver to try another version.
+به‌طور پیش‌فرض، uv در صورتی که هنگام دریافت metadata مربوط به distribution یا یک آرشیو از یک index با خطای HTTP مواجه شود، resolution را هم متوقف می‌کند. نادیده گرفتن آن خطا، نسخهٔ package آسیب‌دیده را به‌عنوان ناموجود علامت‌گذاری می‌کند و به resolver اجازه می‌دهد نسخهٔ دیگری را امتحان کند.
 
-To configure which error codes are ignored for an index, use the `ignore-error-codes` setting. For
-example, to ignore 403s (but not 401s) for a private index:
+برای پیکربندی اینکه کدام کدهای خطا برای یک index نادیده گرفته شوند، از تنظیم `ignore-error-codes` استفاده کنید. برای مثال، برای نادیده گرفتن کدهای 403 (اما نه 401) برای یک index خصوصی:
 
 ```toml
 [[tool.uv.index]]
@@ -316,12 +246,11 @@ authenticate = "always"
 ignore-error-codes = [403]
 ```
 
-uv will always continue searching across indexes when it encounters a `404 Not Found`. This cannot
-be overridden.
+uv وقتی با خطای `404 Not Found` مواجه می‌شود، همیشه به جستجو در indexها ادامه می‌دهد. نمی‌توان این رفتار را تغییر داد.
 
-### Disabling authentication
+### غیرفعال کردن احراز هویت {#disabling-authentication}
 
-To prevent leaking credentials, authentication can be disabled for an index:
+برای جلوگیری از نشت credentialها، می‌توان احراز هویت را برای یک index غیرفعال کرد:
 
 ```toml hl_lines="4"
 [[tool.uv.index]]
@@ -330,17 +259,13 @@ url = "https://example.com/simple"
 authenticate = "never"
 ```
 
-When `authenticate` is set to `never`, uv will never search for credentials for the given index and
-will error if credentials are provided directly.
+وقتی `authenticate` روی `never` تنظیم شود، uv هرگز برای index داده‌شده به دنبال credentialها نمی‌گردد و اگر credentialها مستقیماً ارائه شوند، خطا می‌دهد.
 
-### Customizing cache control headers
+### سفارشی‌سازی هدرهای کنترل cache {#customizing-cache-control-headers}
 
-By default, uv will respect the cache control headers provided by the index. For example, PyPI
-serves package metadata with a `max-age=600` header, thereby allowing uv to cache package metadata
-for 10 minutes; and wheels and source distributions with a `max-age=365000000, immutable` header,
-thereby allowing uv to cache artifacts indefinitely.
+به‌طور پیش‌فرض، uv به هدرهای کنترل cache ارائه‌شده توسط index احترام می‌گذارد. برای مثال، PyPI فرادادهٔ package را با هدر `max-age=600` ارائه می‌دهد و به این ترتیب به uv اجازه می‌دهد فرادادهٔ package را به مدت ۱۰ دقیقه cache کند؛ و wheelها و source distributionها را با هدر `max-age=365000000, immutable` ارائه می‌دهد و به این ترتیب به uv اجازه می‌دهد artifactها را برای مدت نامحدود cache کند.
 
-To override the cache control headers for an index, use the `cache-control` setting:
+برای بازنویسی هدرهای کنترل cache برای یک index، از تنظیم `cache-control` استفاده کنید:
 
 ```toml
 [[tool.uv.index]]
@@ -349,14 +274,14 @@ url = "https://example.com/simple"
 cache-control = { api = "max-age=600", files = "max-age=365000000, immutable" }
 ```
 
-The `cache-control` setting accepts an object with two optional keys:
+تنظیم `cache-control` یک object با دو کلید اختیاری می‌پذیرد:
 
-- `api`: Controls caching for Simple API requests (package metadata).
-- `files`: Controls caching for artifact downloads (wheels and source distributions).
+- `api`: کش کردن درخواست‌های Simple API (فرادادهٔ package) را کنترل می‌کند.
+- `files`: کش کردن دانلودهای artifact (wheelها و source distributionها) را کنترل می‌کند.
 
-The values for these keys are strings that follow the
+مقادیر این کلیدها رشته‌هایی هستند که از سینتکس
 [HTTP Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
-syntax. For example, to force uv to always revalidate package metadata, set `api = "no-cache"`:
+پیروی می‌کنند. برای مثال، برای اینکه uv همیشه فرادادهٔ package را دوباره اعتبارسنجی کند، `api = "no-cache"` را تنظیم کنید:
 
 ```toml
 [[tool.uv.index]]
@@ -365,16 +290,11 @@ url = "https://example.com/simple"
 cache-control = { api = "no-cache" }
 ```
 
-This setting is most commonly used to override the default cache control headers for private indexes
-that otherwise disable caching, often unintentionally. We typically recommend following PyPI's
-approach to caching headers, i.e., setting `api = "max-age=600"` and
-`files = "max-age=365000000, immutable"`.
+این تنظیم بیشتر برای بازنویسی هدرهای پیش‌فرض کنترل cache برای indexهای خصوصی استفاده می‌شود که در غیر این صورت کش کردن را غیرفعال می‌کنند، اغلب به‌صورت ناخواسته. ما معمولاً توصیه می‌کنیم از رویکرد PyPI برای هدرهای کش پیروی کنید، یعنی تنظیم `api = "max-age=600"` و `files = "max-age=365000000, immutable"`.
 
-### Requiring a hash algorithm
+### الزام یک الگوریتم hash {#requiring-a-hash-algorithm}
 
-When an index advertises multiple hashes for a distribution, uv selects a single hash to record in
-the lockfile. To require a specific algorithm for distributions resolved from an index, use the
-`hash-algorithm` setting:
+وقتی یک index چند hash برای یک distribution تبلیغ می‌کند، uv یک hash واحد را برای ثبت در lockfile انتخاب می‌کند. برای الزام یک الگوریتم مشخص برای distributionهایی که از یک index resolve می‌شوند، از تنظیم `hash-algorithm` استفاده کنید:
 
 ```toml
 [tool.uv]
@@ -386,13 +306,11 @@ url = "https://private-index.com/simple"
 hash-algorithm = "sha256"
 ```
 
-If a locked distribution does not advertise the required algorithm, uv will fail instead of falling
-back to another hash algorithm.
+اگر یک distribution قفل‌شده الگوریتم موردنیاز را تبلیغ نکند، uv به‌جای بازگشت به یک الگوریتم hash دیگر، با خطا مواجه می‌شود.
 
-### Configuring `exclude-newer` for an index
+### پیکربندی `exclude-newer` برای یک index {#configuring-exclude-newer-for-an-index}
 
-If you're using [`exclude-newer`](./resolution.md#reproducible-resolutions), you can configure a
-different cutoff for a specific index:
+اگر از [`exclude-newer`](./resolution.md#reproducible-resolutions) استفاده می‌کنید، می‌توانید یک حد زمانی (cutoff) متفاوت برای یک index مشخص پیکربندی کنید:
 
 ```toml
 [[tool.uv.index]]
@@ -401,8 +319,7 @@ url = "https://internal.example.com/simple"
 exclude-newer = "7 days"
 ```
 
-Index-specific values only affect packages served from that index. You can override the cutoff for
-individual packages on that index with `exclude-newer-package`:
+مقادیر خاص index فقط بر packageهایی که از آن index ارائه می‌شوند تأثیر می‌گذارند. می‌توانید حد زمانی را برای packageهای منفرد در آن index با `exclude-newer-package` بازنویسی کنید:
 
 ```toml
 [[tool.uv.index]]
@@ -412,11 +329,9 @@ exclude-newer = "7 days"
 exclude-newer-package = { example = false }
 ```
 
-Package-specific overrides in `[tool.uv.exclude-newer-package]` or on the command line take
-precedence over index-specific package overrides.
+بازنویسی‌های خاص package در `[tool.uv.exclude-newer-package]` یا در خط فرمان بر بازنویسی‌های خاص package مربوط به index اولویت دارند.
 
-If an index does not provide `upload-time` metadata, you can disable the cutoff for that index
-entirely:
+اگر یک index فرادادهٔ `upload-time` ارائه ندهد، می‌توانید حد زمانی را برای آن index کاملاً غیرفعال کنید:
 
 ```toml
 [[tool.uv.index]]
@@ -425,14 +340,11 @@ url = "https://internal.example.com/simple"
 exclude-newer = false
 ```
 
-## "Flat" indexes
+## ایندکس‌های «flat» {#flat-indexes}
 
-By default, `[[tool.uv.index]]` entries are assumed to be PyPI-style registries that implement the
-[PEP 503](https://peps.python.org/pep-0503/) Simple Repository API. However, uv also supports "flat"
-indexes, which are local directories or HTML pages that contain flat lists of wheels and source
-distributions. In pip, such indexes are specified using the `--find-links` option.
+به‌طور پیش‌فرض، فرض می‌شود ورودی‌های `[[tool.uv.index]]` رجیستری‌هایی به سبک PyPI هستند که [PEP 503](https://peps.python.org/pep-0503/) Simple Repository API را پیاده‌سازی می‌کنند. با این حال، uv از indexهای «flat» هم پشتیبانی می‌کند، که پوشه‌های محلی یا صفحات HTML هستند و فهرست‌های تخت از wheelها و source distributionها را در خود دارند. در pip، چنین indexهایی با استفاده از گزینهٔ `--find-links` مشخص می‌شوند.
 
-To define a flat index in your `pyproject.toml`, use the `format = "flat"` option:
+برای تعریف یک flat index در فایل `pyproject.toml` خود، از گزینهٔ `format = "flat"` استفاده کنید:
 
 ```toml
 [[tool.uv.index]]
@@ -441,24 +353,15 @@ url = "/path/to/directory"
 format = "flat"
 ```
 
-Flat indexes support the same feature set as Simple Repository API indexes (e.g.,
-`explicit = true`); you can also pin a package to a flat index using `tool.uv.sources`.
+ایندکس‌های flat از همان مجموعهٔ ویژگی indexهای Simple Repository API پشتیبانی می‌کنند (مثلاً `explicit = true`)؛ همچنین می‌توانید با استفاده از `tool.uv.sources` یک package را به یک flat index پین کنید.
 
-## `--index-url` and `--extra-index-url`
+## `--index-url` و `--extra-index-url` {#index-url-and-extra-index-url}
 
-In addition to the `[[tool.uv.index]]` configuration option, uv supports pip-style `--index-url` and
-`--extra-index-url` command-line options for compatibility, where `--index-url` defines the default
-index and `--extra-index-url` defines additional indexes.
+علاوه بر گزینهٔ پیکربندی `[[tool.uv.index]]`، uv برای سازگاری از گزینه‌های خط فرمان `--index-url` و `--extra-index-url` به سبک pip پشتیبانی می‌کند، که در آن‌ها `--index-url` index پیش‌فرض را تعریف می‌کند و `--extra-index-url` indexهای اضافی را تعریف می‌کند.
 
-These options can be used in conjunction with the `[[tool.uv.index]]` configuration option, and
-follow the same prioritization rules:
+می‌توان این گزینه‌ها را در ترکیب با گزینهٔ پیکربندی `[[tool.uv.index]]` استفاده کرد و آن‌ها از همان قواعد اولویت‌بندی پیروی می‌کنند:
 
-- The default index is always treated as lowest priority, whether defined via the legacy
-  `--index-url` argument, the recommended `--default-index` argument, or a `[[tool.uv.index]]` entry
-  with `default = true`.
-- Indexes are consulted in the order in which they’re defined, either via the legacy
-  `--extra-index-url` argument, the recommended `--index` argument, or `[[tool.uv.index]]` entries.
+- index پیش‌فرض همیشه کمترین اولویت را دارد، چه از طریق آرگومان قدیمی `--index-url` تعریف شده باشد، چه از طریق آرگومان توصیه‌شدهٔ `--default-index`، یا از طریق یک ورودی `[[tool.uv.index]]` با `default = true`.
+- indexها به ترتیبی که تعریف شده‌اند مورد مراجعه قرار می‌گیرند، چه از طریق آرگومان قدیمی `--extra-index-url`، چه از طریق آرگومان توصیه‌شدهٔ `--index`، یا از طریق ورودی‌های `[[tool.uv.index]]`.
 
-In effect, `--index-url` and `--extra-index-url` can be thought of as unnamed `[[tool.uv.index]]`
-entries, with `default = true` enabled for the former. In that context, `--index-url` maps to
-`--default-index`, and `--extra-index-url` maps to `--index`.
+در عمل، می‌توان `--index-url` و `--extra-index-url` را ورودی‌های بی‌نام `[[tool.uv.index]]` در نظر گرفت، که برای اولی `default = true` فعال است. در این زمینه، `--index-url` به `--default-index` نگاشت می‌شود و `--extra-index-url` به `--index` نگاشت می‌شود.

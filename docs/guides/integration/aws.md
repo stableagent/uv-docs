@@ -1,19 +1,20 @@
 ---
 title: AWS CodeArtifact
-description: Using uv with AWS CodeArtifact for installing and publishing Python packages.
+description: استفاده از uv با AWS CodeArtifact برای نصب و منتشر کردن packageهای Python.
 ---
 
-# AWS CodeArtifact
+# AWS CodeArtifact {#aws-codeartifact}
 
-uv can install packages from
-[AWS CodeArtifact](https://docs.aws.amazon.com/codeartifact/latest/ug/using-python.html), either by
-using an access token, or using the [`keyring`](https://github.com/jaraco/keyring) package.
+uv می‌تواند packageها را از
+[AWS CodeArtifact](https://docs.aws.amazon.com/codeartifact/latest/ug/using-python.html) نصب کند،
+چه با استفاده از یک access token و چه با استفاده از package مربوط به
+[`keyring`](https://github.com/jaraco/keyring).
 
 !!! note
 
-    This guide assumes that [`awscli`](https://aws.amazon.com/cli/) is installed and authenticated.
+    این راهنما فرض می‌کند که [`awscli`](https://aws.amazon.com/cli/) نصب شده و احراز هویت شده است.
 
-The index can be declared like so:
+index را می‌توان به این شکل تعریف کرد:
 
 ```toml title="pyproject.toml"
 [[tool.uv.index]]
@@ -21,12 +22,13 @@ name = "private-registry"
 url = "https://<DOMAIN>-<ACCOUNT_ID>.d.codeartifact.<REGION>.amazonaws.com/pypi/<REPOSITORY>/simple/"
 ```
 
-## Authenticate with an AWS access token
+## احراز هویت با access token مربوط به AWS {#authenticate-with-an-aws-access-token}
 
-Credentials can be provided via the "Basic" HTTP authentication scheme. Include the access token in
-the password field of the URL. The username must be `aws`, otherwise authentication will fail.
+می‌توان credentialها را از طریق طرح احراز هویت «Basic» در HTTP ارائه کرد. access token
+را در فیلد password مربوط به URL قرار دهید. username باید `aws` باشد، در غیر این صورت احراز هویت
+ناموفق خواهد بود.
 
-Generate a token with `awscli`:
+با `awscli` یک token تولید کنید:
 
 ```bash
 export AWS_CODEARTIFACT_TOKEN="$(
@@ -40,10 +42,10 @@ export AWS_CODEARTIFACT_TOKEN="$(
 
 !!! note
 
-    This is a basic example; you might need to pass extra parameters to generate the token, such as
+    این یک مثال ساده است؛ ممکن است لازم باشد برای تولید token پارامترهای بیشتری بدهید، مثل
     `--region`.
 
-Then set credentials for the index with:
+سپس credentialهای مربوط به index را با این دستور تنظیم کنید:
 
 ```bash
 export UV_INDEX_PRIVATE_REGISTRY_USERNAME=aws
@@ -52,23 +54,24 @@ export UV_INDEX_PRIVATE_REGISTRY_PASSWORD="$AWS_CODEARTIFACT_TOKEN"
 
 !!! note
 
-    `PRIVATE_REGISTRY` should match the name of the index defined in your `pyproject.toml`.
+    عبارت `PRIVATE_REGISTRY` باید با نام index تعریف‌شده در `pyproject.toml` شما مطابقت داشته باشد.
 
-## Authenticate with `keyring` and `keyrings.codeartifact`
+## احراز هویت با `keyring` و `keyrings.codeartifact` {#authenticate-with-keyring-and-keyringscodeartifact}
 
-You can also authenticate to CodeArtifact using the [`keyring`](https://github.com/jaraco/keyring)
-package with the [`keyrings.codeartifact` plugin](https://github.com/jmkeyes/keyrings.codeartifact).
-Because these two packages are required to authenticate to CodeArtifact, they must be pre-installed
-from a source other than CodeArtifact.
+همچنین می‌توانید با استفاده از package مربوط به
+[`keyring`](https://github.com/jaraco/keyring) و
+[افزونهٔ مربوط به `keyrings.codeartifact`](https://github.com/jmkeyes/keyrings.codeartifact) به
+CodeArtifact احراز هویت کنید. از آنجا که این دو package برای احراز هویت به CodeArtifact لازم‌اند،
+باید از منبعی غیر از CodeArtifact از پیش نصب شده باشند.
 
-The `keyrings.codeartifact` plugin wraps [boto3](https://pypi.org/project/boto3/) to generate
-short-lived access tokens, securely store them in system keyring, and refresh them when they are
-expired.
+افزونهٔ مربوط به `keyrings.codeartifact`، [boto3](https://pypi.org/project/boto3/) را در بر می‌گیرد
+تا access tokenهای کوتاه‌مدت تولید کند، آن‌ها را به‌صورت امن در keyring سیستم ذخیره کند و وقتی منقضی
+شدند، تازه‌سازی کند.
 
-uv only supports using the `keyring` package in
-[subprocess mode](../../reference/settings.md#keyring-provider). The `keyring` executable must be in
-the `PATH`, i.e., installed globally or in the active environment. The `keyring` CLI requires a
-username in the URL and it must be `aws`.
+uv فقط از استفاده از package مربوط به `keyring` در
+[subprocess mode](../../reference/settings.md#keyring-provider) پشتیبانی می‌کند. فایل اجرایی
+`keyring` باید در `PATH` باشد، یعنی به‌صورت سراسری یا در environment فعال نصب شده باشد. CLI مربوط به
+`keyring` به یک username در URL نیاز دارد و آن باید `aws` باشد.
 
 ```bash
 # Pre-install keyring and AWS CodeArtifact plugin from the public PyPI
@@ -83,17 +86,18 @@ export UV_INDEX_PRIVATE_REGISTRY_USERNAME=aws
 
 !!! note
 
-    The [`tool.uv.keyring-provider`](../../reference/settings.md#keyring-provider)
-    setting can be used to enable keyring in your `uv.toml` or `pyproject.toml`.
+    می‌توان از تنظیم
+    [`tool.uv.keyring-provider`](../../reference/settings.md#keyring-provider) برای فعال‌کردن
+    keyring در `uv.toml` یا `pyproject.toml` استفاده کرد.
 
-    Similarly, the username for the index can be added directly to the index URL.
+    به همین ترتیب، username مربوط به index را می‌توان مستقیماً به URL مربوط به index اضافه کرد.
 
-## Publishing packages
+## منتشر کردن packageها {#publishing-packages}
 
-If you also want to publish your own packages to AWS CodeArtifact, you can use `uv publish` as
-described in the [Building and publishing guide](../package.md).
+اگر می‌خواهید packageهای خود را در AWS CodeArtifact هم منتشر کنید، می‌توانید از `uv publish` به
+شکلی که در [راهنمای build و publish کردن](../package.md) توضیح داده شده است، استفاده کنید.
 
-First, add a `publish-url` to the index you want to publish packages to. For example:
+ابتدا، یک `publish-url` به indexای که می‌خواهید packageها را در آن منتشر کنید، اضافه کنید. برای مثال:
 
 ```toml title="pyproject.toml" hl_lines="4"
 [[tool.uv.index]]
@@ -102,25 +106,26 @@ url = "https://<DOMAIN>-<ACCOUNT_ID>.d.codeartifact.<REGION>.amazonaws.com/pypi/
 publish-url = "https://<DOMAIN>-<ACCOUNT_ID>.d.codeartifact.<REGION>.amazonaws.com/pypi/<REPOSITORY>/"
 ```
 
-Then, configure credentials (if not using keyring):
+سپس، credentialها را پیکربندی کنید (اگر از keyring استفاده نمی‌کنید):
 
 ```console
 $ export UV_PUBLISH_USERNAME=aws
 $ export UV_PUBLISH_PASSWORD="$AWS_CODEARTIFACT_TOKEN"
 ```
 
-And publish the package:
+و package را منتشر کنید:
 
 ```console
 $ uv publish --index private-registry
 ```
 
-To use `uv publish` without adding the `publish-url` to the project, you can set `UV_PUBLISH_URL`:
+برای استفاده از `uv publish` بدون افزودن `publish-url` به project، می‌توانید `UV_PUBLISH_URL` را
+تنظیم کنید:
 
 ```console
 $ export UV_PUBLISH_URL=https://<DOMAIN>-<ACCOUNT_ID>.d.codeartifact.<REGION>.amazonaws.com/pypi/<REPOSITORY>/
 $ uv publish
 ```
 
-Note this method is not preferable because uv cannot check if the package is already published
-before uploading artifacts.
+توجه کنید که این روش ترجیح داده نمی‌شود، زیرا uv نمی‌تواند پیش از آپلود artifactها بررسی کند که
+آیا package از قبل منتشر شده است یا نه.

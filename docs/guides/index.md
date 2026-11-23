@@ -1,13 +1,12 @@
-# Guides overview
+# مرور کلی راهنماها {#guides-overview}
 
-Check out one of the core guides to get started:
+برای شروع، یکی از راهنماهای اصلی را بررسی کنید:
 
-- [Installing Python versions](./install-python.md)
-- [Running scripts and declaring dependencies](./scripts.md)
-- [Running and installing applications as tools](./tools.md)
-- [Creating and working on projects](./projects.md)
-- [Building and publishing packages](./package.md)
-- [Integrate uv with other software, e.g., Docker, GitHub, PyTorch, and more](./integration/index.md)
+- [نصب نسخه‌های Python](./install-python.md)
+- [اجرای scriptها و اعلام dependencyها](./scripts.md)
+- [اجرا و نصب برنامه‌ها به‌عنوان toolها](./tools.md)
+- [ایجاد projectها و کار روی آن‌ها](./projects.md)
+- [ساخت و منتشر کردن packageها](./package.md)
+- [یکپارچه‌سازی uv با نرم‌افزارهای دیگر، مثل Docker ،GitHub ،PyTorch و موارد دیگر](./integration/index.md)
 
-Or, explore the [concept documentation](../concepts/index.md) for a comprehensive breakdown of each
-feature.
+یا برای بررسی جامع هر ویژگی، [مستندات مفهومی](../concepts/index.md) را بخوانید.

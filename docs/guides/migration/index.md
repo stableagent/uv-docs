@@ -1,14 +1,14 @@
-# Migration guides
+# راهنماهای مهاجرت {#migration-guides}
 
-Learn how to migrate from other tools to uv:
+یاد بگیرید چگونه از toolهای دیگر به uv مهاجرت کنید:
 
-- [Migrate from pip to uv projects](./pip-to-project.md)
+- [مهاجرت از pip به projectهای uv](./pip-to-project.md)
 
 !!! note
 
-    Other guides, such as migrating from another project management tool, or from pip to `uv pip`
-    are not yet available. See [#5200](https://github.com/astral-sh/uv/issues/5200) to track
-    progress.
+    راهنماهای دیگر، مانند مهاجرت از یک tool مدیریت project دیگر، یا از pip به `uv pip`،
+    هنوز در دسترس نیستند. برای پیگیری پیشرفت، [#5200](https://github.com/astral-sh/uv/issues/5200) را
+    ببینید.
 
-Or, explore the [integration guides](../integration/index.md) to learn how to use uv with other
-software.
+یا برای یادگیری نحوهٔ استفاده از uv با نرم‌افزارهای دیگر، [راهنماهای یکپارچه‌سازی](../integration/index.md) را
+بررسی کنید.

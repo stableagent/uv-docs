@@ -1,109 +1,110 @@
-# Features
+# قابلیت‌ها {#features}
 
-uv provides essential features for Python development — from installing Python and hacking on simple
-scripts to working on large projects that support multiple Python versions and platforms.
+uv قابلیت‌های ضروری برای توسعهٔ Python را فراهم می‌کند — از نصب Python و کار روی script های
+ساده تا کار روی project های بزرگی که از چند Python version و platform پشتیبانی می‌کنند.
 
-uv's interface can be broken down into sections, which are usable independently or together.
+رابط uv را می‌توان به بخش‌هایی تقسیم کرد که به‌صورت مستقل یا با هم قابل استفاده‌اند.
 
-## Python versions
+## Python version ها {#python-versions}
 
-Installing and managing Python itself.
+نصب و مدیریت خود Python.
 
-- `uv python install`: Install Python versions.
-- `uv python list`: View available Python versions.
-- `uv python find`: Find an installed Python version.
-- `uv python pin`: Pin the current project to use a specific Python version.
-- `uv python uninstall`: Uninstall a Python version.
+- `uv python install`: نصب Python version ها.
+- `uv python list`: مشاهدهٔ Python version های موجود.
+- `uv python find`: پیدا کردن یک Python version نصب‌شده.
+- `uv python pin`: پین کردن project جاری برای استفاده از یک Python version مشخص.
+- `uv python uninstall`: حذف نصب یک Python version.
 
-See the [guide on installing Python](../guides/install-python.md) to get started.
+برای شروع، [راهنمای نصب Python](../guides/install-python.md) را ببینید.
 
-## Scripts
+## Script ها {#scripts}
 
-Executing standalone Python scripts, e.g., `example.py`.
+اجرای script های مستقل Python؛ مثلاً `example.py`.
 
-- `uv run`: Run a script.
-- `uv add --script`: Add a dependency to a script.
-- `uv remove --script`: Remove a dependency from a script.
+- `uv run`: اجرای یک script.
+- `uv add --script`: افزودن یک dependency به یک script.
+- `uv remove --script`: حذف یک dependency از یک script.
 
-See the [guide on running scripts](../guides/scripts.md) to get started.
+برای شروع، [راهنمای اجرای script ها](../guides/scripts.md) را ببینید.
 
-## Projects
+## Project ها {#projects}
 
-Creating and working on Python projects, i.e., with a `pyproject.toml`.
+ساختن و کار روی project های Python؛ یعنی با یک `pyproject.toml`.
 
-- `uv init`: Create a new Python project.
-- `uv add`: Add a dependency to the project.
-- `uv remove`: Remove a dependency from the project.
-- `uv sync`: Sync the project's dependencies with the environment.
-- `uv lock`: Create a lockfile for the project's dependencies.
-- `uv run`: Run a command in the project environment.
-- `uv tree`: View the dependency tree for the project.
-- `uv build`: Build the project into distribution archives.
-- `uv publish`: Publish the project to a package index.
+- `uv init`: ساختن یک project جدید Python.
+- `uv add`: افزودن یک dependency به project.
+- `uv remove`: حذف یک dependency از project.
+- `uv sync`: همگام‌سازی dependency های project با environment.
+- `uv lock`: ساختن یک lockfile برای dependency های project.
+- `uv run`: اجرای یک دستور در environment پروژه.
+- `uv tree`: مشاهدهٔ درخت dependency برای project.
+- `uv build`: ساختن project به‌صورت archive های distribution.
+- `uv publish`: منتشر کردن project در یک package index.
 
-See the [guide on projects](../guides/projects.md) to get started.
+برای شروع، [راهنمای project ها](../guides/projects.md) را ببینید.
 
-## Tools
+## Tool ها {#tools}
 
-Running and installing tools published to Python package indexes, e.g., `ruff` or `black`.
+اجرا و نصب tool های منتشرشده در index های package Python؛ مثلاً `ruff` یا `black`.
 
-- `uvx` / `uv tool run`: Run a tool in a temporary environment.
-- `uv tool install`: Install a tool user-wide.
-- `uv tool uninstall`: Uninstall a tool.
-- `uv tool list`: List installed tools.
-- `uv tool update-shell`: Update the shell to include tool executables.
+- `uvx` / `uv tool run`: اجرای یک tool در یک environment موقت.
+- `uv tool install`: نصب یک tool برای کل کاربر.
+- `uv tool uninstall`: حذف نصب یک tool.
+- `uv tool list`: فهرست tool های نصب‌شده.
+- `uv tool update-shell`: به‌روزرسانی shell برای گنجاندن executable های tool.
 
-See the [guide on tools](../guides/tools.md) to get started.
+برای شروع، [راهنمای tool ها](../guides/tools.md) را ببینید.
 
-## The pip interface
+## رابط pip {#the-pip-interface}
 
-Manually managing environments and packages — intended to be used in legacy workflows or cases where
-the high-level commands do not provide enough control.
+مدیریت دستی environment ها و package ها — برای استفاده در workflow های قدیمی یا مواردی که
+دستورهای سطح بالا کنترل کافی فراهم نمی‌کنند.
 
-Creating virtual environments (replacing `venv` and `virtualenv`):
+ساختن virtual environment ها (جایگزین `venv` و `virtualenv`):
 
-- `uv venv`: Create a new virtual environment.
+- `uv venv`: ساختن یک virtual environment جدید.
 
-See the documentation on [using environments](../pip/environments.md) for details.
+برای جزئیات، مستندات [استفاده از environment ها](../pip/environments.md) را ببینید.
 
-Managing packages in an environment (replacing [`pip`](https://github.com/pypa/pip) and
+مدیریت package ها در یک environment (جایگزین [`pip`](https://github.com/pypa/pip) و
 [`pipdeptree`](https://github.com/tox-dev/pipdeptree)):
 
-- `uv pip install`: Install packages into the current environment.
-- `uv pip show`: Show details about an installed package.
-- `uv pip freeze`: List installed packages and their versions.
-- `uv pip check`: Check that the current environment has compatible packages.
-- `uv pip list`: List installed packages.
-- `uv pip uninstall`: Uninstall packages.
-- `uv pip tree`: View the dependency tree for the environment.
+- `uv pip install`: نصب package ها در environment جاری.
+- `uv pip show`: نمایش جزئیات یک package نصب‌شده.
+- `uv pip freeze`: فهرست package های نصب‌شده و version های آن‌ها.
+- `uv pip check`: بررسی اینکه environment جاری package های سازگار دارد.
+- `uv pip list`: فهرست package های نصب‌شده.
+- `uv pip uninstall`: حذف نصب package ها.
+- `uv pip tree`: مشاهدهٔ درخت dependency برای environment.
 
-See the documentation on [managing packages](../pip/packages.md) for details.
+برای جزئیات، مستندات [مدیریت package ها](../pip/packages.md) را ببینید.
 
-Locking packages in an environment (replacing [`pip-tools`](https://github.com/jazzband/pip-tools)):
+قفل کردن package ها در یک environment (جایگزین [`pip-tools`](https://github.com/jazzband/pip-tools)):
 
-- `uv pip compile`: Compile requirements into a lockfile.
-- `uv pip sync`: Sync an environment with a lockfile.
+- `uv pip compile`: کامپایل requirement ها به یک lockfile.
+- `uv pip sync`: همگام‌سازی یک environment با یک lockfile.
 
-See the documentation on [locking environments](../pip/compile.md) for details.
+برای جزئیات، مستندات [قفل کردن environment ها](../pip/compile.md) را ببینید.
 
 !!! important
 
-    These commands do not exactly implement the interfaces and behavior of the tools they are based on. The further you stray from common workflows, the more likely you are to encounter differences. Consult the [pip-compatibility guide](../pip/compatibility.md) for details.
+    این دستورها دقیقاً رابط‌ها و رفتار tool هایی را که بر اساس آن‌ها ساخته شده‌اند پیاده
+    نمی‌کنند. هرچه بیشتر از workflow های رایج فاصله بگیرید، احتمال اینکه با تفاوت‌هایی روبه‌رو
+    شوید بیشتر می‌شود. برای جزئیات، [راهنمای سازگاری با pip](../pip/compatibility.md) را ببینید.
 
-## Utility
+## ابزارهای کمکی {#utility}
 
-Managing and inspecting uv's state, such as the cache and storage directories, or performing a
-self-update:
+مدیریت و بررسی وضعیت uv؛ مانند cache و پوشه‌های storage، یا انجام به‌روزرسانی خودکار:
 
-- `uv cache clean`: Remove cache entries.
-- `uv cache prune`: Remove outdated cache entries and all centralized project environments.
-- `uv cache dir`: Show the uv cache directory path.
-- `uv tool dir`: Show the uv tool directory path.
-- `uv python dir`: Show the uv installed Python versions path.
-- `uv self update`: Update uv to the latest version.
+- `uv cache clean`: حذف ورودی‌های cache.
+- `uv cache prune`: حذف ورودی‌های قدیمی cache و همهٔ environment های متمرکز project.
+- `uv cache dir`: نمایش مسیر پوشهٔ cache مربوط به uv.
+- `uv tool dir`: نمایش مسیر پوشهٔ tool مربوط به uv.
+- `uv python dir`: نمایش مسیر Python version های نصب‌شدهٔ uv.
+- `uv self update`: به‌روزرسانی uv به آخرین version.
 
-## Next steps
+## قدم‌های بعدی {#next-steps}
 
-Read the [guides](../guides/index.md) for an introduction to each feature, check out the
-[concept](../concepts/index.md) pages for in-depth details about uv's features, or learn how to
-[get help](./help.md) if you run into any problems.
+برای آشنایی با هر قابلیت، [راهنماها](../guides/index.md) را بخوانید، برای جزئیات عمیق‌تر
+دربارهٔ قابلیت‌های uv صفحه‌های [مفاهیم](../concepts/index.md) را ببینید، یا اگر به مشکلی
+برخوردید یاد بگیرید چطور [کمک بگیرید](./help.md).

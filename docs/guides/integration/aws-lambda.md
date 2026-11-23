@@ -1,26 +1,26 @@
 ---
-title: Using uv with AWS Lambda
+title: استفاده از uv با AWS Lambda
 description:
-  A complete guide to using uv with AWS Lambda to manage Python dependencies and deploy serverless
-  functions via Docker containers or zip archives.
+  راهنمای کامل استفاده از uv با AWS Lambda برای مدیریت dependencyهای Python و مستقر کردن
+  functionهای serverless از طریق کانتینرهای Docker یا آرشیوهای zip.
 ---
 
-# Using uv with AWS Lambda
+# استفاده از uv با AWS Lambda {#using-uv-with-aws-lambda}
 
-[AWS Lambda](https://aws.amazon.com/lambda/) is a serverless computing service that lets you run
-code without provisioning or managing servers.
+[AWS Lambda](https://aws.amazon.com/lambda/) یک سرویس محاسبات serverless است که به شما امکان
+می‌دهد کد را بدون تهیه یا مدیریت سرور اجرا کنید.
 
-You can use uv with AWS Lambda to manage your Python dependencies, build your deployment package,
-and deploy your Lambda functions.
+می‌توانید از uv با AWS Lambda برای مدیریت dependencyهای Python خود، build کردن package مربوط به
+استقرار و deploy کردن functionهای Lambda خود استفاده کنید.
 
 !!! tip
 
-    Check out the [`uv-aws-lambda-example`](https://github.com/astral-sh/uv-aws-lambda-example) project for
-    an example of best practices when using uv to deploy an application to AWS Lambda.
+    برای نمونه‌ای از بهترین روش‌ها هنگام استفاده از uv برای deploy کردن یک برنامه در AWS Lambda، به
+    project مربوط به [`uv-aws-lambda-example`](https://github.com/astral-sh/uv-aws-lambda-example) مراجعه کنید.
 
-## Getting started
+## شروع کار {#getting-started}
 
-To start, assume we have a minimal FastAPI application with the following structure:
+برای شروع، فرض می‌کنیم یک برنامهٔ حداقلی FastAPI با ساختار زیر داریم:
 
 ```plaintext
 project
@@ -30,7 +30,7 @@ project
     └── main.py
 ```
 
-Where the `pyproject.toml` contains:
+که در آن، `pyproject.toml` شامل موارد زیر است:
 
 ```toml title="pyproject.toml"
 [project]
@@ -51,7 +51,7 @@ dev = [
 ]
 ```
 
-And the `main.py` file contains:
+و فایل `main.py` شامل موارد زیر است:
 
 ```python title="app/main.py"
 import logging
@@ -71,25 +71,25 @@ async def root() -> str:
     return "Hello, world!"
 ```
 
-We can run this application locally with:
+می‌توانیم این برنامه را به‌صورت محلی با این دستور اجرا کنیم:
 
 ```console
 $ uv run fastapi dev
 ```
 
-From there, opening http://127.0.0.1:8000/ in a web browser will display "Hello, world!"
+از آنجا، باز کردن آدرس http://127.0.0.1:8000/ در یک مرورگر وب، عبارت «Hello, world!» را نمایش
+می‌دهد.
 
-## Deploying a Docker image
+## مستقر کردن یک ایمیج Docker {#deploying-a-docker-image}
 
-To deploy to AWS Lambda, we need to build a container image that includes the application code and
-dependencies in a single output directory.
+برای مستقر کردن در AWS Lambda، باید یک ایمیج کانتینر بسازیم که کد برنامه و dependencyها را در یک
+پوشهٔ خروجی واحد در بر می‌گیرد.
 
-We'll follow the principles outlined in the [Docker guide](./docker.md) (in particular, a
-multi-stage build) to ensure that the final image is as small and cache-friendly as possible.
+اصول شرح‌داده‌شده در [راهنمای Docker](./docker.md) را دنبال می‌کنیم (به‌ویژه، یک build چند مرحله‌ای)
+تا مطمئن شویم ایمیج نهایی تا حد ممکن کوچک و سازگار با cache است.
 
-In the first stage, we'll populate a single directory with all application code and dependencies. In
-the second stage, we'll copy this directory over to the final image, omitting the build tools and
-other unnecessary files.
+در مرحلهٔ اول، یک پوشهٔ واحد را با همهٔ کد برنامه و dependencyها پر می‌کنیم. در مرحلهٔ دوم، این
+پوشه را به ایمیج نهایی کپی می‌کنیم و toolهای build و دیگر فایل‌های غیرضروری را حذف می‌کنیم.
 
 ```dockerfile title="Dockerfile"
 FROM ghcr.io/astral-sh/uv:0.13.9 AS uv
@@ -131,25 +131,28 @@ CMD ["app.main.handler"]
 
 !!! tip
 
-    To deploy to ARM-based AWS Lambda runtimes, replace `public.ecr.aws/lambda/python:3.13` with `public.ecr.aws/lambda/python:3.13-arm64`.
+    برای مستقر کردن در runtimeهای AWS Lambda مبتنی بر ARM، عبارت
+    `public.ecr.aws/lambda/python:3.13` را با `public.ecr.aws/lambda/python:3.13-arm64` جایگزین
+    کنید.
 
-We can build the image with, e.g.:
+می‌توانیم ایمیج را مثلاً با این دستور build کنیم:
 
 ```console
 $ uv lock
 $ docker build -t fastapi-app .
 ```
 
-The core benefits of this Dockerfile structure are as follows:
+مزیت‌های اصلی این ساختار Dockerfile به شرح زیر است:
 
-1. **Minimal image size.** By using a multi-stage build, we can ensure that the final image only
-   includes the application code and dependencies. For example, the uv binary itself is not included
-   in the final image.
-2. **Maximal cache reuse.** By installing application dependencies separately from the application
-   code, we can ensure that the Docker layer cache is only invalidated when the dependencies change.
+1. **حداقل اندازهٔ ایمیج.** با استفاده از یک build چند مرحله‌ای، می‌توانیم مطمئن شویم که ایمیج
+   نهایی فقط کد برنامه و dependencyها را در بر می‌گیرد. برای مثال، خود باینری uv در ایمیج نهایی
+   گنجانده نمی‌شود.
+2. **حداکثر استفادهٔ مجدد از cache.** با نصب جداگانهٔ dependencyهای برنامه از کد برنامه، می‌توانیم
+   مطمئن شویم که cache مربوط به لایهٔ مربوط به Docker فقط وقتی باطل می‌شود که dependencyها تغییر
+   کنند.
 
-Concretely, rebuilding the image after modifying the application source code can reuse the cached
-layers, resulting in millisecond builds:
+به‌طور مشخص، بازسازی ایمیج پس از تغییر کد منبع برنامه می‌تواند از لایه‌های cacheشده استفادهٔ
+مجدد کند و به buildهایی در حد میلی‌ثانیه منجر شود:
 
 ```console
  => [internal] load build definition from Dockerfile                                                                 0.0s
@@ -170,8 +173,8 @@ layers, resulting in millisecond builds:
  => => writing image sha256:6f8f9ef715a7cda466b677a9df4046ebbb90c8e88595242ade3b4771f547652d                         0.0
 ```
 
-After building, we can push the image to
-[Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) with, e.g.:
+پس از build کردن، می‌توانیم ایمیج را به
+[Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/) push کنیم، مثلاً با:
 
 ```console
 $ aws ecr get-login-password --region region | docker login --username AWS --password-stdin aws_account_id.dkr.ecr.region.amazonaws.com
@@ -179,8 +182,8 @@ $ docker tag fastapi-app:latest aws_account_id.dkr.ecr.region.amazonaws.com/fast
 $ docker push aws_account_id.dkr.ecr.region.amazonaws.com/fastapi-app:latest
 ```
 
-Finally, we can deploy the image to AWS Lambda using the AWS Management Console or the AWS CLI,
-e.g.:
+در پایان، می‌توانیم ایمیج را با استفاده از AWS Management Console یا AWS CLI در AWS Lambda deploy
+کنیم، مثلاً:
 
 ```console
 $ aws lambda create-function \
@@ -190,9 +193,9 @@ $ aws lambda create-function \
    --role arn:aws:iam::111122223333:role/my-lambda-role
 ```
 
-Where the
+که در آن،
 [execution role](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html#permissions-executionrole-api)
-is created via:
+از طریق دستور زیر ساخته می‌شود:
 
 ```console
 $ aws iam create-role \
@@ -200,7 +203,7 @@ $ aws iam create-role \
    --assume-role-policy-document '{"Version": "2012-10-17", "Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'
 ```
 
-Or, update an existing function with:
+یا یک function موجود را با این دستور به‌روز کنید:
 
 ```console
 $ aws lambda update-function-code \
@@ -209,7 +212,7 @@ $ aws lambda update-function-code \
    --publish
 ```
 
-To test the Lambda, we can invoke it via the AWS Management Console or the AWS CLI, e.g.:
+برای تست Lambda، می‌توانیم آن را از طریق AWS Management Console یا AWS CLI فراخوانی کنیم، مثلاً:
 
 ```console
 $ aws lambda invoke \
@@ -223,7 +226,7 @@ $ aws lambda invoke \
 }
 ```
 
-Where `event.json` contains the event payload to pass to the Lambda function:
+که در آن، `event.json` شامل event payloadای است که به function مربوط به Lambda داده می‌شود:
 
 ```json title="event.json"
 {
@@ -234,7 +237,7 @@ Where `event.json` contains the event payload to pass to the Lambda function:
 }
 ```
 
-And `response.json` contains the response from the Lambda function:
+و `response.json` شامل پاسخ function مربوط به Lambda است:
 
 ```json title="response.json"
 {
@@ -249,27 +252,27 @@ And `response.json` contains the response from the Lambda function:
 }
 ```
 
-For details, see the
-[AWS Lambda documentation](https://docs.aws.amazon.com/lambda/latest/dg/python-image.html).
+برای جزئیات، به
+[مستندات AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/python-image.html) مراجعه کنید.
 
-### Workspace support
+### پشتیبانی از Workspace {#workspace-support}
 
-If a project includes local dependencies (e.g., via
-[Workspaces](../../concepts/projects/workspaces.md)), those too must be included in the deployment
-package.
+اگر یک project شامل dependencyهای محلی باشد (مثلاً از طریق
+[Workspaceها](../../concepts/projects/workspaces.md))، آن‌ها هم باید در package مربوط به deployment
+گنجانده شوند.
 
-We'll start by extending the above example to include a dependency on a locally-developed library
-named `library`.
+با گسترش مثال بالا شروع می‌کنیم تا یک dependency به یک کتابخانهٔ توسعه‌یافته به‌صورت محلی با نام
+`library` را در بر بگیرد.
 
-First, we'll create the library itself:
+ابتدا، خود کتابخانه را می‌سازیم:
 
 ```console
 $ uv init --lib library
 $ uv add ./library
 ```
 
-Running `uv init` within the `project` directory will automatically convert `project` to a workspace
-and add `library` as a workspace member:
+اجرای `uv init` در پوشهٔ `project`، به‌صورت خودکار `project` را به یک workspace تبدیل می‌کند و
+`library` را به‌عنوان یک workspace member اضافه می‌کند:
 
 ```toml title="pyproject.toml"
 [project]
@@ -298,8 +301,8 @@ members = ["library"]
 lib = { workspace = true }
 ```
 
-By default, `uv init --lib` will create a package that exports a `hello` function. We'll modify the
-application source code to call that function:
+به‌طور پیش‌فرض، `uv init --lib` یک package می‌سازد که یک تابع `hello` را صادر می‌کند. کد منبع
+برنامه را تغییر می‌دهیم تا آن تابع را فراخوانی کند:
 
 ```python title="app/main.py"
 import logging
@@ -321,16 +324,16 @@ async def root() -> str:
     return hello()
 ```
 
-We can run the modified application locally with:
+می‌توانیم برنامهٔ تغییرکرده را به‌صورت محلی با این دستور اجرا کنیم:
 
 ```console
 $ uv run fastapi dev
 ```
 
-And confirm that opening http://127.0.0.1:8000/ in a web browser displays, "Hello from library!"
-(instead of "Hello, World!")
+و تأیید کنیم که باز کردن آدرس http://127.0.0.1:8000/ در یک مرورگر وب، عبارت «Hello from library!»
+را نمایش می‌دهد (به‌جای «Hello, World!»)
 
-Finally, we'll update the Dockerfile to include the local library in the deployment package:
+در پایان، Dockerfile را به‌روز می‌کنیم تا کتابخانهٔ محلی را در package مربوط به deployment بگنجانیم:
 
 ```dockerfile title="Dockerfile"
 FROM ghcr.io/astral-sh/uv:0.13.9 AS uv
@@ -384,20 +387,21 @@ CMD ["app.main.handler"]
 
 !!! tip
 
-    To deploy to ARM-based AWS Lambda runtimes, replace `public.ecr.aws/lambda/python:3.13` with `public.ecr.aws/lambda/python:3.13-arm64`.
+    برای مستقر کردن در runtimeهای AWS Lambda مبتنی بر ARM، عبارت
+    `public.ecr.aws/lambda/python:3.13` را با `public.ecr.aws/lambda/python:3.13-arm64` جایگزین
+    کنید.
 
-From there, we can build and deploy the updated image as before.
+از آنجا می‌توانیم ایمیج به‌روزشده را مانند قبل build و deploy کنیم.
 
-## Deploying a zip archive
+## مستقر کردن یک آرشیو zip {#deploying-a-zip-archive}
 
-AWS Lambda also supports deployment via zip archives. For simple applications, zip archives can be a
-more straightforward and efficient deployment method than Docker images; however, zip archives are
-limited to
-[250 MB](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html#python-package-create-update)
-in size.
+AWS Lambda از مستقر کردن از طریق آرشیوهای zip هم پشتیبانی می‌کند. برای برنامه‌های ساده، آرشیوهای
+zip می‌توانند روش ساده‌تر و کارآمدتری نسبت به ایمیج‌های Docker باشند؛ با این حال، آرشیوهای zip به
+[۲۵۰ مگابایت](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html#python-package-create-update)
+محدودند.
 
-Returning to the FastAPI example, we can bundle the application dependencies into a local directory
-for AWS Lambda via:
+با بازگشت به مثال FastAPI، می‌توانیم dependencyهای برنامه را از طریق دستور زیر در یک پوشهٔ محلی
+برای AWS Lambda بگنجانیم:
 
 ```console
 $ uv export --frozen --no-dev --no-editable -o requirements.txt
@@ -412,11 +416,12 @@ $ uv pip install \
 
 !!! tip
 
-    To deploy to ARM-based AWS Lambda runtimes, replace `x86_64-manylinux2014` with `aarch64-manylinux2014`.
+    برای مستقر کردن در runtimeهای AWS Lambda مبتنی بر ARM، عبارت `x86_64-manylinux2014` را با
+    `aarch64-manylinux2014` جایگزین کنید.
 
-Following the
-[AWS Lambda documentation](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html), we can
-then bundle these dependencies into a zip as follows:
+با دنبال‌کردن
+[مستندات AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/python-package.html)، می‌توانیم
+سپس این dependencyها را به این شکل در یک zip بگنجانیم:
 
 ```console
 $ cd packages
@@ -424,14 +429,14 @@ $ zip -r ../package.zip .
 $ cd ..
 ```
 
-Finally, we can add the application code to the zip archive:
+در پایان، می‌توانیم کد برنامه را به آرشیو zip اضافه کنیم:
 
 ```console
 $ zip -r package.zip app
 ```
 
-We can then deploy the zip archive to AWS Lambda via the AWS Management Console or the AWS CLI,
-e.g.:
+سپس می‌توانیم آرشیو zip را از طریق AWS Management Console یا AWS CLI در AWS Lambda مستقر کنیم،
+مثلاً:
 
 ```console
 $ aws lambda create-function \
@@ -442,9 +447,9 @@ $ aws lambda create-function \
    --role arn:aws:iam::111122223333:role/service-role/my-lambda-role
 ```
 
-Where the
+که در آن،
 [execution role](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html#permissions-executionrole-api)
-is created via:
+از طریق دستور زیر ساخته می‌شود:
 
 ```console
 $ aws iam create-role \
@@ -452,7 +457,7 @@ $ aws iam create-role \
    --assume-role-policy-document '{"Version": "2012-10-17", "Statement": [{ "Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]}'
 ```
 
-Or, update an existing function with:
+یا یک function موجود را با این دستور به‌روز کنید:
 
 ```console
 $ aws lambda update-function-code \
@@ -462,11 +467,12 @@ $ aws lambda update-function-code \
 
 !!! note
 
-    By default, the AWS Management Console assumes a Lambda entrypoint of `lambda_function.lambda_handler`.
-    If your application uses a different entrypoint, you'll need to modify it in the AWS Management Console.
-    For example, the above FastAPI application uses `app.main.handler`.
+    به‌طور پیش‌فرض، AWS Management Console یک entrypoint مربوط به Lambda با نام
+    `lambda_function.lambda_handler` را فرض می‌کند. اگر برنامهٔ شما از یک entrypoint متفاوت استفاده
+    می‌کند، باید آن را در AWS Management Console تغییر دهید. برای مثال، برنامهٔ FastAPI بالا از
+    `app.main.handler` استفاده می‌کند.
 
-To test the Lambda, we can invoke it via the AWS Management Console or the AWS CLI, e.g.:
+برای تست Lambda، می‌توانیم آن را از طریق AWS Management Console یا AWS CLI فراخوانی کنیم، مثلاً:
 
 ```console
 $ aws lambda invoke \
@@ -480,7 +486,7 @@ $ aws lambda invoke \
 }
 ```
 
-Where `event.json` contains the event payload to pass to the Lambda function:
+که در آن، `event.json` شامل event payloadای است که به function مربوط به Lambda داده می‌شود:
 
 ```json title="event.json"
 {
@@ -491,7 +497,7 @@ Where `event.json` contains the event payload to pass to the Lambda function:
 }
 ```
 
-And `response.json` contains the response from the Lambda function:
+و `response.json` شامل پاسخ function مربوط به Lambda است:
 
 ```json title="response.json"
 {
@@ -506,22 +512,23 @@ And `response.json` contains the response from the Lambda function:
 }
 ```
 
-### Using a Lambda layer
+### استفاده از یک Lambda layer {#using-a-lambda-layer}
 
-AWS Lambda also supports the deployment of multiple composed
-[Lambda layers](https://docs.aws.amazon.com/lambda/latest/dg/python-layers.html) when working with
-zip archives. These layers are conceptually similar to layers in a Docker image, allowing you to
-separate application code from dependencies.
+AWS Lambda هنگام کار با آرشیوهای zip، از deploy کردن چند
+[لایهٔ Lambda](https://docs.aws.amazon.com/lambda/latest/dg/python-layers.html) ترکیب‌شده هم
+پشتیبانی می‌کند. این layerها از نظر مفهومی شبیه layerها در یک ایمیج Docker هستند و به شما امکان
+می‌دهند کد برنامه را از dependencyها جدا کنید.
 
-In particular, we can create a lambda layer for application dependencies and attach it to the Lambda
-function, separate from the application code itself. This setup can improve cold-start performance
-for application updates, as the dependencies layer can be reused across deployments.
+به‌ویژه، می‌توانیم یک لایهٔ Lambda برای dependencyهای برنامه بسازیم و آن را جدا از خود کد برنامه،
+به function مربوط به Lambda متصل کنیم. این راه‌اندازی می‌تواند عملکرد cold-start را برای
+به‌روزرسانی‌های برنامه بهبود دهد، زیرا لایهٔ مربوط به dependencyها را می‌توان در استقرارهای مختلف
+استفادهٔ مجدد کرد.
 
-To create a Lambda layer, we'll follow similar steps, but create two separate zip archives: one for
-the application code and one for the application dependencies.
+برای ساختن یک Lambda layer، مراحل مشابهی را دنبال می‌کنیم، اما دو آرشیو zip جداگانه می‌سازیم: یکی
+برای کد برنامه و یکی برای dependencyهای برنامه.
 
-First, we'll create the dependency layer. Lambda layers are expected to follow a slightly different
-structure, so we'll use `--prefix` rather than `--target`:
+ابتدا، layer مربوط به dependency را می‌سازیم. انتظار می‌رود layerهای Lambda از یک ساختار کمی متفاوت
+پیروی کنند، پس به‌جای `--target` از `--prefix` استفاده می‌کنیم:
 
 ```console
 $ uv export --frozen --no-dev --no-editable -o requirements.txt
@@ -534,7 +541,7 @@ $ uv pip install \
    -r requirements.txt
 ```
 
-We'll then zip the dependencies in adherence with the expected layout for Lambda layers:
+سپس dependencyها را مطابق با layout مورد انتظار برای layerهای Lambda، zip می‌کنیم:
 
 ```console
 $ mkdir python
@@ -544,10 +551,10 @@ $ zip -r layer_content.zip python
 
 !!! tip
 
-    To generate deterministic zip archives, consider passing the `-X` flag to `zip` to exclude
-    extended attributes and file system metadata.
+    برای تولید آرشیوهای zip قطعی (deterministic)، به فلگ `-X` برای `zip` فکر کنید تا attributeهای
+    گسترش‌یافته و metadata مربوط به file system حذف شوند.
 
-And publish the Lambda layer:
+و Lambda layer را منتشر می‌کنیم:
 
 ```console
 $ aws lambda publish-layer-version --layer-name dependencies-layer \
@@ -556,7 +563,7 @@ $ aws lambda publish-layer-version --layer-name dependencies-layer \
    --compatible-architectures "x86_64"
 ```
 
-We can then create the Lambda function as in the previous example, omitting the dependencies:
+سپس می‌توانیم function مربوط به Lambda را مانند مثال قبلی بسازیم و dependencyها را حذف کنیم:
 
 ```console
 $ # Zip the application code.
@@ -571,8 +578,8 @@ $ aws lambda create-function \
    --role arn:aws:iam::111122223333:role/service-role/my-lambda-role
 ```
 
-Finally, we can attach the dependencies layer to the Lambda function, using the ARN returned by the
-`publish-layer-version` step:
+در پایان، می‌توانیم layer مربوط به dependencyها را با استفاده از ARN برگردانده‌شده در مرحلهٔ
+`publish-layer-version`، به function مربوط به Lambda متصل کنیم:
 
 ```console
 $ aws lambda update-function-configuration --function-name myFunction \
@@ -580,8 +587,8 @@ $ aws lambda update-function-configuration --function-name myFunction \
     --layers "arn:aws:lambda:region:111122223333:layer:dependencies-layer:1"
 ```
 
-When the application dependencies change, the layer can be updated independently of the application
-by republishing the layer and updating the Lambda function configuration:
+وقتی dependencyهای برنامه تغییر می‌کنند، می‌توان لایه را مستقل از برنامه، با republish کردن لایه و
+به‌روزرسانی پیکربندی function مربوط به Lambda، به‌روز کرد:
 
 ```console
 $ # Update the dependencies in the layer.

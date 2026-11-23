@@ -1,154 +1,88 @@
-# Resolution
+# Resolution {#resolution}
 
-Resolution is the process of taking a list of requirements and converting them to a list of package
-versions that fulfill the requirements. Resolution requires recursively searching for compatible
-versions of packages, ensuring that the requested requirements are fulfilled and that the
-requirements of the requested packages are compatible.
+Resolution فرایند تبدیل فهرستی از نیازمندی‌ها به فهرستی از نسخه‌های package است که آن نیازمندی‌ها را برآورده می‌کنند. Resolution مستلزم جست‌وجوی بازگشتی برای یافتن نسخه‌های سازگار packageهاست، به‌طوری که نیازمندی‌های درخواستی برآورده شوند و نیازمندی‌های packageهای درخواستی با یکدیگر سازگار باشند.
 
-## Dependencies
+## Dependencies {#dependencies}
 
-Most projects and packages have dependencies. Dependencies are other packages that are necessary in
-order for the current package to work. A package defines its dependencies as _requirements_, roughly
-a combination of a package name and acceptable versions. The dependencies defined by the current
-project are called _direct dependencies_. The dependencies added by each dependency of the current
-project are called _indirect_ or _transitive dependencies_.
+بیشتر projectها و packageها dependency دارند. Dependencyها packageهای دیگری هستند که برای کار کردن packageٔ جاری لازم‌اند. یک package، dependencyهای خود را به‌صورت _requirement_ تعریف می‌کند؛ تقریباً ترکیبی از نام یک package و نسخه‌های قابل‌قبول آن. به dependencyهایی که projectٔ جاری تعریف می‌کند، _dependencyهای مستقیم_ گفته می‌شود. به dependencyهایی که هر dependency از projectٔ جاری اضافه می‌کند، _dependencyهای غیرمستقیم_ یا _transitive_ گفته می‌شود.
 
 !!! note
 
-    See the [dependency specifiers
-    page](https://packaging.python.org/en/latest/specifications/dependency-specifiers/)
-    in the Python Packaging documentation for details about dependencies.
+    برای جزئیات بیشتر دربارهٔ dependencyها، به صفحهٔ [dependency specifiers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/) در مستندات Python Packaging مراجعه کنید.
 
-## Basic examples
+## مثال‌های پایه {#basic-examples}
 
-To help demonstrate the resolution process, consider the following dependencies:
+برای نمایش فرایند resolution، dependencyهای زیر را در نظر بگیرید:
 
 <!-- prettier-ignore -->
-- The project depends on `foo` and `bar`.
-- `foo` has one version, 1.0.0:
-    - `foo 1.0.0` depends on `lib>=1.0.0`.
-- `bar` has one version, 1.0.0:
-    - `bar 1.0.0` depends on `lib>=2.0.0`.
-- `lib` has two versions, 1.0.0 and 2.0.0. Both versions have no dependencies.
+- project به `foo` و `bar` وابسته است.
+- `foo` یک نسخه دارد، 1.0.0:
+    - `foo 1.0.0` به `lib>=1.0.0` وابسته است.
+- `bar` یک نسخه دارد، 1.0.0:
+    - `bar 1.0.0` به `lib>=2.0.0` وابسته است.
+- `lib` دو نسخه دارد، 1.0.0 و 2.0.0. هر دو نسخه dependency ندارند.
 
-In this example, the resolver must find a set of package versions which satisfies the project
-requirements. Since there is only one version of both `foo` and `bar`, those will be used. The
-resolution must also include the transitive dependencies, so a version of `lib` must be chosen.
-`foo 1.0.0` allows all available versions of `lib`, but `bar 1.0.0` requires `lib>=2.0.0` so
-`lib 2.0.0` must be used.
+در این مثال، resolver باید مجموعه‌ای از نسخه‌های package را پیدا کند که نیازمندی‌های project را برآورده کند. از آنجا که هم `foo` و هم `bar` فقط یک نسخه دارند، از همان نسخه‌ها استفاده می‌شود. resolution باید dependencyهای transitive را هم شامل شود، پس باید نسخه‌ای از `lib` انتخاب شود. `foo 1.0.0` همهٔ نسخه‌های موجود `lib` را مجاز می‌داند، اما `bar 1.0.0` به `lib>=2.0.0` نیاز دارد، پس باید از `lib 2.0.0` استفاده شود.
 
-In some resolutions, there may be more than one valid solution. Consider the following dependencies:
+در برخی resolutionها، ممکن است بیش از یک راه‌حل معتبر وجود داشته باشد. dependencyهای زیر را در نظر بگیرید:
 
 <!-- prettier-ignore -->
-- The project depends on `foo` and `bar`.
-- `foo` has two versions, 1.0.0 and 2.0.0:
-    - `foo 1.0.0` has no dependencies.
-    - `foo 2.0.0` depends on `lib==2.0.0`.
-- `bar` has two versions, 1.0.0 and 2.0.0:
-    - `bar 1.0.0` has no dependencies.
-    - `bar 2.0.0` depends on `lib==1.0.0`
-- `lib` has two versions, 1.0.0 and 2.0.0. Both versions have no dependencies.
+- project به `foo` و `bar` وابسته است.
+- `foo` دو نسخه دارد، 1.0.0 و 2.0.0:
+    - `foo 1.0.0` هیچ dependencyای ندارد.
+    - `foo 2.0.0` به `lib==2.0.0` وابسته است.
+- `bar` دو نسخه دارد، 1.0.0 و 2.0.0:
+    - `bar 1.0.0` هیچ dependencyای ندارد.
+    - `bar 2.0.0` به `lib==1.0.0` وابسته است.
+- `lib` دو نسخه دارد، 1.0.0 و 2.0.0. هر دو نسخه dependency ندارند.
 
-In this example, some version of both `foo` and `bar` must be selected; however, determining which
-version requires considering the dependencies of each version of `foo` and `bar`. `foo 2.0.0` and
-`bar 2.0.0` cannot be installed together as they conflict on their required version of `lib`, so the
-resolver must select either `foo 1.0.0` (along with `bar 2.0.0`) or `bar 1.0.0` (along with
-`foo 2.0.0`). Both are valid solutions, and different resolution algorithms may yield either result.
+در این مثال، باید نسخه‌ای از هر دو `foo` و `bar` انتخاب شود؛ اما تعیین اینکه کدام نسخه، نیازمند در نظر گرفتن dependencyهای هر نسخه از `foo` و `bar` است. `foo 2.0.0` و `bar 2.0.0` را نمی‌توان با هم نصب کرد، چون در نسخهٔ موردنیاز `lib` با یکدیگر تعارض دارند؛ پس resolver باید یا `foo 1.0.0` (همراه با `bar 2.0.0`) یا `bar 1.0.0` (همراه با `foo 2.0.0`) را انتخاب کند. هر دو راه‌حل معتبرند و الگوریتم‌های مختلف resolution ممکن است هر یک از آن‌ها را بدهند.
 
-## Platform markers
+## Platform markers {#platform-markers}
 
-Markers allow attaching an expression to requirements that indicate when the dependency should be
-used. For example `bar ; python_version < "3.9"` indicates that `bar` should only be installed on
-Python 3.8 and earlier.
+Markerها امکان می‌دهند عبارتی به requirementها ضمیمه شود که نشان می‌دهد dependency چه زمانی باید استفاده شود. برای مثال، `bar ; python_version < "3.9"` نشان می‌دهد که `bar` فقط باید روی Python 3.8 و نسخه‌های قدیمی‌تر نصب شود.
 
-Markers are used to adjust a package's dependencies based on the current environment or platform.
-For example, markers can be used to modify dependencies by operating system, CPU architecture,
-Python version, Python implementation, and more.
+Markerها برای تنظیم dependencyهای یک package بر اساس environment یا platform جاری استفاده می‌شوند. برای مثال، می‌توان از markerها برای تغییر dependencyها بر اساس سیستم‌عامل، معماری CPU، نسخهٔ Python، پیاده‌سازی Python و موارد دیگر استفاده کرد.
 
 !!! note
 
-    See the [environment
-    markers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#environment-markers)
-    section in the Python Packaging documentation for more details about markers.
+    برای جزئیات بیشتر دربارهٔ markerها، به بخش [environment markers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#environment-markers) در مستندات Python Packaging مراجعه کنید.
 
-Markers are important for resolution because their values change the required dependencies.
-Typically, Python package resolvers use the markers of the _current_ platform to determine which
-dependencies to use since the package is often being _installed_ on the current platform. However,
-for _locking_ dependencies this is problematic — the lockfile would only work for developers using
-the same platform the lockfile was created on. To solve this problem, platform-independent, or
-"universal" resolvers exist.
+Markerها برای resolution مهم‌اند، چون مقدار آن‌ها dependencyهای موردنیاز را تغییر می‌دهد. معمولاً resolverهای package در Python از markerهای platform _جاری_ برای تعیین dependencyهای مورداستفاده بهره می‌برند، چون package اغلب روی همان platform جاری _نصب_ می‌شود. اما برای _lock کردن_ dependencyها این روش مشکل‌ساز است — lockfile فقط برای توسعه‌دهندگانی کار می‌کند که از همان platform استفاده می‌کنند که lockfile روی آن ساخته شده است. برای حل این مشکل، resolverهای مستقل از platform یا «سراسری» (universal) وجود دارند.
 
-uv supports both [platform-specific](#platform-specific-resolution) and
-[universal](#universal-resolution) resolution.
+uv هم از [resolution مخصوص platform](#platform-specific-resolution) و هم از [resolution سراسری](#universal-resolution) پشتیبانی می‌کند.
 
-## Platform-specific resolution
+## resolution مخصوص platform {#platform-specific-resolution}
 
-By default, uv's pip interface, i.e., [`uv pip compile`](../pip/compile.md), produces a resolution
-that is platform-specific, like `pip-tools`. There is no way to use platform-specific resolution in
-uv's project interface.
+به‌طور پیش‌فرض، رابط pip در uv، یعنی [`uv pip compile`](../pip/compile.md)، resolutionای تولید می‌کند که مخصوص platform است، مانند `pip-tools`. در رابط project در uv هیچ راهی برای استفاده از resolution مخصوص platform وجود ندارد.
 
-uv also supports resolving for specific, alternate platforms and Python versions with the
-`--python-platform` and `--python-version` options. For example, if using Python 3.12 on macOS,
-`uv pip compile --python-platform linux --python-version 3.10 requirements.in` can be used to
-produce a resolution for Python 3.10 on Linux instead. Unlike universal resolution, during
-platform-specific resolution, the provided `--python-version` is the exact python version to use,
-not a lower bound.
+uv همچنین از resolution برای platformها و نسخه‌های Python مشخص و جایگزین، با گزینه‌های `--python-platform` و `--python-version` پشتیبانی می‌کند. برای مثال، اگر از Python 3.12 روی macOS استفاده می‌کنید، می‌توان از `uv pip compile --python-platform linux --python-version 3.10 requirements.in` برای تولید resolutionای برای Python 3.10 روی Linux استفاده کرد. برخلاف resolution سراسری، در resolution مخصوص platform، مقدار `--python-version` دقیقاً همان نسخهٔ Python مورداستفاده است، نه یک کران پایین.
 
 !!! note
 
-    Python's environment markers expose far more information about the current machine
-    than can be expressed by a simple `--python-platform` argument. For example, the `platform_version` marker
-    on macOS includes the time at which the kernel was built, which can (in theory) be encoded in
-    package requirements. uv's resolver makes a best-effort attempt to generate a resolution that is
-    compatible with any machine running on the target `--python-platform`, which should be sufficient for
-    most use cases, but may lose fidelity for complex package and platform combinations.
+    markerهای environment در Python اطلاعات بسیار بیشتری دربارهٔ ماشین جاری در اختیار می‌گذارند تا آنچه بتوان با یک آرگومان سادهٔ `--python-platform` بیان کرد. برای مثال، marker `platform_version` روی macOS شامل زمانی است که کرنل ساخته شده است؛ چیزی که (در تئوری) می‌توان آن را در requirementهای package کدگذاری کرد. resolver در uv با بهترین تلاش، resolutionای تولید می‌کند که با هر ماشینی که روی platform هدفِ `--python-platform` کار می‌کند سازگار باشد؛ این برای بیشتر موارد استفاده کافی است، اما ممکن است برای ترکیب‌های پیچیدهٔ package و platform دقت را از دست بدهد.
 
-## Universal resolution
+## resolution سراسری {#universal-resolution}
 
-uv's lockfile (`uv.lock`) is created with a universal resolution and is portable across platforms.
-This ensures that dependencies are locked for everyone working on the project, regardless of
-operating system, architecture, and Python version. The uv lockfile is created and modified by
-[project](../concepts/projects/index.md) commands such as `uv lock`, `uv sync`, and `uv add`.
+lockfile در uv (`uv.lock`) با یک resolution سراسری ساخته می‌شود و در platformهای مختلف قابل‌حمل است. این تضمین می‌کند که dependencyها برای همهٔ کسانی که روی project کار می‌کنند lock شده‌اند، صرف‌نظر از سیستم‌عامل، معماری و نسخهٔ Python. lockfile در uv با دستورهای [project](../concepts/projects/index.md) مانند `uv lock`، `uv sync` و `uv add` ساخته و تغییر داده می‌شود.
 
-Universal resolution is also available in uv's pip interface, i.e.,
-[`uv pip compile`](../pip/compile.md), with the `--universal` flag. The resulting requirements file
-will contain markers to indicate which platform each dependency is relevant for.
+resolution سراسری در رابط pip در uv نیز موجود است، یعنی [`uv pip compile`](../pip/compile.md)، با فلگ `--universal`. فایل requirementهای حاصل، markerهایی خواهد داشت که نشان می‌دهند هر dependency مربوط به کدام platform است.
 
-During universal resolution, a package may be listed multiple times with different versions or URLs
-if different versions are needed for different platforms — the markers determine which version will
-be used. A universal resolution is often more constrained than a platform-specific resolution, since
-we need to take the requirements for all markers into account.
+در resolution سراسری، ممکن است یک package چند بار با نسخه‌ها یا URLهای متفاوت فهرست شود، اگر برای platformهای مختلف به نسخه‌های متفاوتی نیاز باشد — markerها تعیین می‌کنند کدام نسخه استفاده خواهد شد. resolution سراسری اغلب محدودتر از resolution مخصوص platform است، چون باید requirementهای مربوط به همهٔ markerها را در نظر گرفت.
 
-During universal resolution, all required packages must be compatible with the _entire_ range of
-`requires-python` declared in the `pyproject.toml`. For example, if a project's `requires-python` is
-`>=3.8`, resolution will fail if all versions of given dependency require Python 3.9 or later, since
-the dependency lacks a usable version for (e.g.) Python 3.8, the lower bound of the project's
-supported range. In other words, the project's `requires-python` must be a subset of the
-`requires-python` of all its dependencies.
+در resolution سراسری، همهٔ packageهای موردنیاز باید با _کل_ بازهٔ `requires-python` اعلام‌شده در `pyproject.toml` سازگار باشند. برای مثال، اگر مقدار `requires-python` در یک project برابر `>=3.8` باشد، resolution در صورتی شکست می‌خورد که همهٔ نسخه‌های یک dependency به Python 3.9 یا جدیدتر نیاز داشته باشند، چون آن dependency نسخهٔ قابل‌استفاده‌ای برای (مثلاً) Python 3.8، یعنی کران پایین بازهٔ پشتیبانی‌شدهٔ project، ندارد. به عبارت دیگر، مقدار `requires-python` در project باید زیرمجموعهٔ مقدار `requires-python` در همهٔ dependencyهای آن باشد.
 
-When selecting the compatible version for a given dependency, uv will
-([by default](#multi-version-resolution)) attempt to choose the latest compatible version for each
-supported Python version. For example, if a project's `requires-python` is `>=3.8`, and the latest
-version of a dependency requires Python 3.9 or later, while all prior versions support Python 3.8,
-the resolver will select the latest version for users running Python 3.9 or later, and previous
-versions for users running Python 3.8.
+هنگام انتخاب نسخهٔ سازگار برای یک dependency مشخص، uv ([به‌طور پیش‌فرض](#multi-version-resolution)) تلاش می‌کند جدیدترین نسخهٔ سازگار را برای هر نسخهٔ پشتیبانی‌شدهٔ Python انتخاب کند. برای مثال، اگر مقدار `requires-python` در یک project برابر `>=3.8` باشد و جدیدترین نسخهٔ یک dependency به Python 3.9 یا جدیدتر نیاز داشته باشد، در حالی که همهٔ نسخه‌های قبلی از Python 3.8 پشتیبانی می‌کنند، resolver جدیدترین نسخه را برای کاربرانی که Python 3.9 یا جدیدتر اجرا می‌کنند و نسخه‌های قبلی را برای کاربرانی که Python 3.8 اجرا می‌کنند انتخاب می‌کند.
 
-When evaluating `requires-python` ranges for dependencies, uv only considers lower bounds and
-ignores upper bounds entirely. For example, `>=3.8, <4` is treated as `>=3.8`. Respecting upper
-bounds on `requires-python` often leads to formally correct but practically incorrect resolutions,
-as, e.g., resolvers will backtrack to the first published version that omits the upper bound (see:
-[`Requires-Python` upper limits](https://discuss.python.org/t/requires-python-upper-limits/12663)).
+هنگام ارزیابی بازه‌های `requires-python` برای dependencyها، uv فقط کران‌های پایین را در نظر می‌گیرد و کران‌های بالا را کاملاً نادیده می‌گیرد. برای مثال، `>=3.8, <4` به‌صورت `>=3.8` در نظر گرفته می‌شود. رعایت کران‌های بالا روی `requires-python` اغلب به resolutionهایی منجر می‌شود که از نظر صوری درست‌اند اما در عمل نادرست‌اند؛ چون، برای مثال، resolverها به اولین نسخهٔ منتشرشده‌ای بازمی‌گردند که کران بالا را ندارد (نگاه کنید به: [`Requires-Python` upper limits](https://discuss.python.org/t/requires-python-upper-limits/12663)).
 
-## Limited resolution environments
+## environmentهای resolution محدود {#limited-resolution-environments}
 
-By default, the universal resolver attempts to solve for all platforms and Python versions.
+به‌طور پیش‌فرض، resolver سراسری تلاش می‌کند برای همهٔ platformها و نسخه‌های Python حل کند.
 
-If your project supports only a limited set of platforms or Python versions, you can constrain the
-set of solved platforms via the `environments` setting, which accepts a list of
-[PEP 508 environment markers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#environment-markers).
-In other words, you can use the `environments` setting to _reduce_ the set of supported platforms.
+اگر project شما فقط از مجموعهٔ محدودی از platformها یا نسخه‌های Python پشتیبانی می‌کند، می‌توانید مجموعهٔ platformهای حل‌شده را با تنظیم `environments` محدود کنید؛ این تنظیم فهرستی از [markerهای environment در PEP 508](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#environment-markers) را می‌پذیرد. به عبارت دیگر، می‌توانید از تنظیم `environments` برای _کاهش_ مجموعهٔ platformهای پشتیبانی‌شده استفاده کنید.
 
-For example, to constrain the lockfile to macOS and Linux, and avoid solving for Windows:
+برای مثال، برای محدود کردن lockfile به macOS و Linux و حل نکردن برای Windows:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -158,7 +92,7 @@ environments = [
 ]
 ```
 
-Or, to avoid solving for alternative Python implementations:
+یا، برای حل نکردن برای پیاده‌سازی‌های جایگزین Python:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -167,47 +101,23 @@ environments = [
 ]
 ```
 
-Entries in the `environments` setting must be disjoint (i.e., they must not overlap). For example,
-`sys_platform == 'darwin'` and `sys_platform == 'linux'` are disjoint, but
-`sys_platform == 'darwin'` and `python_version >= '3.9'` are not, since both could be true at the
-same time.
+ورودی‌های تنظیم `environments` باید جدا از هم باشند (یعنی نباید هم‌پوشانی داشته باشند). برای مثال، `sys_platform == 'darwin'` و `sys_platform == 'linux'` جدا از هم‌اند، اما `sys_platform == 'darwin'` و `python_version >= '3.9'` جدا نیستند، چون هر دو می‌توانند هم‌زمان درست باشند.
 
-## Required environments
+## environmentهای موردنیاز {#required-environments}
 
-In the Python ecosystem, packages can be published as source distributions, built distributions
-(wheels), or both; but to install a package, a built distribution is required. If a package lacks a
-built distribution, or lacks a distribution for the current platform or Python version (built
-distributions are often platform-specific), uv will attempt to build the package from source, then
-install the resulting built distribution.
+در اکوسیستم Python، packageها می‌توانند به‌صورت source distribution، built distribution (wheel) یا هر دو منتشر شوند؛ اما برای نصب یک package، به یک built distribution نیاز است. اگر packageای built distribution نداشته باشد، یا distributionای برای platform یا نسخهٔ Python جاری نداشته باشد (built distributionها اغلب مخصوص platform هستند)، uv تلاش می‌کند package را از source بسازد و سپس distribution ساخته‌شده را نصب کند.
 
-Some packages (like PyTorch) publish built distributions, but omit a source distribution. Such
-packages are _only_ installable on platforms for which a built distribution is available. For
-example, if a package publishes built distributions for Linux, but not macOS or Windows, then that
-package will _only_ be installable on Linux.
+برخی packageها (مانند PyTorch) built distribution منتشر می‌کنند، اما source distribution ندارند. چنین packageهایی _فقط_ روی platformهایی قابل‌نصب‌اند که built distribution برایشان موجود باشد. برای مثال، اگر packageای built distribution برای Linux منتشر کند اما برای macOS یا Windows نه، آن package _فقط_ روی Linux قابل‌نصب خواهد بود.
 
-Packages that lack source distributions cause problems for universal resolution, since there will
-typically be at least one platform or Python version for which the package is not installable.
+packageهایی که source distribution ندارند برای resolution سراسری مشکل‌ساز می‌شوند، چون معمولاً حداقل یک platform یا نسخهٔ Python وجود خواهد داشت که package روی آن قابل‌نصب نیست.
 
-By default, uv requires each such package to include at least one wheel that is compatible with the
-target Python version. The `required-environments` setting can be used to ensure that the resulting
-resolution contains wheels for specific platforms, or fails if no such wheels are available. The
-setting accepts a list of
-[PEP 508 environment markers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#environment-markers).
+به‌طور پیش‌فرض، uv ایجاب می‌کند که هر یک از این packageها حداقل یک wheel سازگار با نسخهٔ هدف Python داشته باشند. می‌توان از تنظیم `required-environments` استفاده کرد تا مطمئن شد resolution حاصل برای platformهای مشخص wheel دارد، یا در صورت نبود چنین wheelهایی شکست بخورد. این تنظیم فهرستی از [markerهای environment در PEP 508](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#environment-markers) را می‌پذیرد.
 
-While the `environments` setting _limits_ the set of environments that uv will consider when
-resolving dependencies, `required-environments` _expands_ the set of platforms that uv _must_
-support when resolving dependencies.
+در حالی که تنظیم `environments` مجموعهٔ environmentهایی را که uv هنگام resolution dependencyها در نظر می‌گیرد _محدود_ می‌کند، `required-environments` مجموعهٔ platformهایی را که uv هنگام resolution dependencyها _باید_ پشتیبانی کند _گسترش_ می‌دهد.
 
-For example, `environments = ["sys_platform == 'darwin'"]` would limit uv to solving for macOS (and
-ignoring Linux and Windows). On the other hand,
-`required-environments = ["sys_platform == 'darwin'"]` would _require_ that any package without a
-source distribution include a wheel for macOS in order to be installable (and would fail if no such
-wheel is available).
+برای مثال، `environments = ["sys_platform == 'darwin'"]` باعث می‌شود uv فقط برای macOS حل کند (و Linux و Windows را نادیده بگیرد). در مقابل، `required-environments = ["sys_platform == 'darwin'"]` _ایجاب می‌کند_ که هر package بدون source distribution، برای قابل‌نصب بودن، یک wheel برای macOS داشته باشد (و اگر چنین wheelای موجود نباشد، شکست می‌خورد).
 
-In practice, `required-environments` can be useful for declaring explicit support for non-latest
-platforms, since this often requires backtracking past the latest published versions of those
-packages. For example, to guarantee that any built distribution-only packages includes support for
-Intel macOS:
+در عمل، `required-environments` می‌تواند برای اعلام صریح پشتیبانی از platformهای غیر از جدیدترین‌ها مفید باشد، چون این کار اغلب نیازمند بازگشت به نسخه‌های قدیمی‌تر منتشرشدهٔ آن packageهاست. برای مثال، برای تضمین اینکه packageهای فقط-built-distribution از macOS اینتل پشتیبانی کنند:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -216,9 +126,7 @@ required-environments = [
 ]
 ```
 
-To require a macOS release, use its
-[Darwin kernel version](<https://en.wikipedia.org/wiki/Darwin_(operating_system)#Darwin_20_onwards>)
-in `platform_release`. For example, macOS 15 uses Darwin 24:
+برای الزام به یک نسخهٔ macOS، از [نسخهٔ کرنل Darwin](<https://en.wikipedia.org/wiki/Darwin_(operating_system)#Darwin_20_onwards>) در `platform_release` استفاده کنید. برای مثال، macOS 15 از Darwin 24 استفاده می‌کند:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -227,21 +135,17 @@ required-environments = [
 ]
 ```
 
-Use `==` to require coverage at the baseline. A range like `>= '24.0.0'` can be satisfied by a wheel
-that only supports a newer release. Wheels targeting newer releases are still retained in the
-lockfile.
+برای الزام به پوشش در خط پایه، از `==` استفاده کنید. بازه‌ای مانند `>= '24.0.0'` را می‌توان با wheelای برآورده کرد که فقط از نسخهٔ جدیدتری پشتیبانی می‌کند. wheelهایی که نسخه‌های جدیدتر را هدف می‌گیرند، همچنان در lockfile باقی می‌مانند.
 
-### Minimum libc version
+### حداقل نسخهٔ libc {#minimum-libc-version}
 
 !!! note
 
-    `minimum-libc-version` is in preview. Use `--preview-features minimum-libc-version` or
-    `preview-features = ["minimum-libc-version"]` to disable the warning.
+    `minimum-libc-version` در preview است. برای غیرفعال کردن هشدار، از `--preview-features minimum-libc-version` یا `preview-features = ["minimum-libc-version"]` استفاده کنید.
 
-Environment markers do not include the libc implementation or version. The `minimum-libc-version`
-setting specifies the oldest libc versions that must be supported in `required-environments`.
+markerهای environment شامل پیاده‌سازی یا نسخهٔ libc نمی‌شوند. تنظیم `minimum-libc-version` قدیمی‌ترین نسخه‌های libc را مشخص می‌کند که باید در `required-environments` پشتیبانی شوند.
 
-For example, to require support for glibc 2.31 on x86-64 and ARM64 Linux:
+برای مثال، برای الزام به پشتیبانی از glibc 2.31 روی Linux با x86-64 و ARM64:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -253,82 +157,57 @@ required-environments = [
 minimum-libc-version = { glibc = "2.31" }
 ```
 
-With this configuration, a `manylinux_2_17` wheel satisfies the glibc requirement, but a
-`manylinux_2_34` wheel does not. Both are retained in the lockfile and exported hashes, so machines
-with newer glibc versions can install the newer wheel. Musl wheels are also retained, but do not
-satisfy the glibc requirement. Omitting a libc implementation means it is not required, not
-excluded.
+با این پیکربندی، یک wheel از نوع `manylinux_2_17` نیازمندی glibc را برآورده می‌کند، اما wheel از نوع `manylinux_2_34` این کار را نمی‌کند. هر دو در lockfile و hashهای exportشده باقی می‌مانند، پس ماشین‌هایی که نسخه‌های جدیدتر glibc دارند می‌توانند wheel جدیدتر را نصب کنند. wheelهای Musl نیز باقی می‌مانند، اما نیازمندی glibc را برآورده نمی‌کنند. حذف یک پیاده‌سازی libc به این معناست که الزامی نیست، نه اینکه حذف شده باشد.
 
-To require both glibc and musl support, set a version for each:
+برای الزام به پشتیبانی هم از glibc و هم از musl، برای هر کدام نسخه‌ای تعیین کنید:
 
 ```toml
 minimum-libc-version = { glibc = "2.31", musl = "1.2" }
 ```
 
-Each configured libc version needs coverage in `required-environments`. If a required environment
-has no compatible wheel or usable source distribution, uv will try another version of the package.
-Generic Linux wheels, such as `linux_x86_64`, do not constrain libc and can satisfy either
-implementation.
+هر نسخهٔ libc پیکربندی‌شده به پوشش در `required-environments` نیاز دارد. اگر یک environment موردنیاز wheel سازگار یا source distribution قابل‌استفاده‌ای نداشته باشد، uv نسخهٔ دیگری از package را امتحان می‌کند. wheelهای عمومی Linux، مانند `linux_x86_64`، libc را محدود نمی‌کنند و می‌توانند هر یک از پیاده‌سازی‌ها را برآورده کنند.
 
-## Common marker values
+## مقادیر رایج marker {#common-marker-values}
 
-The `environments` and `required-environments` settings accept
-[PEP 508 environment markers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#environment-markers).
-The values for these markers are derived from the Python runtime (e.g.,
-[`sys.platform`](https://docs.python.org/3/library/sys.html#sys.platform),
-[`platform.machine()`](https://docs.python.org/3/library/platform.html#platform.machine),
-[`platform.system()`](https://docs.python.org/3/library/platform.html#platform.system), and
-[`os.name`](https://docs.python.org/3/library/os.html#os.name)).
+تنظیم‌های `environments` و `required-environments`، [markerهای environment در PEP 508](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#environment-markers) را می‌پذیرند. مقدار این markerها از runtime در Python گرفته می‌شود (برای مثال، [`sys.platform`](https://docs.python.org/3/library/sys.html#sys.platform)، [`platform.machine()`](https://docs.python.org/3/library/platform.html#platform.machine)، [`platform.system()`](https://docs.python.org/3/library/platform.html#platform.system) و [`os.name`](https://docs.python.org/3/library/os.html#os.name)).
 
-For quick reference, the most common marker values by platform are:
+برای مرجع سریع، رایج‌ترین مقدارهای marker بر اساس platform عبارت‌اند از:
 
-| Marker                      | Linux       | macOS      | Windows     |
+| marker | Linux | macOS | Windows |
 | --------------------------- | ----------- | ---------- | ----------- |
-| `sys_platform`              | `'linux'`   | `'darwin'` | `'win32'`   |
-| `platform_system`           | `'Linux'`   | `'Darwin'` | `'Windows'` |
-| `platform_machine` (x86-64) | `'x86_64'`  | `'x86_64'` | `'AMD64'`   |
-| `platform_machine` (ARM64)  | `'aarch64'` | `'arm64'`  | `'ARM64'`   |
-| `os_name`                   | `'posix'`   | `'posix'`  | `'nt'`      |
+| `sys_platform` | `'linux'` | `'darwin'` | `'win32'` |
+| `platform_system` | `'Linux'` | `'Darwin'` | `'Windows'` |
+| `platform_machine` (x86-64) | `'x86_64'` | `'x86_64'` | `'AMD64'` |
+| `platform_machine` (ARM64) | `'aarch64'` | `'arm64'` | `'ARM64'` |
+| `os_name` | `'posix'` | `'posix'` | `'nt'` |
 
 !!! note
 
-    On Windows, `sys_platform` is always `'win32'`, even on 64-bit systems.
+    روی Windows، مقدار `sys_platform` همیشه `'win32'` است، حتی روی سیستم‌های ۶۴ بیتی.
 
-You can check the values for your current platform by running:
+می‌توانید مقدارها را برای platform جاری خود با اجرای این دستور بررسی کنید:
 
 ```console
 $ uvx python -c "import sysconfig; print(sysconfig.get_config_vars())"
 ```
 
-## Dependency preferences
+## ترجیحات dependency {#dependency-preferences}
 
-If resolution output file exists, i.e., a uv lockfile (`uv.lock`) or a requirements output file
-(`requirements.txt`), uv will _prefer_ the dependency versions listed there. Similarly, if
-installing a package into a virtual environment, uv will prefer the already installed version if
-present. This means that locked or installed versions will not change unless an incompatible version
-is requested or an upgrade is explicitly requested with `--upgrade`.
+اگر فایل خروجی resolution وجود داشته باشد، یعنی یک lockfile در uv (`uv.lock`) یا یک فایل خروجی requirementها (`requirements.txt`)، uv نسخه‌های dependency فهرست‌شده در آن را _ترجیح_ می‌دهد. به همین ترتیب، اگر packageای در یک virtual environment نصب می‌شود، uv نسخهٔ از پیش نصب‌شده را در صورت وجود ترجیح می‌دهد. این یعنی نسخه‌های lockشده یا نصب‌شده تغییر نمی‌کنند، مگر اینکه نسخهٔ ناسازگاری درخواست شود یا ارتقا به‌صورت صریح با `--upgrade` درخواست شود.
 
-## Resolution strategy
+## استراتژی resolution {#resolution-strategy}
 
-By default, uv tries to use the latest version of each package. For example,
-`uv pip install flask>=2.0.0` will install the latest version of Flask, e.g., 3.0.0. If
-`flask>=2.0.0` is a dependency of the project, only `flask` 3.0.0 will be used. This is important,
-for example, because running tests will not check that the project is actually compatible with its
-stated lower bound of `flask` 2.0.0.
+به‌طور پیش‌فرض، uv تلاش می‌کند از جدیدترین نسخهٔ هر package استفاده کند. برای مثال، `uv pip install flask>=2.0.0` جدیدترین نسخهٔ Flask، مثلاً 3.0.0، را نصب می‌کند. اگر `flask>=2.0.0` یک dependency در project باشد، فقط از `flask` نسخهٔ 3.0.0 استفاده می‌شود. این موضوع مهم است، چون برای مثال، اجرای تست‌ها بررسی نمی‌کند که project واقعاً با کران پایین اعلام‌شدهٔ خود، یعنی `flask` نسخهٔ 2.0.0، سازگار است.
 
-With `--resolution lowest`, uv will install the lowest possible version for all dependencies, both
-direct and indirect (transitive). Alternatively, `--resolution lowest-direct` will use the lowest
-compatible versions for all direct dependencies, while using the latest compatible versions for all
-other dependencies. uv will always use the latest versions for build dependencies.
+با `--resolution lowest`، uv کمترین نسخهٔ ممکن را برای همهٔ dependencyها، هم مستقیم و هم غیرمستقیم (transitive)، نصب می‌کند. به‌عنوان جایگزین، `--resolution lowest-direct` کمترین نسخه‌های سازگار را برای همهٔ dependencyهای مستقیم استفاده می‌کند، در حالی که برای بقیهٔ dependencyها از جدیدترین نسخه‌های سازگار استفاده می‌کند. uv همیشه برای dependencyهای build از جدیدترین نسخه‌ها استفاده می‌کند.
 
-For example, given the following `requirements.in` file:
+برای مثال، با فرض فایل `requirements.in` زیر:
 
 ```requirements title="requirements.in"
 flask>=2.0.0
 ```
 
-Running `uv pip compile requirements.in -o requirements.txt` would produce the following
-`requirements.txt` file:
+اجرای `uv pip compile requirements.in -o requirements.txt` فایل `requirements.txt` زیر را تولید می‌کند:
 
 ```requirements title="requirements.txt"
 # This file was autogenerated by uv via the following command:
@@ -350,8 +229,7 @@ werkzeug==3.0.1
     # via flask
 ```
 
-However, `uv pip compile --resolution lowest requirements.in -o requirements.txt` would instead
-produce:
+اما `uv pip compile --resolution lowest requirements.in -o requirements.txt` به‌جای آن این را تولید می‌کند:
 
 ```requirements title="requirements.txt"
 # This file was autogenerated by uv via the following command:
@@ -369,21 +247,15 @@ werkzeug==2.0.0
     # via flask
 ```
 
-When publishing libraries, it is recommended to separately run tests with `--resolution lowest` or
-`--resolution lowest-direct` in continuous integration to ensure compatibility with the declared
-lower bounds.
+هنگام انتشار libraryها، توصیه می‌شود تست‌ها را جداگانه با `--resolution lowest` یا `--resolution lowest-direct` در یکپارچه‌سازی مداوم اجرا کنید تا از سازگاری با کران‌های پایین اعلام‌شده مطمئن شوید.
 
-## Pre-release handling
+## مدیریت pre-release {#pre-release-handling}
 
-By default (`if-necessary`), uv prefers stable versions over pre-releases, falling back to
-pre-releases only if every stable candidate that satisfies the active constraints is rejected during
-resolution.
+به‌طور پیش‌فرض (`if-necessary`)، uv نسخه‌های پایدار را به pre-releaseها ترجیح می‌دهد و فقط در صورتی به pre-releaseها برمی‌گردد که همهٔ کاندیداهای پایداری که constraintهای فعال را برآورده می‌کنند، در طول resolution رد شوند.
 
-Use `--prerelease allow` to consider pre-releases for every package without preferring stable
-candidates first, or `--prerelease disallow` to exclude them entirely.
+از `--prerelease allow` استفاده کنید تا pre-releaseها برای هر package بدون ترجیح دادن اول کاندیداهای پایدار در نظر گرفته شوند، یا از `--prerelease disallow` استفاده کنید تا کاملاً حذف شوند.
 
-Use `--prerelease-package foo=allow` to override the global pre-release strategy for a specific
-package. Package-specific strategies can also be configured in `[tool.uv]`:
+از `--prerelease-package foo=allow` استفاده کنید تا استراتژی سراسری pre-release را برای یک package مشخص بازنویسی کنید. استراتژی‌های خاص package را می‌توان در `[tool.uv]` نیز پیکربندی کرد:
 
 ```toml
 [tool.uv]
@@ -391,30 +263,19 @@ prerelease = "disallow"
 prerelease-package = { foo = "allow", bar = "if-necessary" }
 ```
 
-The `explicit` mode considers pre-releases only for first-party requirements that contain a
-pre-release identifier (preferring stable versions and falling back to pre-releases only if
-necessary), while disallowing pre-releases for all other packages.
+حالت `explicit` pre-releaseها را فقط برای requirementهای first-party که شناسهٔ pre-release دارند در نظر می‌گیرد (نسخه‌های پایدار را ترجیح می‌دهد و فقط در صورت لزوم به pre-releaseها برمی‌گردد)، در حالی که pre-releaseها را برای بقیهٔ packageها مجاز نمی‌داند.
 
-For more details, see
-[Pre-release compatibility](../pip/compatibility.md#pre-release-compatibility).
+برای جزئیات بیشتر، به [سازگاری pre-release](../pip/compatibility.md#pre-release-compatibility) مراجعه کنید.
 
-## Multi-version resolution
+## resolution چندنسخه‌ای {#multi-version-resolution}
 
-During universal resolution, a package may be listed multiple times with different versions or URLs
-within the same lockfile, since different versions may be needed for different platforms or Python
-versions.
+در طول resolution سراسری، ممکن است یک package چند بار با نسخه‌ها یا URLهای متفاوت در همان lockfile فهرست شود، چون ممکن است برای platformها یا نسخه‌های مختلف Python به نسخه‌های متفاوتی نیاز باشد.
 
-The `--fork-strategy` setting can be used to control how uv trades off between (1) minimizing the
-number of selected versions and (2) selecting the latest-possible version for each platform. The
-former leads to greater consistency across platforms, while the latter leads to use of newer package
-versions where possible.
+می‌توان از تنظیم `--fork-strategy` برای کنترل اینکه uv چگونه بین (۱) کمینه کردن تعداد نسخه‌های انتخاب‌شده و (۲) انتخاب جدیدترین نسخهٔ ممکن برای هر platform، تعادل برقرار می‌کند، استفاده کرد. مورد اول به سازگاری بیشتر در platformها منجر می‌شود، در حالی که مورد دوم به استفاده از نسخه‌های جدیدتر package در جاهایی که ممکن است منجر می‌شود.
 
-By default (`--fork-strategy requires-python`), uv will optimize for selecting the latest version of
-each package for each supported Python version, while minimizing the number of selected versions
-across platforms.
+به‌طور پیش‌فرض (`--fork-strategy requires-python`)، uv برای انتخاب جدیدترین نسخهٔ هر package برای هر نسخهٔ پشتیبانی‌شدهٔ Python بهینه‌سازی می‌کند، در حالی که تعداد نسخه‌های انتخاب‌شده در platformها را کمینه می‌کند.
 
-For example, when resolving `numpy` with a Python requirement of `>=3.8`, uv would select the
-following versions:
+برای مثال، هنگام resolution برای `numpy` با نیازمندی Python برابر `>=3.8`، uv نسخه‌های زیر را انتخاب می‌کند:
 
 ```txt
 numpy==1.24.4 ; python_version == "3.8"
@@ -422,55 +283,29 @@ numpy==2.0.2 ; python_version == "3.9"
 numpy==2.2.0 ; python_version >= "3.10"
 ```
 
-This resolution reflects the fact that NumPy 2.2.0 and later require at least Python 3.10, while
-earlier versions are compatible with Python 3.8 and 3.9.
+این resolution نشان می‌دهد که NumPy 2.2.0 و نسخه‌های بعدی حداقل به Python 3.10 نیاز دارند، در حالی که نسخه‌های قبلی با Python 3.8 و 3.9 سازگارند.
 
-Under `--fork-strategy fewest`, uv will instead minimize the number of selected versions for each
-package, preferring older versions that are compatible with a wider range of supported Python
-versions or platforms.
+با `--fork-strategy fewest`، uv به‌جای آن تعداد نسخه‌های انتخاب‌شده برای هر package را کمینه می‌کند و نسخه‌های قدیمی‌تری را ترجیح می‌دهد که با بازهٔ وسیع‌تری از نسخه‌های پشتیبانی‌شدهٔ Python یا platformها سازگارند.
 
-For example, when in the scenario above, uv would select `numpy==1.24.4` for all Python versions,
-rather than upgrading to `numpy==2.0.2` for Python 3.9 and `numpy==2.2.0` for Python 3.10 and later.
+برای مثال، در سناریوی بالا، uv به‌جای ارتقا به `numpy==2.0.2` برای Python 3.9 و `numpy==2.2.0` برای Python 3.10 و نسخه‌های بعدی، `numpy==1.24.4` را برای همهٔ نسخه‌های Python انتخاب می‌کند.
 
-## Dependency constraints
+## constraintهای dependency {#dependency-constraints}
 
-Like pip, uv supports constraint files (`--constraint constraints.txt`) which narrow the set of
-acceptable versions for the given packages. Constraint files are similar to requirements files, but
-being listed as a constraint alone will not cause a package to be included in the resolution.
-Instead, constraints only take effect if a requested package is already pulled in as a direct or
-transitive dependency. Constraints are useful for reducing the range of available versions for a
-transitive dependency. They can also be used to keep a resolution in sync with some other set of
-resolved versions, regardless of which packages are overlapping between the two.
+مانند pip، uv از فایل‌های constraint (`--constraint constraints.txt`) پشتیبانی می‌کند که مجموعهٔ نسخه‌های قابل‌قبول برای packageهای داده‌شده را محدود می‌کنند. فایل‌های constraint شبیه فایل‌های requirement هستند، اما صرف فهرست شدن به‌عنوان constraint باعث نمی‌شود package در resolution گنجانده شود. در عوض، constraintها فقط زمانی اثر می‌گذارند که یک package درخواستی از قبل به‌عنوان dependency مستقیم یا transitive کشیده شده باشد. constraintها برای کاهش بازهٔ نسخه‌های موجود برای یک dependency از نوع transitive مفیدند. همچنین می‌توان از آن‌ها برای همگام نگه داشتن یک resolution با مجموعهٔ دیگری از نسخه‌های حل‌شده استفاده کرد، صرف‌نظر از اینکه کدام packageها بین این دو هم‌پوشانی دارند.
 
-## Dependency overrides
+## overrideهای dependency {#dependency-overrides}
 
-Dependency overrides allow bypassing unsuccessful or undesirable resolutions by overriding a
-package's declared dependencies. Overrides are a useful last resort for cases in which you _know_
-that a dependency is compatible with a certain version of a package, despite the metadata indicating
-otherwise.
+overrideهای dependency امکان دور زدن resolutionهای ناموفق یا نامطلوب را با بازنویسی dependencyهای اعلام‌شدهٔ یک package فراهم می‌کنند. overrideها آخرین راه‌حل مفیدی برای مواردی هستند که _می‌دانید_ یک dependency با نسخهٔ مشخصی از یک package سازگار است، با وجود اینکه metadata خلاف آن را نشان می‌دهد.
 
-For example, if a transitive dependency declares the requirement `pydantic>=1.0,<2.0`, but _does_
-work with `pydantic>=2.0`, the user can override the declared dependency by including
-`pydantic>=1.0,<3` in the overrides, thereby allowing the resolver to choose a newer version of
-`pydantic`.
+برای مثال، اگر یک dependency از نوع transitive، requirement با مقدار `pydantic>=1.0,<2.0` را اعلام کند، اما با `pydantic>=2.0` هم کار کند، کاربر می‌تواند dependency اعلام‌شده را با گنجاندن `pydantic>=1.0,<3` در overrideها بازنویسی کند و به این ترتیب به resolver اجازه دهد نسخهٔ جدیدتری از `pydantic` را انتخاب کند.
 
-Concretely, if `pydantic>=1.0,<3` is included as an override, uv will ignore all declared
-requirements on `pydantic`, replacing them with the override. In the above example, the
-`pydantic>=1.0,<2.0` requirement would be ignored completely, and would instead be replaced with
-`pydantic>=1.0,<3`.
+به‌طور مشخص، اگر `pydantic>=1.0,<3` به‌عنوان override گنجانده شود، uv همهٔ requirementهای اعلام‌شده روی `pydantic` را نادیده می‌گیرد و آن‌ها را با override جایگزین می‌کند. در مثال بالا، requirement با مقدار `pydantic>=1.0,<2.0` کاملاً نادیده گرفته می‌شود و به‌جای آن با `pydantic>=1.0,<3` جایگزین می‌شود.
 
-While constraints can only _reduce_ the set of acceptable versions for a package, overrides can
-_expand_ the set of acceptable versions, providing an escape hatch for erroneous upper version
-bounds. As with constraints, global overrides do not add a dependency on the package and only take
-effect if the package is requested in a direct or transitive dependency.
+در حالی که constraintها فقط می‌توانند مجموعهٔ نسخه‌های قابل‌قبول برای یک package را _کاهش_ دهند، overrideها می‌توانند مجموعهٔ نسخه‌های قابل‌قبول را _گسترش_ دهند و راه فراری برای کران‌های بالای نادرست نسخه فراهم کنند. مانند constraintها، overrideهای سراسری dependencyای روی package اضافه نمی‌کنند و فقط زمانی اثر می‌گذارند که package در یک dependency مستقیم یا transitive درخواست شده باشد.
 
-In a `pyproject.toml`, use `tool.uv.override-dependencies` to define a list of overrides. In the
-pip-compatible interface, the `--override` option can be used to pass files with the same format as
-constraints files.
+در `pyproject.toml`، از `tool.uv.override-dependencies` برای تعریف فهرستی از overrideها استفاده کنید. در رابط سازگار با pip، می‌توان از گزینهٔ `--override` برای ارسال فایل‌هایی با همان قالب فایل‌های constraint استفاده کرد.
 
-By default, an override applies to every requirement for the named dependency, including direct
-requirements. An override can instead be scoped to the dependencies of a particular package version
-by using an inline table:
+به‌طور پیش‌فرض، یک override روی همهٔ requirementها برای dependency نام‌برده اعمال می‌شود، از جمله requirementهای مستقیم. در عوض، می‌توان یک override را به dependencyهای یک نسخهٔ مشخص از package با استفاده از یک inline table محدود کرد:
 
 ```toml
 [tool.uv]
@@ -480,36 +315,24 @@ override-dependencies = [
 ]
 ```
 
-In this example, `foo>1` is the global override, while `foo>2` replaces requirements for `foo`
-declared by `bar==0.0.5`. If `bar` does not declare a dependency on `foo`, the scoped override adds
-it. Other dependencies declared by `bar` are unchanged. The `version` field in `package` can be
-omitted to apply the scoped overrides to all versions of `bar`. A version-specific entry takes
-precedence over an all-versions entry, and a scoped override takes precedence over a global override
-for the same dependency.
+در این مثال، `foo>1` override سراسری است، در حالی که `foo>2` جایگزین requirementهای `foo` اعلام‌شده توسط `bar==0.0.5` می‌شود. اگر `bar` dependencyای روی `foo` اعلام نکند، override محدودشده آن را اضافه می‌کند. بقیهٔ dependencyهای اعلام‌شده توسط `bar` بدون تغییر می‌مانند. فیلد `version` در `package` را می‌توان حذف کرد تا overrideهای محدودشده روی همهٔ نسخه‌های `bar` اعمال شوند. یک ورودی مخصوص نسخه بر ورودی همهٔ نسخه‌ها اولویت دارد و یک override محدودشده بر override سراسری برای همان dependency اولویت دارد.
 
-Scoped overrides currently support registry version specifiers only. Direct URL and path sources,
-including Git sources, and explicit indexes are not supported.
+overrideهای محدودشده در حال حاضر فقط از specifierهای نسخهٔ registry پشتیبانی می‌کنند. sourceهای URL مستقیم و path، از جمله sourceهای Git، و indexهای صریح پشتیبانی نمی‌شوند.
 
-Under the `explicit` pre-release mode, an explicit pre-release specifier in any scoped override
-permits stable-first pre-release fallback for that package for the entire resolution. Similarly, an
-exact yanked-version pin in any scoped override opts that package into yanked-version candidate
-selection for the entire resolution, even if the scope is not selected.
+در حالت pre-release از نوع `explicit`، یک specifier صریح pre-release در هر override محدودشده، بازگشت به pre-release با اولویت نسخهٔ پایدار را برای آن package در کل resolution مجاز می‌کند. به همین ترتیب، یک pin دقیق نسخهٔ yanked در هر override محدودشده، آن package را برای انتخاب کاندیدای نسخهٔ yanked در کل resolution وارد می‌کند، حتی اگر scope انتخاب نشده باشد.
 
-If multiple overrides are provided for the same package, they must be differentiated with
-[markers](#platform-markers). If a package has a dependency with a marker, it is replaced
-unconditionally when using overrides — it does not matter if the marker evaluates to true or false.
+اگر چند override برای همان package ارائه شود، باید با [markerها](#platform-markers) از هم متمایز شوند. اگر packageای dependencyای با marker داشته باشد، هنگام استفاده از overrideها بدون قید و شرط جایگزین می‌شود — مهم نیست marker درست ارزیابی شود یا نادرست.
 
-## Dependency exclusions
+## exclusionهای dependency {#dependency-exclusions}
 
-Dependency exclusions remove packages from the dependency graph. By default, an exclusion applies to
-every requirement for the named dependency, including direct requirements:
+exclusionهای dependency، packageها را از گراف dependency حذف می‌کنند. به‌طور پیش‌فرض، یک exclusion روی همهٔ requirementها برای dependency نام‌برده اعمال می‌شود، از جمله requirementهای مستقیم:
 
 ```toml
 [tool.uv]
 exclude-dependencies = ["foo"]
 ```
 
-An exclusion can instead be scoped to the dependencies of a particular package version:
+در عوض، می‌توان یک exclusion را به dependencyهای یک نسخهٔ مشخص از package محدود کرد:
 
 ```toml
 [tool.uv]
@@ -518,12 +341,9 @@ exclude-dependencies = [
 ]
 ```
 
-In this example, requirements for `foo` declared by `bar==0.0.5` are removed, while requirements for
-`foo` from other packages are unchanged. The `version` field in `package` can be omitted to apply
-the scoped exclusions to all versions of `bar`. A version-specific entry takes precedence over an
-all-versions entry.
+در این مثال، requirementهای `foo` اعلام‌شده توسط `bar==0.0.5` حذف می‌شوند، در حالی که requirementهای `foo` از packageهای دیگر بدون تغییر می‌مانند. فیلد `version` در `package` را می‌توان حذف کرد تا exclusionهای محدودشده روی همهٔ نسخه‌های `bar` اعمال شوند. یک ورودی مخصوص نسخه بر ورودی همهٔ نسخه‌ها اولویت دارد.
 
-Scoped exclusions can be combined with scoped overrides to replace one dependency with another:
+exclusionهای محدودشده را می‌توان با overrideهای محدودشده ترکیب کرد تا یک dependency با dependency دیگری جایگزین شود:
 
 ```toml
 [tool.uv]
@@ -535,29 +355,19 @@ exclude-dependencies = [
 ]
 ```
 
-If the same dependency is both overridden and excluded in a matching scope, the exclusion takes
-precedence.
+اگر همان dependency در یک scope تطبیق‌یافته هم override شده و هم exclude شده باشد، exclusion اولویت دارد.
 
-## Dependency metadata
+## metadata مربوط به dependency {#dependency-metadata}
 
-During resolution, uv needs to resolve the metadata for each package it encounters, in order to
-determine its dependencies. This metadata is often available as a static file in the package index;
-however, for packages that only provide source distributions, the metadata may not be available
-upfront.
+در طول resolution، uv نیاز دارد metadata هر package را که با آن روبه‌رو می‌شود حل کند تا dependencyهای آن را تعیین کند. این metadata اغلب به‌صورت یک فایل ایستا در package index در دسترس است؛ اما برای packageهایی که فقط source distribution ارائه می‌دهند، ممکن است metadata از ابتدا در دسترس نباشد.
 
-In such cases, uv has to build the package to determine its metadata (e.g., by invoking `setup.py`).
-This can introduce a performance penalty during resolution. Further, it imposes the requirement that
-the package can be built on all platforms, which may not be true.
+در چنین مواردی، uv باید package را بسازد تا metadata آن را تعیین کند (مثلاً با فراخوانی `setup.py`). این کار می‌تواند در طول resolution هزینهٔ عملکردی ایجاد کند. علاوه بر این، این الزام را تحمیل می‌کند که package روی همهٔ platformها قابل ساخت باشد، که ممکن است درست نباشد.
 
-For example, you may have a package that should only be built and installed on Linux, but doesn't
-build successfully on macOS or Windows. While uv can construct a perfectly valid lockfile for this
-scenario, doing so would require building the package, which would fail on non-Linux platforms.
+برای مثال، ممکن است packageای داشته باشید که فقط باید روی Linux ساخته و نصب شود، اما روی macOS یا Windows با موفقیت ساخته نمی‌شود. در حالی که uv می‌تواند یک lockfile کاملاً معتبر برای این سناریو بسازد، انجام این کار نیازمند ساخت package است که روی platformهای غیر Linux شکست می‌خورد.
 
-The `tool.uv.dependency-metadata` table can be used to provide static metadata for such dependencies
-upfront, thereby allowing uv to skip the build step and use the provided metadata instead.
+می‌توان از جدول `tool.uv.dependency-metadata` برای ارائهٔ metadata ایستا برای چنین dependencyهایی از ابتدا استفاده کرد و به این ترتیب به uv اجازه داد مرحلهٔ ساخت را رد کند و به‌جای آن از metadata ارائه‌شده استفاده کند.
 
-For example, to provide metadata for `chumpy` upfront, include its `dependency-metadata` in the
-`pyproject.toml`:
+برای مثال، برای ارائهٔ metadata برای `chumpy` از ابتدا، `dependency-metadata` آن را در `pyproject.toml` بگنجانید:
 
 ```toml
 [[tool.uv.dependency-metadata]]
@@ -566,15 +376,9 @@ version = "0.70"
 requires-dist = ["numpy>=1.8.1", "scipy>=0.13.0", "six>=1.11.0"]
 ```
 
-These declarations are intended for cases in which a package does _not_ declare static metadata
-upfront, though they are also useful for packages that require
-[disabling build isolation](./projects/config.md#build-isolation). In such cases, it may be easier
-to declare the package metadata upfront, rather than creating a custom build environment prior to
-resolving the package.
+این اعلام‌ها برای مواردی در نظر گرفته شده‌اند که packageای metadata ایستا را از ابتدا اعلام _نمی‌کند_، هرچند برای packageهایی که نیازمند [غیرفعال کردن build isolation](./projects/config.md#build-isolation) هستند نیز مفیدند. در چنین مواردی، ممکن است اعلام metadata مربوط به package از ابتدا آسان‌تر از ایجاد یک environment ساخت سفارشی پیش از resolution package باشد.
 
-For example, past versions of `flash-attn` did not declare static metadata. By declaring metadata
-for `flash-attn` upfront, uv can resolve `flash-attn` without building the package from source
-(which itself requires installing `torch`):
+برای مثال، نسخه‌های قدیمی `flash-attn` metadata ایستا اعلام نمی‌کردند. با اعلام metadata برای `flash-attn` از ابتدا، uv می‌تواند `flash-attn` را بدون ساخت package از source حل کند (کاری که خود نیازمند نصب `torch` است):
 
 ```toml
 [project]
@@ -592,36 +396,21 @@ version = "2.6.3"
 requires-dist = ["torch", "einops"]
 ```
 
-Like dependency overrides, `tool.uv.dependency-metadata` can also be used for cases in which a
-package's metadata is incorrect or incomplete, or when a package is not available in the package
-index. While dependency overrides allow overriding the allowed versions of a package globally,
-metadata overrides allow overriding the declared metadata of a _specific package_.
+مانند overrideهای dependency، می‌توان از `tool.uv.dependency-metadata` برای مواردی استفاده کرد که metadata یک package نادرست یا ناقص است، یا زمانی که package در package index موجود نیست. در حالی که overrideهای dependency اجازهٔ بازنویسی نسخه‌های مجاز یک package را به‌صورت سراسری می‌دهند، overrideهای metadata اجازهٔ بازنویسی metadata اعلام‌شدهٔ یک _package مشخص_ را می‌دهند.
 
-For a variant wheel at a direct URL, the wheel's `METADATA` must still be parseable even when
-`tool.uv.dependency-metadata` supplies its dependencies. For example, an override can replace an
-incorrect version constraint, but the original `Requires-Dist` entry must use valid syntax.
+برای یک wheel نوع variant در یک URL مستقیم، `METADATA` مربوط به wheel باید همچنان قابل تجزیه باشد، حتی زمانی که `tool.uv.dependency-metadata` dependencyهای آن را تأمین می‌کند. برای مثال، یک override می‌تواند یک constraint نادرست نسخه را جایگزین کند، اما ورودی اصلی `Requires-Dist` باید از نحو معتبر استفاده کند.
 
 !!! note
 
-    The `version` field in `tool.uv.dependency-metadata` is optional for registry-based
-    dependencies (when omitted, uv will assume the metadata applies to all versions of the package),
-    but _required_ for direct URL dependencies (like Git dependencies).
+    فیلد `version` در `tool.uv.dependency-metadata` برای dependencyهای مبتنی بر registry اختیاری است (وقتی حذف شود، uv فرض می‌کند metadata روی همهٔ نسخه‌های package اعمال می‌شود)، اما برای dependencyهای URL مستقیم (مانند dependencyهای Git) _الزامی_ است.
 
-Entries in the `tool.uv.dependency-metadata` table follow the
-[Metadata 2.3](https://packaging.python.org/en/latest/specifications/core-metadata/) specification,
-though only `name`, `version`, `requires-dist`, `requires-python`, and `provides-extra` are read by
-uv. The `version` field is also considered optional. If omitted, the metadata will be used for all
-versions of the specified package.
+ورودی‌های جدول `tool.uv.dependency-metadata` از مشخصات [Metadata 2.3](https://packaging.python.org/en/latest/specifications/core-metadata/) پیروی می‌کنند، هرچند uv فقط `name`، `version`، `requires-dist`، `requires-python` و `provides-extra` را می‌خواند. فیلد `version` نیز اختیاری در نظر گرفته می‌شود. اگر حذف شود، metadata برای همهٔ نسخه‌های package مشخص‌شده استفاده خواهد شد.
 
-## Conflicting dependencies
+## dependencyهای متعارض {#conflicting-dependencies}
 
-uv requires that all dependencies declared by a project are compatible with each other and resolves
-all dependencies together when creating the lockfile. This includes project dependencies, optional
-dependencies ("extras"), and dependency groups (development dependencies).
+uv نیاز دارد که همهٔ dependencyهای اعلام‌شده توسط یک project با یکدیگر سازگار باشند و هنگام ساخت lockfile همهٔ dependencyها را با هم حل می‌کند. این شامل dependencyهای project، dependencyهای اختیاری («extra»ها) و groupهای dependency (dependencyهای توسعه) می‌شود.
 
-If dependencies declared in one extra are not compatible with those in another extra, uv will fail
-to resolve the requirements of the project with an error. For example, consider two sets of optional
-dependencies that conflict with one another:
+اگر dependencyهای اعلام‌شده در یک extra با dependencyهای extra دیگر سازگار نباشند، uv در حل requirementهای project با خطا شکست می‌خورد. برای مثال، دو مجموعهٔ dependency اختیاری را در نظر بگیرید که با یکدیگر تعارض دارند:
 
 ```toml title="pyproject.toml"
 [project.optional-dependencies]
@@ -629,7 +418,7 @@ extra1 = ["numpy==2.1.2"]
 extra2 = ["numpy==2.0.0"]
 ```
 
-If you run `uv lock` with the above dependencies, resolution will fail:
+اگر `uv lock` را با dependencyهای بالا اجرا کنید، resolution شکست می‌خورد:
 
 ```console
 $ uv lock
@@ -639,9 +428,7 @@ $ uv lock
       And because your project requires myproject[extra1] and myproject[extra2], we can conclude that your projects's requirements are unsatisfiable.
 ```
 
-To work around this, uv supports explicit declaration of conflicts. If you specify that `extra1` and
-`extra2` are conflicting, uv will resolve them separately. Specify conflicts in the `tool.uv`
-section:
+برای دور زدن این مشکل، uv از اعلام صریح تعارض‌ها پشتیبانی می‌کند. اگر مشخص کنید که `extra1` و `extra2` متعارض‌اند، uv آن‌ها را جداگانه حل می‌کند. تعارض‌ها را در بخش `tool.uv` مشخص کنید:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -653,8 +440,7 @@ conflicts = [
 ]
 ```
 
-Now, running `uv lock` will succeed. However, now you cannot install both `extra1` and `extra2` at
-the same time:
+حالا اجرای `uv lock` موفق خواهد بود. اما حالا نمی‌توانید هم‌زمان هم `extra1` و هم `extra2` را نصب کنید:
 
 ```console
 $ uv sync --extra extra1 --extra extra2
@@ -662,11 +448,9 @@ Resolved 3 packages in 14ms
 error: extra `extra1`, extra `extra2` are incompatible with the declared conflicts: {`myproject[extra1]`, `myproject[extra2]`}
 ```
 
-This error occurs because installing both `extra1` and `extra2` would result in installing two
-different versions of a package into the same environment.
+این خطا به این دلیل رخ می‌دهد که نصب هم‌زمان `extra1` و `extra2` به نصب دو نسخهٔ متفاوت از یک package در همان environment منجر می‌شود.
 
-The above strategy for dealing with conflicting optional dependencies also works with dependency
-groups:
+استراتژی بالا برای برخورد با dependencyهای اختیاری متعارض با groupهای dependency نیز کار می‌کند:
 
 ```toml title="pyproject.toml"
 [dependency-groups]
@@ -682,14 +466,11 @@ conflicts = [
 ]
 ```
 
-The only difference from conflicting extras is that you need to use the `group` key instead of
-`extra`.
+تنها تفاوت با extraهای متعارض این است که باید به‌جای کلید `extra` از کلید `group` استفاده کنید.
 
-When using a workspace with multiple projects, the same restrictions apply — uv requires all
-workspace members to be compatible with each other. Similarly, conflicts can be declared across
-workspace members.
+هنگام استفاده از یک workspace با چند project، همان محدودیت‌ها اعمال می‌شوند — uv نیاز دارد همهٔ اعضای workspace با یکدیگر سازگار باشند. به همین ترتیب، می‌توان تعارض‌ها را در اعضای workspace اعلام کرد.
 
-For example, consider the following workspace:
+برای مثال، workspace زیر را در نظر بگیرید:
 
 ```toml title="member1/pyproject.toml"
 [project]
@@ -707,7 +488,7 @@ name = "member2"
 extra2 = ["numpy==2.0.0"]
 ```
 
-To declare a conflict between extras in these different workspace members, use the `package` key:
+برای اعلام تعارض بین extraها در این اعضای مختلف workspace، از کلید `package` استفاده کنید:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -719,8 +500,7 @@ conflicts = [
 ]
 ```
 
-It's also possible for the project dependencies (i.e., `project.dependencies`) of one workspace
-member to conflict with the extra of another member, for example:
+همچنین ممکن است dependencyهای project (یعنی `project.dependencies`) یک عضو workspace با extra عضو دیگر تعارض داشته باشند، برای مثال:
 
 ```toml title="member1/pyproject.toml"
 [project]
@@ -736,7 +516,7 @@ name = "member2"
 extra2 = ["numpy==2.0.0"]
 ```
 
-This conflict can also be declared using the `package` key:
+این تعارض را نیز می‌توان با استفاده از کلید `package` اعلام کرد:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -748,7 +528,7 @@ conflicts = [
 ]
 ```
 
-Similarly, it's possible for some workspace members to have conflicting project dependencies:
+به همین ترتیب، ممکن است برخی اعضای workspace dependencyهای project متعارضی داشته باشند:
 
 ```toml title="member1/pyproject.toml"
 [project]
@@ -762,7 +542,7 @@ name = "member2"
 dependencies = ["numpy==2.0.0"]
 ```
 
-This conflict can also be declared using the `package` key:
+این تعارض را نیز می‌توان با استفاده از کلید `package` اعلام کرد:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -774,7 +554,7 @@ conflicts = [
 ]
 ```
 
-These workspace members will not be installable together, e.g., the workspace root cannot define:
+این اعضای workspace با هم قابل‌نصب نخواهند بود؛ برای مثال، ریشهٔ workspace نمی‌تواند این را تعریف کند:
 
 ```toml title="pyproject.toml"
 [project]
@@ -782,93 +562,58 @@ name = "root"
 dependencies = ["member1", "member2"]
 ```
 
-## Lower bounds
+## کران‌های پایین {#lower-bounds}
 
-By default, `uv add` adds lower bounds to dependencies and, when using uv to manage projects, uv
-will warn if direct dependencies don't have lower bounds.
+به‌طور پیش‌فرض، `uv add` کران‌های پایین به dependencyها اضافه می‌کند و هنگام استفاده از uv برای مدیریت projectها، uv هشدار می‌دهد اگر dependencyهای مستقیم کران پایین نداشته باشند.
 
-Lower bounds are not critical in the "happy path", but they are important for cases where there are
-dependency conflicts. For example, consider a project that requires two packages and those packages
-have conflicting dependencies. The resolver needs to check all combinations of all versions within
-the constraints for the two packages — if all of them conflict, an error is reported because the
-dependencies are not satisfiable. If there are no lower bounds, the resolver can (and often will)
-backtrack down to the oldest version of a package. This isn't only problematic because it's slow,
-the old version of the package often fails to build, or the resolver can end up picking a version
-that's old enough that it doesn't depend on the conflicting package, but also doesn't work with your
-code.
+کران‌های پایین در «مسیر خوشایند» حیاتی نیستند، اما برای مواردی که تعارض dependency وجود دارد مهم‌اند. برای مثال، projectای را در نظر بگیرید که به دو package نیاز دارد و آن packageها dependencyهای متعارضی دارند. resolver باید همهٔ ترکیب‌های همهٔ نسخه‌ها را در محدودهٔ constraintها برای این دو package بررسی کند — اگر همهٔ آن‌ها تعارض داشته باشند، خطایی گزارش می‌شود، چون dependencyها قابل برآورده شدن نیستند. اگر کران پایینی وجود نداشته باشد، resolver می‌تواند (و اغلب این کار را می‌کند) تا قدیمی‌ترین نسخهٔ یک package عقب‌گرد کند. این موضوع نه‌تنها مشکل‌ساز است چون کند است، بلکه نسخهٔ قدیمی package اغلب ساخته نمی‌شود، یا resolver ممکن است نسخه‌ای را انتخاب کند که آن‌قدر قدیمی است که به package متعارض وابسته نیست، اما با کد شما هم کار نمی‌کند.
 
-Lower bounds are particularly critical when writing a library. It's important to declare the lowest
-version for each dependency that your library works with, and to validate that the bounds are
-correct — testing with
-[`--resolution lowest` or `--resolution lowest-direct`](#resolution-strategy). Otherwise, a user may
-receive an old, incompatible version of one of your library's dependencies and the library will fail
-with an unexpected error.
+کران‌های پایین هنگام نوشتن یک library به‌ویژه حیاتی‌اند. مهم است که کمترین نسخه را برای هر dependency که library شما با آن کار می‌کند اعلام کنید و صحت کران‌ها را اعتبارسنجی کنید — با تست کردن با [`--resolution lowest` یا `--resolution lowest-direct`](#resolution-strategy). در غیر این صورت، کاربر ممکن است نسخهٔ قدیمی و ناسازگاری از یکی از dependencyهای library شما را دریافت کند و library با خطای غیرمنتظره‌ای شکست بخورد.
 
-## Reproducible resolutions
+## resolutionهای تکرارپذیر {#reproducible-resolutions}
 
-uv supports an `--exclude-newer` option to limit resolution to distributions uploaded before a
-specific date, allowing reproduction of installations regardless of new package releases. The date
-is compared against the upload time of each individual distribution artifact (i.e., when each file
-was uploaded to the package index), not the release date of the package version. The date may be
-specified as an [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339.html) timestamp (e.g.,
-`2006-12-02T02:07:43Z`) or a local date in the same format (e.g., `2006-12-02`) in your system's
-configured time zone.
+uv از گزینهٔ `--exclude-newer` پشتیبانی می‌کند تا resolution را به distributionهای آپلودشده پیش از یک تاریخ مشخص محدود کند و به این ترتیب امکان بازتولید نصب‌ها را بدون توجه به انتشار packageهای جدید فراهم کند. تاریخ با زمان آپلود هر آرتیفکت distribution به‌صورت جداگانه مقایسه می‌شود (یعنی زمانی که هر فایل در package index آپلود شده است)، نه تاریخ انتشار نسخهٔ package. تاریخ را می‌توان به‌صورت یک timestamp از نوع [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339.html) (برای مثال، `2006-12-02T02:07:43Z`) یا یک تاریخ محلی با همان قالب (برای مثال، `2006-12-02`) در منطقهٔ زمانی پیکربندی‌شدهٔ سیستم خود مشخص کرد.
 
 !!! important
 
-    The package index must support the `upload-time` field as specified in
-    [`PEP 700`](https://peps.python.org/pep-0700/). If the field is not present for a given
-    distribution, the distribution will be treated as unavailable unless the package is opted out
-    via `--exclude-newer-package <package>=false`, or the index is configured with its own
-    `exclude-newer` value, or the index is opted out via `[[tool.uv.index]] exclude-newer = false`.
-    PyPI provides `upload-time` for all packages.
+    package index باید از فیلد `upload-time` مطابق مشخصات [`PEP 700`](https://peps.python.org/pep-0700/) پشتیبانی کند. اگر فیلد برای یک distribution مشخص وجود نداشته باشد، آن distribution به‌عنوان ناموجود در نظر گرفته می‌شود، مگر اینکه package از طریق `--exclude-newer-package <package>=false` از این قاعده مستثنا شده باشد، یا index با مقدار `exclude-newer` خودش پیکربندی شده باشد، یا index از طریق `[[tool.uv.index]] exclude-newer = false` مستثنا شده باشد. PyPI برای همهٔ packageها `upload-time` ارائه می‌دهد.
 
-To ensure reproducibility, messages for unsatisfiable resolutions will not mention that
-distributions were excluded due to the `--exclude-newer` flag — newer distributions will be treated
-as if they do not exist.
+برای اطمینان از تکرارپذیری، پیام‌های مربوط به resolutionهای غیرقابل‌برآورده شدن، اشاره‌ای نمی‌کنند که distributionها به دلیل فلگ `--exclude-newer` حذف شده‌اند — distributionهای جدیدتر چنان در نظر گرفته می‌شوند که گویی وجود ندارند.
 
 !!! note
 
-    The `--exclude-newer` option is only applied to packages that are read from a registry (as
-    opposed to, e.g., Git dependencies). Further, when using the `uv pip` interface, uv will not
-    downgrade previously installed packages unless the `--reinstall` flag is provided, in which case
-    uv will perform a new resolution.
+    گزینهٔ `--exclude-newer` فقط روی packageهایی اعمال می‌شود که از یک registry خوانده می‌شوند (برخلاف، برای مثال، dependencyهای Git). علاوه بر این، هنگام استفاده از رابط `uv pip`، uv packageهای از پیش نصب‌شده را تنزل نمی‌دهد، مگر اینکه فلگ `--reinstall` ارائه شده باشد؛ در این صورت uv یک resolution جدید انجام می‌دهد.
 
-This option is also supported in the `pyproject.toml`, e.g.:
+این گزینه در `pyproject.toml` نیز پشتیبانی می‌شود، برای مثال:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 exclude-newer = "2006-12-02T02:07:43Z"
 ```
 
-To disable a global cutoff from a lower-priority configuration source, pass `--exclude-newer false`,
-set `UV_EXCLUDE_NEWER=false`, or set `exclude-newer = false` in a higher-priority configuration
-file.
+برای غیرفعال کردن یک cutoff سراسری از یک منبع پیکربندی با اولویت پایین‌تر، `--exclude-newer false` را ارسال کنید، `UV_EXCLUDE_NEWER=false` را تنظیم کنید، یا `exclude-newer = false` را در یک فایل پیکربندی با اولویت بالاتر تنظیم کنید.
 
-When specified in persistent configuration, local date times are not allowed.
+هنگامی که در پیکربندی پایدار مشخص شده باشد، زمان‌های محلی مجاز نیستند.
 
-Values may also be specified for specific packages, e.g.,
-`--exclude-newer-package setuptools=2006-12-02`, or:
+مقادیر را می‌توان برای packageهای مشخص نیز تعیین کرد، برای مثال، `--exclude-newer-package setuptools=2006-12-02`، یا:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 exclude-newer-package = { setuptools = "2006-12-02T02:07:43Z" }
 ```
 
-The package option also accepts `<package>=false` to opt a package out of the restriction, e.g.,
-`--exclude-newer-package setuptools=false`, or:
+گزینهٔ package همچنین `<package>=false` را می‌پذیرد تا یک package را از این محدودیت مستثنا کند، برای مثال، `--exclude-newer-package setuptools=false`، یا:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 exclude-newer-package = { setuptools = false }
 ```
 
-This is useful to temporarily use a newer version of a package or to allow resolving a package from
-an index that does not publish upload times.
+این کار برای استفادهٔ موقت از نسخهٔ جدیدتر یک package یا برای اجازهٔ resolution یک package از indexای که زمان‌های آپلود را منتشر نمی‌کند، مفید است.
 
-Package-specific values will take precedence over both global and index-specific values.
+مقادیر خاص package بر مقادیر سراسری و خاص index اولویت دارند.
 
-Likewise, an individual index can override the global cutoff:
+به همین ترتیب، یک index جداگانه می‌تواند cutoff سراسری را بازنویسی کند:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -880,7 +625,7 @@ url = "https://internal.example.com/simple"
 exclude-newer = "7 days"
 ```
 
-Or disable it entirely for that index:
+یا آن را برای آن index کاملاً غیرفعال کند:
 
 ```toml title="pyproject.toml"
 [[tool.uv.index]]
@@ -889,42 +634,30 @@ url = "https://internal.example.com/simple"
 exclude-newer = false
 ```
 
-This is useful for private indexes that don't publish `upload-time`, or for applying a different
-reproducibility window to a specific index while preserving the global behavior elsewhere.
+این کار برای indexهای خصوصی که `upload-time` منتشر نمی‌کنند، یا برای اعمال یک پنجرهٔ تکرارپذیری متفاوت روی یک index مشخص در حالی که رفتار سراسری حفظ می‌شود، مفید است.
 
-## Dependency cooldowns
+## cooldownهای dependency {#dependency-cooldowns}
 
-uv also supports dependency "cooldowns" in which resolution will ignore packages newer than a
-duration. This is a good way to improve security posture by delaying package updates until the
-community has had the opportunity to vet new versions of packages.
+uv همچنین از «cooldown»های dependency پشتیبانی می‌کند که در آن‌ها resolution packageهای جدیدتر از یک مدت را نادیده می‌گیرد. این روش خوبی برای بهبود وضعیت امنیتی با به تأخیر انداختن به‌روزرسانی packageهاست تا زمانی که جامعه فرصت بررسی نسخه‌های جدید packageها را داشته باشد.
 
-This feature is available via the [`exclude-newer` option](#reproducible-resolutions) and shares the
-same semantics.
+این ویژگی از طریق گزینهٔ [`exclude-newer`](#reproducible-resolutions) در دسترس است و همان معنا را دارد.
 
-Define a dependency cooldown by specifying a duration instead of an absolute value. Either a
-"friendly" duration (e.g., `24 hours`, `1 week`, `30 days`) or an ISO 8601 duration (e.g., `PT24H`,
-`P7D`, `P30D`) can be used.
+یک cooldown برای dependency را با تعیین یک مدت به‌جای یک مقدار مطلق تعریف کنید. می‌توان از یک مدت «دوستانه» (برای مثال، `24 hours`، `1 week`، `30 days`) یا یک مدت ISO 8601 (برای مثال، `PT24H`، `P7D`، `P30D`) استفاده کرد.
 
 !!! note
 
-    Durations do not respect semantics of the local time zone and are always resolved to a fixed
-    number of seconds assuming that a day is 24 hours (e.g., DST transitions are ignored). Calendar
-    units such as months and years are not allowed since they are inherently inconsistent lengths.
+    مدت‌ها معنای منطقهٔ زمانی محلی را رعایت نمی‌کنند و همیشه به تعداد ثابتی از ثانیه‌ها تبدیل می‌شوند، با این فرض که یک روز ۲۴ ساعت است (برای مثال، تغییرهای DST نادیده گرفته می‌شوند). واحدهای تقویمی مانند ماه‌ها و سال‌ها مجاز نیستند، چون طول آن‌ها ذاتاً ناسازگار است.
 
-When a duration is used for resolution, a timestamp is calculated relative to the current time. When
-using a `uv.lock` file, the timestamp is included in the lockfile. uv will not update the lockfile
-when the current time changes, instead, uv will update the timestamp when a new resolution is
-performed, e.g., when `--upgrade` or `--refresh` is used.
+وقتی یک مدت برای resolution استفاده می‌شود، یک timestamp نسبت به زمان جاری محاسبه می‌شود. هنگام استفاده از یک فایل `uv.lock`، timestamp در lockfile گنجانده می‌شود. uv وقتی زمان جاری تغییر می‌کند lockfile را به‌روز نمی‌کند؛ در عوض، uv زمانی timestamp را به‌روز می‌کند که یک resolution جدید انجام شود، برای مثال وقتی از `--upgrade` یا `--refresh` استفاده می‌شود.
 
-This option is also supported in the `pyproject.toml`, e.g.:
+این گزینه در `pyproject.toml` نیز پشتیبانی می‌شود، برای مثال:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 exclude-newer = "1 week"
 ```
 
-Values may also be specified for specific packages, e.g.,
-`--exclude-newer-package "setuptools=30 days"`, or:
+مقادیر را می‌توان برای packageهای مشخص نیز تعیین کرد، برای مثال، `--exclude-newer-package "setuptools=30 days"`، یا:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -932,41 +665,26 @@ exclude-newer = "1 week"
 exclude-newer-package = { setuptools = "30 days" }
 ```
 
-## Source distribution
+## Source distribution {#source-distribution}
 
-[PEP 625](https://peps.python.org/pep-0625/) specifies that packages must distribute source
-distributions as gzip tarball (`.tar.gz`) archives. Prior to this specification, other archive
-formats, which need to be supported for backward compatibility, were also allowed.
+[PEP 625](https://peps.python.org/pep-0625/) مشخص می‌کند که packageها باید source distributionها را به‌صورت آرشیوهای tarball فشرده‌شده با gzip (`.tar.gz`) توزیع کنند. پیش از این مشخصات، قالب‌های آرشیو دیگری نیز که برای سازگاری با نسخه‌های قبلی باید پشتیبانی شوند، مجاز بودند.
 
 !!! important
 
-    As of 0.12, uv rejects source distributions that do not conform to
-    [PEP 625]'s extension requirements with the exception of `.zip` archives,
-    which are still accepted for backward compatibility.
+    از نسخهٔ 0.12، uv source distributionهایی را که با الزامات پسوند [PEP 625] مطابقت ندارند، رد می‌کند، به‌جز آرشیوهای `.zip` که همچنان برای سازگاری با نسخه‌های قبلی پذیرفته می‌شوند.
 
-## Lockfile versioning
+## نسخه‌بندی lockfile {#lockfile-versioning}
 
-The `uv.lock` file uses a versioned schema. The schema version is included in the `version` field of
-the lockfile.
+فایل `uv.lock` از یک اسکیمای نسخه‌دار استفاده می‌کند. نسخهٔ اسکیما در فیلد `version` در lockfile گنجانده شده است.
 
-Any given version of uv can read and write lockfiles with the same schema version, but will reject
-lockfiles with a greater schema version. For example, if your uv version supports schema v1,
-`uv lock` will error if it encounters an existing lockfile with schema v2.
+هر نسخهٔ مشخص از uv می‌تواند lockfileهایی با همان نسخهٔ اسکیما را بخواند و بنویسد، اما lockfileهایی با نسخهٔ اسکیمای بالاتر را رد می‌کند. برای مثال، اگر نسخهٔ uv شما از اسکیمای v1 پشتیبانی کند، `uv lock` در صورت برخورد با یک lockfile موجود با اسکیمای v2 خطا می‌دهد.
 
-uv versions that support schema v2 _may_ be able to read lockfiles with schema v1 if the schema
-update was backwards-compatible. However, this is not guaranteed, and uv may exit with an error if
-it encounters a lockfile with an outdated schema version.
+نسخه‌های uv که از اسکیمای v2 پشتیبانی می‌کنند، _ممکن است_ بتوانند lockfileهایی با اسکیمای v1 را بخوانند، اگر به‌روزرسانی اسکیما با نسخه‌های قبلی سازگار بوده باشد. اما این تضمین‌شده نیست و uv ممکن است در صورت برخورد با lockfileای با نسخهٔ اسکیمای قدیمی، با خطا خارج شود.
 
-The schema version is considered part of the public API, and so is only bumped in minor releases, as
-a breaking change (see [Versioning](../reference/policies/versioning.md)). As such, all uv patch
-versions within a given minor uv release are guaranteed to have full lockfile compatibility. In
-other words, lockfiles may only be rejected across minor releases.
+نسخهٔ اسکیما بخشی از API عمومی محسوب می‌شود و بنابراین فقط در انتشارهای minor به‌عنوان یک تغییر ناسازگار افزایش می‌یابد (نگاه کنید به [نسخه‌بندی](../reference/policies/versioning.md)). به این ترتیب، تضمین می‌شود که همهٔ نسخه‌های patch در uv در یک انتشار minor مشخص از uv، سازگاری کامل lockfile را دارند. به عبارت دیگر، lockfileها فقط در انتشارهای minor ممکن است رد شوند.
 
-The `revision` field of the lockfile is used to track backwards compatible changes to the lockfile.
-For example, adding a new field to distributions. Changes to the revision will not cause older
-versions of uv to error.
+فیلد `revision` در lockfile برای ردیابی تغییرهای سازگار با نسخه‌های قبلی در lockfile استفاده می‌شود. برای مثال، اضافه کردن یک فیلد جدید به distributionها. تغییرهای revision باعث نمی‌شوند نسخه‌های قدیمی‌تر uv خطا بدهند.
 
-## Learn more
+## بیشتر بدانید {#learn-more}
 
-For more details about the internals of the resolver, see the
-[resolver reference](../reference/internals/resolver.md) documentation.
+برای جزئیات بیشتر دربارهٔ سازوکار داخلی resolver، به مستندات [مرجع resolver](../reference/internals/resolver.md) مراجعه کنید.

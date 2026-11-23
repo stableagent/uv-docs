@@ -1,7 +1,7 @@
-# Troubleshooting
+# عیب‌یابی {#troubleshooting}
 
-The troubleshooting section provides information about investigating failures in uv:
+بخش عیب‌یابی، اطلاعاتی دربارهٔ بررسی خطاها در uv ارائه می‌دهد:
 
-- [Build failures](./build-failures.md): Understanding common causes of package build failures.
-- [Reproducible examples](./reproducible-examples.md): How to write a minimal reproducible example
-  for a uv issue.
+- [خطاهای build](./build-failures.md): درک دلایل رایج خطاهای build در packageها.
+- [مثال‌های قابل تکرار](./reproducible-examples.md): نحوهٔ نوشتن یک مثال حداقلی و قابل تکرار
+  برای یک issue در uv.

@@ -1,112 +1,117 @@
-# Workspace metadata
+# metadata مربوط به workspace {#workspace-metadata}
 
-`uv workspace metadata` exports the information uv has about your workspace or PEP 723 script as
-JSON so other tools can use it. If you want access to the information in a `uv.lock` or script
-lockfile, prefer this command's output: the lockfile format is not guaranteed to be stable. Pass
-`--script path/to/script.py` to request metadata for a script.
+`uv workspace metadata` اطلاعاتی را که uv دربارهٔ workspace یا script مربوط به PEP 723 شما دارد،
+به‌صورت JSON صادر می‌کند تا toolهای دیگر بتوانند از آن استفاده کنند. اگر به اطلاعات موجود در یک
+`uv.lock` یا lockfile مربوط به script دسترسی می‌خواهید، خروجی این دستور را ترجیح دهید: قالب
+lockfile تضمین‌شده نیست که پایدار بماند. برای درخواست metadata مربوط به یک script،
+`--script path/to/script.py` را ارسال کنید.
 
-Pass `--sync` to install the selected packages before collecting module ownership information.
-Synchronization preserves unrelated installed packages by default; add `--exact` to remove them.
+برای نصب packageهای انتخاب‌شده پیش از جمع‌آوری اطلاعات مالکیت module، `--sync` را ارسال کنید.
+همگام‌سازی به‌طور پیش‌فرض packageهای نصب‌شدهٔ نامرتبط را حفظ می‌کند؛ برای حذف آن‌ها `--exact` را
+اضافه کنید.
 
-The primary structure is the "resolution" field which contains the dependency graph with exact
-package versions that a `uv.lock` encodes.
+ساختار اصلی، فیلد "resolution" است که گراف dependency را با نسخه‌های دقیق package که یک `uv.lock`
+رمزگذاری می‌کند، در بر می‌گیرد.
 
-The edges of the graph are the `dependencies` each node defines. These must also be installed when
-the node is installed, along with their `dependencies` recursively. Cycles are normal in this graph.
-Each dependency entry will include an `id` for the node it refers to, and an optional `marker` that
-[specifies on what platforms the dependency is required](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#dependency-specifiers)
-(if there is no marker the dependency is always required).
+یال‌های گراف، `dependencies`ای هستند که هر node تعریف می‌کند. این‌ها نیز باید هنگام نصب node نصب
+شوند، همراه با `dependencies` آن‌ها به‌صورت بازگشتی. چرخه‌ها در این گراف عادی هستند. هر ورودی
+dependency شامل یک `id` برای node‌ای است که به آن اشاره می‌کند و یک `marker` اختیاری که
+[مشخص می‌کند dependency روی چه platformهایی لازم است](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#dependency-specifiers)
+(اگر marker‌ای نباشد، dependency همیشه لازم است).
 
-Package-derived nodes in the graph are uniquely identified by package `name`, `version`, `source`,
-and `kind`. Script and workspace nodes are identified by their path. Workspace-root dependency group
-nodes are identified by their group name and the workspace path. All node ids should be treated as
-opaque.
+nodeهای مشتق از package در گراف، به‌صورت یکتا با `name` و `version` و `source` و `kind` مربوط به
+package شناسایی می‌شوند. nodeهای script و workspace با مسیرشان شناسایی می‌شوند. nodeهای group
+مربوط به dependency در ریشهٔ workspace با نام group و مسیر workspace شناسایی می‌شوند. همهٔ idهای
+node باید به‌عنوان مبهم (opaque) در نظر گرفته شوند.
 
-There are 5 kinds of node in the graph:
+۵ نوع node در گراف وجود دارد:
 
-- `"script"` -- a PEP 723 script and its direct dependencies
-- `"workspace"` -- a workspace root and its workspace-exclusive dependency groups
-- `"package"` -- the package itself
-- `{ "extra": "extraname" }` -- an extra the package defines
-- `{ "group": "groupname" }` -- a dependency group a package or workspace root defines
+- `"script"` -- یک script مربوط به PEP 723 و dependencyهای مستقیم آن
+- `"workspace"` -- یک ریشهٔ workspace و groupهای dependency مختص workspace آن
+- `"package"` -- خود package
+- `{ "extra": "extraname" }` -- یک extra که package تعریف می‌کند
+- `{ "group": "groupname" }` -- یک dependency group که یک package یا ریشهٔ workspace تعریف می‌کند
 
-(In the future we will add "build" nodes for the dependencies of
-[build environments](../../concepts/projects/config.md#build-isolation).)
+(در آینده nodeهای "build" را برای dependencyهای
+[environmentهای build](../../concepts/projects/config.md#build-isolation) اضافه خواهیم کرد.)
 
-If you want to install `mypackage`, find its `"kind": "package"` node. This node will also include
-information on its sdist, its wheels, its extras (`optional_dependencies`), and dependency groups
-(`dependency_groups`).
+اگر می‌خواهید `mypackage` را نصب کنید، node با `"kind": "package"` آن را پیدا کنید. این node
+همچنین اطلاعاتی دربارهٔ sdist آن، wheelهای آن، extraهای آن (`optional_dependencies`) و dependency
+groupهای آن (`dependency_groups`) شامل می‌شود.
 
-If you want to install `mypackage[myextra]` then find the node with `"kind": { "extra": "myextra" }`
-for `mypackage` (this node will always depend on `mypackage`). If you want to install
-`mypackage[extra1, extra2]`, find the two nodes for `mypackage[extra1]` and `mypackage[extra2]`.
+اگر می‌خواهید `mypackage[myextra]` را نصب کنید، node با `"kind": { "extra": "myextra" }` را برای
+`mypackage` پیدا کنید (این node همیشه به `mypackage` وابسته خواهد بود). اگر می‌خواهید
+`mypackage[extra1, extra2]` را نصب کنید، دو node مربوط به `mypackage[extra1]` و
+`mypackage[extra2]` را پیدا کنید.
 
-If you want to install the dependency group `mypackage:mygroup` then find the node with
-`"kind": { "group": "mygroup" }` for `mypackage` (this node will _not_ depend on `mypackage`, as
-dependency groups are just lists of things you might want when working on the package itself).
+اگر می‌خواهید dependency group با نام `mypackage:mygroup` را نصب کنید، node با
+`"kind": { "group": "mygroup" }` را برای `mypackage` پیدا کنید (این node به `mypackage` وابسته
+_نخواهد_ بود، چون dependency groupها فقط فهرست‌هایی از چیزهایی هستند که ممکن است هنگام کار روی
+خود package بخواهید).
 
-If the workspace root defines dependency groups but is not itself a package, its `"workspace"` node
-provides the corresponding group node ids through `dependency_groups`.
+اگر ریشهٔ workspace dependency groupهایی تعریف کند اما خودش یک package نباشد، node با نام
+`"workspace"` آن، idهای node مربوط به group را از طریق `dependency_groups` ارائه می‌دهد.
 
-## Installed packages
+## packageهای نصب‌شده {#installed-packages}
 
-When an environment exists, `environment.packages` is an inventory of its installed distributions,
-including those absent from the lockfile. Each entry contains the installed name, version, metadata
-path, and editable status.
+وقتی یک environment وجود داشته باشد، `environment.packages` فهرستی از distributionهای نصب‌شدهٔ آن
+است، از جمله مواردی که در lockfile نیستند. هر ورودی شامل نام نصب‌شده، نسخه، مسیر metadata و وضعیت
+editable است.
 
-An installed distribution is matched by normalized name to a package in the selected resolution. A
-matched entry then uses that package's resolution node ID. The entry's `version` reports the actual
-installed version; node IDs should be treated as opaque.
+یک distribution نصب‌شده بر اساس نام نرمال‌شده با یک package در resolution انتخاب‌شده تطبیق داده
+می‌شود. یک ورودی تطبیق‌داده‌شده سپس از ID مربوط به node مربوط به resolution در آن package استفاده
+می‌کند. فیلد `version` در ورودی، نسخهٔ واقعی نصب‌شده را گزارش می‌دهد؛ IDهای node باید به‌عنوان
+مبهم (opaque) در نظر گرفته شوند.
 
-`modules` maps importable module names to objects whose `owners` array contains `package_id`
-references to `environment.packages`. IDs for packages outside the selected resolution do not appear
-in `resolution`. The map is omitted when empty.
+فیلد `modules` نام‌های module قابل import را به شیءهایی نگاشت می‌کند که آرایهٔ `owners` آن‌ها شامل
+ارجاع‌های `package_id` به `environment.packages` است. IDهای packageهای خارج از resolution
+انتخاب‌شده در `resolution` ظاهر نمی‌شوند. وقتی map خالی باشد، حذف می‌شود.
 
-## Handling multiple versions of a package
+## برخورد با چند نسخه از یک package {#handling-multiple-versions-of-a-package}
 
-Two versions of a package cannot be installed into a Python environment, but the dependency graph
-may still include multiple versions of a package. This can happen for two different reasons.
+دو نسخه از یک package نمی‌توانند در یک Python environment نصب شوند، اما گراف dependency ممکن است
+همچنان چند نسخه از یک package را شامل شود. این موضوع به دو دلیل متفاوت می‌تواند رخ دهد.
 
-The first way is for
-[different platforms](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#dependency-specifiers)
-to have conflicting requirements that force different versions of a package to be used.
+راه اول این است که
+[platformهای مختلف](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#dependency-specifiers)
+requirementهای متناقضی داشته باشند که استفاده از نسخه‌های متفاوت یک package را اجبار می‌کنند.
 
-The second way is when a workspace has
-[conflicts](../../concepts/resolution.md#conflicting-dependencies), implying some workspace members
-or their extras are mutually exclusive, and only one of them can be installed at a time. Information
-about conflicts can be found in the top-level `conflicts` field.
+راه دوم وقتی است که یک workspace دارای
+[تعارض‌ها](../../concepts/resolution.md#conflicting-dependencies) باشد؛ به این معنا که بعضی از
+اعضای workspace یا extraهای آن‌ها با یکدیگر ناسازگارند و فقط یکی از آن‌ها می‌تواند در یک زمان نصب
+شود. اطلاعات مربوط به تعارض‌ها را می‌توان در فیلد سطح بالای `conflicts` پیدا کرد.
 
-The specific guarantee we provide is that **for any concrete choice of
-[markers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#dependency-specifiers),
-if you select a set of packages to install that has no
-[conflicts](../../concepts/resolution.md#conflicting-dependencies), then the resulting set of
-packages to install will not have multiple versions of a package**.
+تضمین مشخصی که ما ارائه می‌دهیم این است که **برای هر انتخاب مشخص از
+[markerها](https://packaging.python.org/en/latest/specifications/dependency-specifiers/#dependency-specifiers)،
+اگر مجموعه‌ای از packageها را برای نصب انتخاب کنید که هیچ
+[تعارضی](../../concepts/resolution.md#conflicting-dependencies) نداشته باشد، مجموعهٔ حاصل از
+packageها برای نصب، چند نسخه از یک package نخواهد داشت**.
 
-If you just want to get "every version of pydantic this workspace uses" you're free to iterate
-through the list of nodes and collect up every instance. If however you want to specifically analyze
-the graph and get actual resolutions you will likely need to consult `conflicts` and need to
-understand how to resolve `markers` for a specific platform.
+اگر فقط می‌خواهید «هر نسخه از pydantic که این workspace استفاده می‌کند» را بگیرید، آزادید که در
+فهرست nodeها پیمایش کنید و هر نمونه را جمع کنید. اما اگر می‌خواهید به‌طور خاص گراف را تحلیل کنید و
+resolutionهای واقعی را بگیرید، احتمالاً باید به `conflicts` مراجعه کنید و باید بدانید چگونه
+`marker`ها را برای یک platform مشخص حل کنید.
 
-The best way to avoid mistakes when working with multiple versions of a package is to keep your
-queries into the dependency graph rooted in operations on the workspace root, workspace members, or
-the requested script. These are the natural entry-points to the graph and can give coherent
-responses for operations such as "install the workspace `dev` group", "install `member1` and
-`member2[extra]`", or "install this script's declared dependencies".
+بهترین راه برای جلوگیری از اشتباه هنگام کار با چند نسخه از یک package این است که پرس‌وجوهای خود
+در گراف dependency را بر عملیات روی ریشهٔ workspace، اعضای workspace یا script درخواستی متمرکز
+کنید. این‌ها نقطه‌های ورود طبیعی به گراف هستند و می‌توانند پاسخ‌های منسجمی برای عملیات‌هایی مثل
+«نصب group با نام `dev` در workspace»، «نصب `member1` و `member2[extra]`» یا «نصب dependencyهای
+اعلام‌شدهٔ این script» ارائه دهند.
 
-Another way to put this is that when possible _you should avoid iterating over the `resolution`
-object to find a node_. Only access `resolution` like a map using ids that were provided by another
-part of the metadata. For a workspace, the workspace root is `workspace.id` and package entry points
-are listed in the `members` array. For a script, the initial id is `script.id`. From there you may
-recursively discover other packages by following dependency edges.
+به بیان دیگر، وقتی ممکن است _باید از پیمایش روی شیء `resolution` برای پیدا کردن یک node پرهیز
+کنید_. فقط با استفاده از idهایی که بخش دیگری از metadata ارائه کرده است، به `resolution` مثل یک
+map دسترسی پیدا کنید. برای یک workspace، ریشهٔ workspace برابر `workspace.id` است و نقطه‌های ورود
+package در آرایهٔ `members` فهرست شده‌اند. برای یک script، id اولیه برابر `script.id` است. از آنجا
+می‌توانید با دنبال کردن یال‌های dependency، packageهای دیگر را به‌صورت بازگشتی کشف کنید.
 
-So rather than trying to find a node for anyio in the dependency graph directly, you should decide
-what workspace member(s) you're interested in analyzing as if they were going to be installed. While
-traversing the `dependencies` of the things you want to install, you may visit an instance of anyio,
-which is the one you should use. If you visit multiple instances of anyio then that means you've
-selected a conflicting set of things to install which uv would never select.
+پس به‌جای اینکه مستقیماً سعی کنید node‌ای برای anyio در گراف dependency پیدا کنید، باید تصمیم
+بگیرید که کدام عضو (یا اعضای) workspace را می‌خواهید تحلیل کنید، گویی قرار است نصب شوند. هنگام
+پیمایش `dependencies` چیزهایی که می‌خواهید نصب کنید، ممکن است به یک نمونه از anyio برسید که همان
+نمونه‌ای است که باید استفاده کنید. اگر به چند نمونه از anyio برسید، یعنی مجموعه‌ای متناقض از
+چیزهایی را برای نصب انتخاب کرده‌اید که uv هرگز آن‌ها را انتخاب نمی‌کند.
 
-So if you wanted to analyze say, installing the `dev` dependency group of the workspace member
-`mypackage` it would look something like:
+پس اگر می‌خواستید مثلاً نصب dependency group با نام `dev` مربوط به عضو workspace با نام
+`mypackage` را تحلیل کنید، چیزی شبیه به این خواهد بود:
 
 ```python
 member = find_by_name(metadata.members, "mypackage")
@@ -116,7 +121,8 @@ group_node = metadata.resolution[group.id]
 visit(metadata, [group_node])
 ```
 
-For a dependency group defined on the workspace root, look it up through the workspace node:
+برای یک dependency group که روی ریشهٔ workspace تعریف شده است، آن را از طریق node مربوط به
+workspace جستجو کنید:
 
 ```python
 workspace_node = metadata.resolution[metadata.workspace.id]
@@ -125,8 +131,8 @@ group_node = metadata.resolution[group.id]
 visit(metadata, [group_node])
 ```
 
-If you wanted to analyze two particular workspace members installed together, it would look
-something like:
+اگر می‌خواستید دو عضو خاص از workspace را که با هم نصب شده‌اند تحلیل کنید، چیزی شبیه به این خواهد
+بود:
 
 ```python
 to_analyze = []
@@ -137,14 +143,14 @@ for member_name in ["package1", "package2"]:
 visit(metadata, to_analyze)
 ```
 
-For a script, start from its resolution node in exactly the same way:
+برای یک script، دقیقاً به همان روش از node مربوط به resolution آن شروع کنید:
 
 ```python
 script_node = metadata.resolution[metadata.script.id]
 visit(metadata, [script_node])
 ```
 
-Where `visit` is your favourite graph traversal algorithm like depth-first-search:
+که در آن `visit` الگوریتم پیمایش گراف مورد علاقهٔ شماست، مثل جستجوی عمق‌اول (depth-first-search):
 
 ```python
 def visit(metadata: UvMetadata, to_analyze: list[Node]):
@@ -169,15 +175,16 @@ def visit(metadata: UvMetadata, to_analyze: list[Node]):
             print(node.name, node.version, node.source)
 ```
 
-## Schema
+## Schema {#schema}
 
-Use `uv workspace metadata --output-version preview` to request the `preview` schema. It is
-currently the only supported version. If you omit the flag or request an unsupported version, uv
-returns the latest schema it supports. The `schema.version` field identifies the version returned.
+برای درخواست schema با نام `preview`، از `uv workspace metadata --output-version preview` استفاده
+کنید. در حال حاضر این تنها نسخهٔ پشتیبانی‌شده است. اگر فلگ را حذف کنید یا نسخهٔ
+پشتیبانی‌نشده‌ای را درخواست کنید، uv جدیدترین schema‌ای را که پشتیبانی می‌کند برمی‌گرداند. فیلد
+`schema.version` نسخهٔ برگردانده‌شده را مشخص می‌کند.
 
-A full JSON schema for the format will be provided when the format is finalized.
+یک JSON schema کامل برای این قالب، وقتی قالب نهایی شد، ارائه خواهد شد.
 
-Here is a human-readable annotated example:
+در ادامه یک مثال حاشیه‌نویسی‌شده و خوانا برای انسان آمده است:
 
 ```js
 {

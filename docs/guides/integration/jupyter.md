@@ -1,110 +1,112 @@
 ---
-title: Using uv with Jupyter
+title: استفاده از uv با Jupyter
 description:
-  A complete guide to using uv with Jupyter notebooks for interactive computing, data analysis, and
-  visualization, including kernel management and virtual environment integration.
+  راهنمای کامل استفاده از uv با نوت‌بوک‌های Jupyter برای محاسبات تعاملی، تحلیل داده و
+  مصورسازی، شامل مدیریت kernel و یکپارچه‌سازی virtual environment.
 ---
 
-# Using uv with Jupyter
+# استفاده از uv با Jupyter {#using-uv-with-jupyter}
 
-The [Jupyter](https://jupyter.org/) notebook is a popular tool for interactive computing, data
-analysis, and visualization. You can use Jupyter with uv in a few different ways, either to interact
-with a project, or as a standalone tool.
+نوت‌بوک [Jupyter](https://jupyter.org/) یک tool محبوب برای محاسبات تعاملی، تحلیل داده و مصورسازی
+است. می‌توانید Jupyter را با uv به چند روش مختلف استفاده کنید، چه برای تعامل با یک project و چه
+به‌عنوان یک tool مستقل.
 
-## Using Jupyter within a project
+## استفاده از Jupyter در یک project {#using-jupyter-within-a-project}
 
-If you're working within a [project](../../concepts/projects/index.md), you can start a Jupyter
-server with access to the project's virtual environment via the following:
+اگر در یک [project](../../concepts/projects/index.md) کار می‌کنید، می‌توانید یک سرور Jupyter را با
+دسترسی به virtual environment مربوط به project، از طریق دستور زیر شروع کنید:
 
 ```console
 $ uv run --with jupyter jupyter lab
 ```
 
-By default, `jupyter lab` will start the server at
-[http://localhost:8888/lab](http://localhost:8888/lab).
+به‌طور پیش‌فرض، `jupyter lab` سرور را در آدرس
+[http://localhost:8888/lab](http://localhost:8888/lab) شروع می‌کند.
 
-Within a notebook, you can import your project's modules as you would in any other file in the
-project. For example, if your project depends on `requests`, `import requests` will import
-`requests` from the project's virtual environment.
+در یک نوت‌بوک، می‌توانید moduleهای project خود را مانند هر فایل دیگری در project، import کنید. برای
+مثال، اگر project شما به `requests` وابسته است، دستور `import requests`، `requests` را از virtual
+environment مربوط به project، import می‌کند.
 
-If you're looking for read-only access to the project's virtual environment, then there's nothing
-more to it. However, if you need to install additional packages from within the notebook, there are
-a few extra details to consider.
+اگر به دنبال دسترسی فقط-خواندنی به virtual environment مربوط به project هستید، همین کافی است. اما
+اگر نیاز دارید packageهای بیشتری را از داخل نوت‌بوک نصب کنید، چند نکتهٔ دیگر هم باید در نظر گرفته
+شود.
 
-### Creating a kernel
+### ساختن یک kernel {#creating-a-kernel}
 
-If you need to install packages from within the notebook, we recommend creating a dedicated kernel
-for your project. Kernels enable the Jupyter server to run in one environment, with individual
-notebooks running in their own, separate environments.
+اگر نیاز دارید packageها را از داخل نوت‌بوک نصب کنید، توصیه می‌کنیم یک kernel اختصاصی برای project
+خود بسازید. kernelها به سرور Jupyter امکان می‌دهند در یک environment اجرا شود، در حالی که
+نوت‌بوک‌های جداگانه در environmentهای جداگانهٔ خودشان اجرا می‌شوند.
 
-In the context of uv, we can create a kernel for a project while installing Jupyter itself in an
-isolated environment, as in `uv run --with jupyter jupyter lab`. Creating a kernel for the project
-ensures that the notebook is hooked up to the correct environment, and that any packages installed
-from within the notebook are installed into the project's virtual environment.
+در زمینهٔ uv، می‌توانیم یک kernel برای یک project بسازیم، در حالی که خود Jupyter را در
+یک environment ایزوله نصب می‌کنیم، مانند `uv run --with jupyter jupyter lab`. ساختن یک kernel برای
+project تضمین می‌کند که نوت‌بوک به environment درست متصل است و هر packageای که از داخل نوت‌بوک نصب
+شود، در virtual environment مربوط به project نصب می‌شود.
 
-To create a kernel, you'll need to install `ipykernel` as a development dependency:
+برای ساختن یک kernel، باید `ipykernel` را به‌عنوان یک development dependency نصب کنید:
 
 ```console
 $ uv add --dev ipykernel
 ```
 
-Then, you can create the kernel for `project` with:
+سپس، می‌توانید kernel را برای `project` با این دستور بسازید:
 
 ```console
 $ uv run ipython kernel install --user --env VIRTUAL_ENV $(pwd)/.venv --name=project
 ```
 
-From there, start the server with:
+از آنجا، سرور را با این دستور شروع کنید:
 
 ```console
 $ uv run --with jupyter jupyter lab
 ```
 
-When creating a notebook, select the `project` kernel from the dropdown. Then use `!uv add pydantic`
-to add `pydantic` to the project's dependencies, or `!uv pip install pydantic` to install `pydantic`
-into the project's virtual environment without persisting the change to the project `pyproject.toml`
-or `uv.lock` files. Either command will make `import pydantic` work within the notebook.
+هنگام ساختن یک نوت‌بوک، kernel مربوط به `project` را از منوی کشویی انتخاب کنید. سپس از دستور
+`!uv add pydantic` برای افزودن `pydantic` به dependencyهای project، یا از دستور
+`!uv pip install pydantic` برای نصب `pydantic` در virtual environment مربوط به project، بدون اینکه
+تغییر در فایل‌های `pyproject.toml` یا `uv.lock` مربوط به project ماندگار شود، استفاده کنید. هر یک از
+این دو دستور، کارکردن `import pydantic` را در نوت‌بوک ممکن می‌کند.
 
-### Installing packages without a kernel
+### نصب packageها بدون kernel {#installing-packages-without-a-kernel}
 
-If you don't want to create a kernel, you can still install packages from within the notebook.
-However, there are a few caveats to consider.
+اگر نمی‌خواهید kernel بسازید، باز هم می‌توانید packageها را از داخل نوت‌بوک نصب کنید. با این حال،
+چند نکتهٔ احتیاطی وجود دارد که باید در نظر گرفته شود.
 
-Though `uv run --with jupyter` runs in an isolated environment, within the notebook itself,
-`!uv add` and related commands will modify the _project's_ environment, even without a kernel.
+اگرچه `uv run --with jupyter` در یک environment ایزوله اجرا می‌شود، اما در خود نوت‌بوک، دستورهای
+`!uv add` و دستورهای مرتبط، environment مربوط به _project_ را تغییر می‌دهند، حتی بدون kernel.
 
-For example, running `!uv add pydantic` from within a notebook will add `pydantic` to the project's
-dependencies and virtual environment, such that `import pydantic` will work immediately, without
-further configuration or a server restart.
+برای مثال، اجرای `!uv add pydantic` از داخل یک نوت‌بوک، `pydantic` را به dependencyهای project و
+virtual environment اضافه می‌کند، به‌طوری که `import pydantic` بلافاصله و بدون پیکربندی بیشتر یا
+راه‌اندازی مجدد سرور، کار می‌کند.
 
-However, since the Jupyter server is the "active" environment, `!uv pip install` will install
-packages into _Jupyter's_ environment, not the project environment. Such dependencies will persist
-for the lifetime of the Jupyter server, but may disappear on subsequent `jupyter` invocations.
+با این حال، از آنجا که سرور Jupyter همان environment «فعال» است، دستور `!uv pip install`،
+packageها را در environment مربوط به _Jupyter_ نصب می‌کند، نه environment مربوط به project. چنین
+dependencyهایی در طول عمر سرور Jupyter باقی می‌مانند، اما ممکن است در فراخوانی‌های بعدی `jupyter`
+ناپدید شوند.
 
-If you're working with a notebook that relies on pip (e.g., via the `%pip` magic), you can include
-pip in your project's virtual environment by running `uv venv --seed` prior to starting the Jupyter
-server. For example, given:
+اگر با نوت‌بوکی کار می‌کنید که به pip متکی است (مثلاً از طریق magic مربوط به `%pip`)، می‌توانید با
+اجرای `uv venv --seed` پیش از شروع سرور Jupyter، pip را در virtual environment مربوط به project
+بگنجانید. برای مثال، با فرض اینکه:
 
 ```console
 $ uv venv --seed
 $ uv run --with jupyter jupyter lab
 ```
 
-Subsequent `%pip install` invocations within the notebook will install packages into the project's
-virtual environment. However, such modifications will _not_ be reflected in the project's
-`pyproject.toml` or `uv.lock` files.
+فراخوانی‌های بعدی `%pip install` در نوت‌بوک، packageها را در virtual environment مربوط به project
+نصب می‌کنند. با این حال، چنین تغییراتی در فایل‌های `pyproject.toml` یا `uv.lock` مربوط به project
+منعکس _نمی‌شود_.
 
-## Using Jupyter as a standalone tool
+## استفاده از Jupyter به‌عنوان یک tool مستقل {#using-jupyter-as-a-standalone-tool}
 
-If you ever need ad hoc access to a notebook (i.e., to run a Python snippet interactively), you can
-start a Jupyter server at any time with `uv tool run jupyter lab`. This will run a Jupyter server in
-an isolated environment.
+اگر زمانی به دسترسی موردی به یک نوت‌بوک نیاز دارید (یعنی برای اجرای تعاملی یک قطعه‌کد
+Python)، می‌توانید در هر زمان یک سرور Jupyter را با `uv tool run jupyter lab` شروع کنید. این کار یک
+سرور Jupyter را در یک environment ایزوله اجرا می‌کند.
 
-## Using Jupyter with a non-project environment
+## استفاده از Jupyter با یک environment غیر project {#using-jupyter-with-a-non-project-environment}
 
-If you need to run Jupyter in a virtual environment that isn't associated with a
-[project](../../concepts/projects/index.md) (e.g., has no `pyproject.toml` or `uv.lock`), you can do
-so by adding Jupyter to the environment directly. For example:
+اگر نیاز دارید Jupyter را در یک virtual environment اجرا کنید که به یک
+[project](../../concepts/projects/index.md) مرتبط نیست (مثلاً فایل `pyproject.toml` یا `uv.lock`
+ندارد)، می‌توانید این کار را با افزودن مستقیم Jupyter به environment انجام دهید. برای مثال:
 
 === "macOS and Linux"
 
@@ -124,14 +126,14 @@ so by adding Jupyter to the environment directly. For example:
     PS> .venv\Scripts\jupyter lab
     ```
 
-From here, `import pydantic` will work within the notebook, and you can install additional packages
-via `!uv pip install`, or even `!pip install`.
+از اینجا، دستور `import pydantic` در نوت‌بوک کار می‌کند و می‌توانید packageهای بیشتری را از طریق
+`!uv pip install` یا حتی `!pip install` نصب کنید.
 
-## Using Jupyter from VS Code
+## استفاده از Jupyter از VS Code {#using-jupyter-from-vs-code}
 
-You can also engage with Jupyter notebooks from within an editor like VS Code. To connect a
-uv-managed project to a Jupyter notebook within VS Code, we recommend creating a kernel for the
-project, as in the following:
+همچنین می‌توانید با نوت‌بوک‌های Jupyter از داخل یک ویرایشگر مانند VS Code کار کنید. برای اتصال یک
+project مدیریت‌شده با uv به یک نوت‌بوک Jupyter در VS Code، توصیه می‌کنیم یک kernel برای project
+بسازید، به این شکل:
 
 ```console
 # Create a project.
@@ -147,24 +149,24 @@ $ uv add --dev ipykernel
 $ code .
 ```
 
-Once the project directory is open in VS Code, you can create a new Jupyter notebook by selecting
-"Create: New Jupyter Notebook" from the command palette. When prompted to select a kernel, choose
-"Python Environments" and select the virtual environment you created earlier (e.g.,
-`.venv/bin/python` on macOS and Linux, or `.venv\Scripts\python` on Windows).
+وقتی پوشهٔ project در VS Code باز شد، می‌توانید با انتخاب «Create: New Jupyter Notebook» از command
+palette، یک نوت‌بوک Jupyter جدید بسازید. وقتی از شما خواسته شد یک kernel انتخاب کنید، گزینهٔ «Python
+Environments» را انتخاب کنید و virtual environmentای را که پیش‌تر ساختید انتخاب کنید (مثلاً
+`.venv/bin/python` در macOS و Linux، یا `.venv\Scripts\python` در Windows).
 
 !!! note
 
-    VS Code requires `ipykernel` to be present in the project environment. If you'd prefer to avoid
-    adding `ipykernel` as a dev dependency, you can install it directly into the project environment
-    with `uv pip install ipykernel`.
+    VS Code به وجود `ipykernel` در environment مربوط به project نیاز دارد. اگر ترجیح می‌دهید
+    `ipykernel` را به‌عنوان یک dev dependency اضافه نکنید، می‌توانید آن را مستقیماً با دستور
+    `uv pip install ipykernel` در environment مربوط به project نصب کنید.
 
-If you need to manipulate the project's environment from within the notebook, you may need to add
-`uv` as an explicit development dependency:
+اگر نیاز دارید environment مربوط به project را از داخل نوت‌بوک دست‌کاری کنید، ممکن است لازم باشد
+`uv` را به‌عنوان یک development dependency صریح اضافه کنید:
 
 ```console
 $ uv add --dev uv
 ```
 
-From there, you can use `!uv add pydantic` to add `pydantic` to the project's dependencies, or
-`!uv pip install pydantic` to install `pydantic` into the project's virtual environment without
-updating the project's `pyproject.toml` or `uv.lock` files.
+از آنجا می‌توانید از دستور `!uv add pydantic` برای افزودن `pydantic` به dependencyهای project، یا
+از دستور `!uv pip install pydantic` برای نصب `pydantic` در virtual environment مربوط به project،
+بدون به‌روزرسانی فایل‌های `pyproject.toml` یا `uv.lock` مربوط به project، استفاده کنید.

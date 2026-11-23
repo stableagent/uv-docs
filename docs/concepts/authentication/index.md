@@ -1,11 +1,11 @@
-# Authentication
+# احراز هویت {#authentication}
 
-Authentication is required when working with private repositories or package indexes.
+احراز هویت هنگام کار با مخزن‌ها یا indexهای package خصوصی لازم است.
 
-Learn more about authentication in uv:
+دربارهٔ احراز هویت در uv بیشتر بدانید:
 
-- [Using the `uv auth` CLI](./cli.md)
-- [HTTP authentication](./http.md)
-- [Git authentication](./git.md)
-- [TLS certificates](./certificates.md)
-- [Third-party services](./third-party.md)
+- [استفاده از `uv auth` در CLI](./cli.md)
+- [احراز هویت HTTP](./http.md)
+- [احراز هویت Git](./git.md)
+- [گواهی‌های TLS](./certificates.md)
+- [سرویس‌های شخص ثالث](./third-party.md)

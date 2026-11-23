@@ -1,8 +1,8 @@
-# Policies
+# سیاست‌ها {#policies}
 
-- [Security](https://github.com/astral-sh/uv/security/policy)
-- [Versioning](./versioning.md)
-- [Platform support](./platforms.md)
-- [Python support](./python.md)
-- [Rust support](./rust.md)
-- [License](./license.md)
+- [امنیت](https://github.com/astral-sh/uv/security/policy)
+- [نسخه‌بندی](./versioning.md)
+- [پشتیبانی از platform](./platforms.md)
+- [پشتیبانی از Python](./python.md)
+- [پشتیبانی از Rust](./rust.md)
+- [مجوز](./license.md)

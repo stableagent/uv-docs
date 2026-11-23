@@ -1,20 +1,21 @@
 ---
 title: Google Artifact Registry
-description: Using uv with Google Artifact Registry for installing and publishing Python packages.
+description: استفاده از uv با Google Artifact Registry برای نصب و منتشر کردن packageهای Python.
 ---
 
-# Google Artifact Registry
+# Google Artifact Registry {#google-artifact-registry}
 
-uv can install packages from
-[Google Artifact Registry](https://cloud.google.com/artifact-registry/docs), either by using an
-access token, or using the [`keyring`](https://github.com/jaraco/keyring) package.
+uv می‌تواند packageها را از
+[Google Artifact Registry](https://cloud.google.com/artifact-registry/docs) نصب کند، چه با استفاده
+از یک access token و چه با استفاده از package مربوط به
+[`keyring`](https://github.com/jaraco/keyring).
 
 !!! note
 
-    This guide assumes that [`gcloud`](https://cloud.google.com/sdk/gcloud) CLI is installed and
-    authenticated.
+    این راهنما فرض می‌کند که CLI مربوط به
+    [`gcloud`](https://cloud.google.com/sdk/gcloud) نصب شده و احراز هویت شده است.
 
-To use Google Artifact Registry, add the index to your project:
+برای استفاده از Google Artifact Registry، index را به project خود اضافه کنید:
 
 ```toml title="pyproject.toml"
 [[tool.uv.index]]
@@ -22,13 +23,13 @@ name = "private-registry"
 url = "https://<REGION>-python.pkg.dev/<PROJECT>/<REPOSITORY>/simple/"
 ```
 
-## Authenticate with a Google access token
+## احراز هویت با access token مربوط به Google {#authenticate-with-a-google-access-token}
 
-Credentials can be provided via the "Basic" HTTP authentication scheme. Include the access token in
-the password field of the URL. The username must be `oauth2accesstoken`, otherwise authentication
-will fail.
+می‌توان credentialها را از طریق طرح احراز هویت «Basic» در HTTP ارائه کرد. access token
+را در فیلد password مربوط به URL قرار دهید. username باید `oauth2accesstoken` باشد، در غیر این صورت
+احراز هویت ناموفق خواهد بود.
 
-Generate a token with `gcloud`:
+با `gcloud` یک token تولید کنید:
 
 ```bash
 export ARTIFACT_REGISTRY_TOKEN=$(
@@ -38,10 +39,10 @@ export ARTIFACT_REGISTRY_TOKEN=$(
 
 !!! note
 
-    This is a basic example; you might need to pass extra parameters to generate the token, such as
+    این یک مثال ساده است؛ ممکن است لازم باشد برای تولید token پارامترهای بیشتری بدهید، مثل
     `--project`.
 
-Then set credentials for the index with:
+سپس credentialهای مربوط به index را با این دستور تنظیم کنید:
 
 ```bash
 export UV_INDEX_PRIVATE_REGISTRY_USERNAME=oauth2accesstoken
@@ -50,24 +51,25 @@ export UV_INDEX_PRIVATE_REGISTRY_PASSWORD="$ARTIFACT_REGISTRY_TOKEN"
 
 !!! note
 
-    `PRIVATE_REGISTRY` should match the name of the index defined in your `pyproject.toml`.
+    عبارت `PRIVATE_REGISTRY` باید با نام index تعریف‌شده در `pyproject.toml` شما مطابقت داشته باشد.
 
-## Authenticate with `keyring` and `keyrings.google-artifactregistry-auth`
+## احراز هویت با `keyring` و `keyrings.google-artifactregistry-auth` {#authenticate-with-keyring-and-keyringsgoogle-artifactregistry-auth}
 
-You can also authenticate to Artifact Registry using [`keyring`](https://github.com/jaraco/keyring)
-package with the
-[`keyrings.google-artifactregistry-auth` plugin](https://github.com/GoogleCloudPlatform/artifact-registry-python-tools).
-Because these two packages are required to authenticate to Artifact Registry, they must be
-pre-installed from a source other than Artifact Registry.
+همچنین می‌توانید با استفاده از package مربوط به
+[`keyring`](https://github.com/jaraco/keyring) و
+[افزونهٔ مربوط به `keyrings.google-artifactregistry-auth`](https://github.com/GoogleCloudPlatform/artifact-registry-python-tools) به Artifact Registry احراز هویت کنید.
+از آنجا که این دو package برای احراز هویت به Artifact Registry لازم‌اند، باید از منبعی غیر از
+Artifact Registry از پیش نصب شده باشند.
 
-The `keyrings.google-artifactregistry-auth` plugin wraps
-[gcloud CLI](https://cloud.google.com/sdk/gcloud) to generate short-lived access tokens, securely
-store them in system keyring, and refresh them when they are expired.
+افزونهٔ مربوط به `keyrings.google-artifactregistry-auth`،
+[CLI مربوط به gcloud](https://cloud.google.com/sdk/gcloud) را در بر می‌گیرد تا access tokenهای
+کوتاه‌مدت تولید کند، آن‌ها را به‌صورت امن در keyring سیستم ذخیره کند و وقتی منقضی شدند، تازه‌سازی
+کند.
 
-uv only supports using the `keyring` package in
-[subprocess mode](../../reference/settings.md#keyring-provider). The `keyring` executable must be in
-the `PATH`, i.e., installed globally or in the active environment. The `keyring` CLI requires a
-username in the URL and it must be `oauth2accesstoken`.
+uv فقط از استفاده از package مربوط به `keyring` در
+[subprocess mode](../../reference/settings.md#keyring-provider) پشتیبانی می‌کند. فایل اجرایی
+`keyring` باید در `PATH` باشد، یعنی به‌صورت سراسری یا در environment فعال نصب شده باشد. CLI مربوط به
+`keyring` به یک username در URL نیاز دارد و آن باید `oauth2accesstoken` باشد.
 
 ```bash
 # Pre-install keyring and Artifact Registry plugin from the public PyPI
@@ -82,17 +84,19 @@ export UV_INDEX_PRIVATE_REGISTRY_USERNAME=oauth2accesstoken
 
 !!! note
 
-    The [`tool.uv.keyring-provider`](../../reference/settings.md#keyring-provider)
-    setting can be used to enable keyring in your `uv.toml` or `pyproject.toml`.
+    می‌توان از تنظیم
+    [`tool.uv.keyring-provider`](../../reference/settings.md#keyring-provider) برای فعال‌کردن
+    keyring در `uv.toml` یا `pyproject.toml` استفاده کرد.
 
-    Similarly, the username for the index can be added directly to the index URL.
+    به همین ترتیب، username مربوط به index را می‌توان مستقیماً به URL مربوط به index اضافه کرد.
 
-## Publishing packages
+## منتشر کردن packageها {#publishing-packages}
 
-If you also want to publish your own packages to Google Artifact Registry, you can use `uv publish`
-as described in the [Building and publishing guide](../package.md).
+اگر می‌خواهید packageهای خود را در Google Artifact Registry هم منتشر کنید، می‌توانید از
+`uv publish` به شکلی که در [راهنمای build و publish کردن](../package.md) توضیح داده شده است،
+استفاده کنید.
 
-First, add a `publish-url` to the index you want to publish packages to. For example:
+ابتدا، یک `publish-url` به indexای که می‌خواهید packageها را در آن منتشر کنید، اضافه کنید. برای مثال:
 
 ```toml title="pyproject.toml" hl_lines="4"
 [[tool.uv.index]]
@@ -101,25 +105,26 @@ url = "https://<REGION>-python.pkg.dev/<PROJECT>/<REPOSITORY>/simple/"
 publish-url = "https://<REGION>-python.pkg.dev/<PROJECT>/<REPOSITORY>/"
 ```
 
-Then, configure credentials (if not using keyring):
+سپس، credentialها را پیکربندی کنید (اگر از keyring استفاده نمی‌کنید):
 
 ```console
 $ export UV_PUBLISH_USERNAME=oauth2accesstoken
 $ export UV_PUBLISH_PASSWORD="$ARTIFACT_REGISTRY_TOKEN"
 ```
 
-And publish the package:
+و package را منتشر کنید:
 
 ```console
 $ uv publish --index private-registry
 ```
 
-To use `uv publish` without adding the `publish-url` to the project, you can set `UV_PUBLISH_URL`:
+برای استفاده از `uv publish` بدون افزودن `publish-url` به project، می‌توانید `UV_PUBLISH_URL` را
+تنظیم کنید:
 
 ```console
 $ export UV_PUBLISH_URL=https://<REGION>-python.pkg.dev/<PROJECT>/<REPOSITORY>/
 $ uv publish
 ```
 
-Note this method is not preferable because uv cannot check if the package is already published
-before uploading artifacts.
+توجه کنید که این روش ترجیح داده نمی‌شود، زیرا uv نمی‌تواند پیش از آپلود artifactها بررسی کند که
+آیا package از قبل منتشر شده است یا نه.

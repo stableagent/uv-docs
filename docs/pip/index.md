@@ -1,25 +1,17 @@
-# The pip interface
+# رابط pip {#the-pip-interface}
 
-uv provides a drop-in replacement for common `pip`, `pip-tools`, and `virtualenv` commands. These
-commands work directly with the virtual environment, in contrast to uv's primary interfaces where
-the virtual environment is managed automatically. The `uv pip` interface exposes the speed and
-functionality of uv to power users and projects that are not ready to transition away from `pip` and
-`pip-tools`.
+uv یک جایگزین مستقیم برای دستورهای رایج `pip`، `pip-tools` و `virtualenv` فراهم می‌کند. این دستورها مستقیماً با virtual environment کار می‌کنند، برخلاف رابط‌های اصلی uv که در آن‌ها virtual environment به‌صورت خودکار مدیریت می‌شود. رابط `uv pip` سرعت و قابلیت‌های uv را در اختیار کاربران حرفه‌ای و projectهایی قرار می‌دهد که هنوز آمادهٔ گذر از `pip` و `pip-tools` نیستند.
 
-The following sections discuss the basics of using `uv pip`:
+بخش‌های زیر مبانی استفاده از `uv pip` را بررسی می‌کنند:
 
-- [Creating and using environments](./environments.md)
-- [Installing and managing packages](./packages.md)
-- [Inspecting environments and packages](./inspection.md)
-- [Declaring package dependencies](./dependencies.md)
-- [Locking and syncing environments](./compile.md)
+- [ساخت و استفاده از environmentها](./environments.md)
+- [نصب و مدیریت packageها](./packages.md)
+- [بازرسی environmentها و packageها](./inspection.md)
+- [اعلام dependencyهای package](./dependencies.md)
+- [قفل کردن و همگام‌سازی environmentها](./compile.md)
 
-Please note these commands do not _exactly_ implement the interfaces and behavior of the tools they
-are based on. The further you stray from common workflows, the more likely you are to encounter
-differences. Consult the [pip-compatibility guide](./compatibility.md) for details.
+توجه کنید که این دستورها رابط‌ها و رفتار ابزارهایی را که بر اساس آن‌ها ساخته شده‌اند، _دقیقاً_ پیاده‌سازی نمی‌کنند. هرچه از گردش‌کارهای رایج بیشتر فاصله بگیرید، احتمال اینکه با تفاوت‌هایی روبه‌رو شوید بیشتر می‌شود. برای جزئیات به [راهنمای سازگاری pip](./compatibility.md) مراجعه کنید.
 
 !!! important
 
-    uv does not rely on or invoke pip. The pip interface is named as such to highlight its dedicated
-    purpose of providing low-level commands that match pip's interface and to separate it from the
-    rest of uv's commands which operate at a higher level of abstraction.
+    uv به pip وابسته نیست و آن را فراخوانی نمی‌کند. رابط pip چنین نام گرفته است تا هدف اختصاصی آن را برجسته کند: ارائهٔ دستورهای سطح پایین که با رابط pip مطابقت دارند، و جدا کردن آن از بقیهٔ دستورهای uv که در سطح انتزاع بالاتری عمل می‌کنند.

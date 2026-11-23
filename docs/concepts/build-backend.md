@@ -1,33 +1,22 @@
-# The uv build backend
+# بک‌اند بیلد uv {#the-uv-build-backend}
 
-A build backend transforms a source tree (i.e., a directory) into a source distribution or a wheel.
+یک build backend یک source tree (یعنی یک پوشه) را به یک source distribution یا یک wheel تبدیل می‌کند.
 
-uv supports all build backends (as specified by [PEP 517](https://peps.python.org/pep-0517/)), but
-also provides a native build backend (`uv_build`) that integrates tightly with uv to improve
-performance and user experience.
+uv از همهٔ build backendها پشتیبانی می‌کند (مطابق [PEP 517](https://peps.python.org/pep-0517/))، اما یک build backend بومی (`uv_build`) هم ارائه می‌دهد که به‌صورت تنگاتنگ با uv یکپارچه می‌شود تا عملکرد و تجربهٔ کاربری را بهبود دهد.
 
-## Choosing a build backend
+## انتخاب یک build backend {#choosing-a-build-backend}
 
-The uv build backend is a great choice for most Python projects. It has reasonable defaults, with
-the goal of requiring zero configuration for most users, but provides flexible configuration to
-accommodate most Python project structures. It integrates tightly with uv, to improve messaging and
-user experience. It validates project metadata and structures, preventing common mistakes. And,
-finally, it's very fast.
+build backend مربوط به uv برای بیشتر پروژه‌های Python انتخاب بسیار خوبی است. پیش‌فرض‌های معقولی دارد، با این هدف که برای بیشتر کاربران به هیچ پیکربندی‌ای نیاز نباشد، اما پیکربندی انعطاف‌پذیری ارائه می‌دهد تا با بیشتر ساختارهای پروژهٔ Python سازگار شود. به‌صورت تنگاتنگ با uv یکپارچه می‌شود تا پیام‌رسانی و تجربهٔ کاربری را بهبود دهد. metadata و ساختارهای پروژه را اعتبارسنجی می‌کند و از اشتباه‌های رایج جلوگیری می‌کند. و در نهایت، بسیار سریع است.
 
-The uv build backend currently **only supports pure Python code**. An alternative backend is
-required to build a
-[library with extension modules](../concepts/projects/init.md#projects-with-extension-modules).
+build backend مربوط به uv در حال حاضر **فقط از کد خالص Python پشتیبانی می‌کند**. برای ساخت یک [کتابخانه با ماژول‌های extension](../concepts/projects/init.md#projects-with-extension-modules) به یک backend جایگزین نیاز است.
 
 !!! tip
 
-    While the backend supports a number of options for configuring your project structure, when build scripts or
-    a more flexible project layout are required, consider using the
-    [hatchling](https://hatch.pypa.io/latest/config/build/#build-system) build backend instead.
+    با اینکه این backend از تعدادی گزینه برای پیکربندی ساختار پروژهٔ شما پشتیبانی می‌کند، وقتی به اسکریپت‌های بیلد یا یک چیدمان انعطاف‌پذیرتر برای پروژه نیاز است، به‌جای آن استفاده از build backend مربوط به [hatchling](https://hatch.pypa.io/latest/config/build/#build-system) را در نظر بگیرید.
 
-## Using the uv build backend
+## استفاده از build backend مربوط به uv {#using-the-uv-build-backend}
 
-To use uv as a build backend in an existing project, add `uv_build` to the
-[`[build-system]`](../concepts/projects/config.md#build-systems) section in your `pyproject.toml`:
+برای استفاده از uv به‌عنوان یک build backend در یک پروژهٔ موجود، `uv_build` را به بخش [`[build-system]`](../concepts/projects/config.md#build-systems) در فایل `pyproject.toml` خود اضافه کنید:
 
 ```toml title="pyproject.toml"
 [build-system]
@@ -37,34 +26,25 @@ build-backend = "uv_build"
 
 !!! note
 
-    The uv build backend follows the same [versioning policy](../reference/policies/versioning.md)
-    as uv. Including an upper bound on the `uv_build` version ensures that your package continues to
-    build correctly as new versions are released.
+    build backend مربوط به uv از همان [سیاست نسخه‌گذاری](../reference/policies/versioning.md) uv پیروی می‌کند. گنجاندن یک حد بالا برای نسخهٔ `uv_build` تضمین می‌کند که package شما با انتشار نسخه‌های جدید همچنان به‌درستی بیلد می‌شود.
 
-To create a new project that uses the uv build backend, use `uv init`:
+برای ساخت یک پروژهٔ جدید که از build backend مربوط به uv استفاده می‌کند، از `uv init` استفاده کنید:
 
 ```console
 $ uv init
 ```
 
-When the project is built, e.g., with [`uv build`](../guides/package.md), the uv build backend will
-be used to create the source distribution and wheel.
+هنگام بیلد پروژه، مثلاً با [`uv build`](../guides/package.md)، از build backend مربوط به uv برای ساخت source distribution و wheel استفاده می‌شود.
 
-## Bundled build backend
+## build backend همراه {#bundled-build-backend}
 
-The build backend is published as a separate package (`uv_build`) that is optimized for portability
-and small binary size. However, the `uv` executable also includes a copy of the build backend, which
-will be used during builds performed by uv, e.g., during `uv build`, if its version is compatible
-with the `uv_build` requirement. If it's not compatible, a compatible version of the `uv_build`
-package will be used. Other build frontends, such as `python -m build`, will always use the
-`uv_build` package, typically choosing the latest compatible version.
+build backend به‌عنوان یک package جداگانه (`uv_build`) منتشر می‌شود که برای قابل‌حمل بودن و اندازهٔ کوچک باینری بهینه شده است. با این حال، فایل اجرایی `uv` هم یک نسخه از build backend را در خود دارد که در طول بیلدهایی که توسط uv انجام می‌شوند، مثلاً هنگام `uv build`، استفاده می‌شود، به شرطی که نسخهٔ آن با نیازمندی `uv_build` سازگار باشد. اگر سازگار نباشد، یک نسخهٔ سازگار از package مربوط به `uv_build` استفاده می‌شود. frontendهای بیلد دیگر، مانند `python -m build`، همیشه از package مربوط به `uv_build` استفاده می‌کنند و معمولاً آخرین نسخهٔ سازگار را انتخاب می‌کنند.
 
-## Modules
+## ماژول‌ها {#modules}
 
-Python packages are expected to contain one or more Python modules, which are directories containing
-an `__init__.py`. By default, a single root module is expected at `src/<package_name>/__init__.py`.
+انتظار می‌رود packageهای Python یک یا چند module Python داشته باشند، که پوشه‌هایی حاوی یک فایل `__init__.py` هستند. به‌طور پیش‌فرض، انتظار می‌رود یک module ریشهٔ واحد در `src/<package_name>/__init__.py` باشد.
 
-For example, the structure for a project named `foo` would be:
+برای مثال، ساختار یک پروژه با نام `foo` چنین خواهد بود:
 
 ```text
 pyproject.toml
@@ -73,13 +53,11 @@ src
     └── __init__.py
 ```
 
-uv normalizes the package name to determine the default module name: the package name is lowercased
-and dots and dashes are replaced with underscores, e.g., `Foo-Bar` would be converted to `foo_bar`.
+uv نام package را normalize می‌کند تا نام پیش‌فرض module را تعیین کند: نام package به حروف کوچک تبدیل می‌شود و نقطه‌ها و خط‌تیره‌ها با زیرخط جایگزین می‌شوند؛ مثلاً `Foo-Bar` به `foo_bar` تبدیل می‌شود.
 
-The `src/` directory is the default directory for module discovery.
+پوشهٔ `src/` پوشهٔ پیش‌فرض برای کشف module است.
 
-These defaults can be changed with the `module-name` and `module-root` settings. For example, to use
-a `FOO` module in the root directory, as in the project structure:
+می‌توان این پیش‌فرض‌ها را با تنظیمات `module-name` و `module-root` تغییر داد. برای مثال، برای استفاده از یک module با نام `FOO` در پوشهٔ ریشه، مطابق ساختار پروژه:
 
 ```text
 pyproject.toml
@@ -87,7 +65,7 @@ FOO
 └── __init__.py
 ```
 
-The correct build configuration would be:
+پیکربندی صحیح بیلد چنین خواهد بود:
 
 ```toml title="pyproject.toml"
 [tool.uv.build-backend]
@@ -95,13 +73,11 @@ module-name = "FOO"
 module-root = ""
 ```
 
-## Namespace packages
+## پکیج‌های namespace {#namespace-packages}
 
-Namespace packages are intended for use-cases where multiple packages write modules into a shared
-namespace.
+پکیج‌های namespace برای موارد استفاده‌ای در نظر گرفته شده‌اند که در آن‌ها چند package ماژول‌هایی را در یک namespace مشترک می‌نویسند.
 
-Namespace package modules are identified by a `.` in the `module-name`. For example, to package the
-module `bar` in the shared namespace `foo`, the project structure would be:
+ماژول‌های پکیج namespace با یک `.` در `module-name` مشخص می‌شوند. برای مثال، برای بسته‌بندی module مربوط به `bar` در namespace مشترک `foo`، ساختار پروژه چنین خواهد بود:
 
 ```text
 pyproject.toml
@@ -111,7 +87,7 @@ src
         └── __init__.py
 ```
 
-And the `module-name` configuration would be:
+و پیکربندی `module-name` چنین خواهد بود:
 
 ```toml title="pyproject.toml"
 [tool.uv.build-backend]
@@ -120,10 +96,9 @@ module-name = "foo.bar"
 
 !!! important
 
-    The `__init__.py` file is not included in `foo`, since it's the shared namespace module.
+    فایل `__init__.py` در `foo` گنجانده نمی‌شود، زیرا آن module مربوط به namespace مشترک است.
 
-It's also possible to have a complex namespace package with more than one root module, e.g., with
-the project structure:
+همچنین می‌توان یک پکیج namespace پیچیده با بیش از یک module ریشه داشت، مثلاً با ساختار پروژه:
 
 ```text
 pyproject.toml
@@ -134,16 +109,14 @@ src
     └── __init__.py
 ```
 
-While we do not recommend this structure (i.e., you should use a workspace with multiple packages
-instead), it is supported by setting `module-name` to a list of names:
+با اینکه ما این ساختار را توصیه نمی‌کنیم (یعنی به‌جای آن باید از یک workspace با چند package استفاده کنید)، با تنظیم `module-name` روی فهرستی از نام‌ها پشتیبانی می‌شود:
 
 ```toml title="pyproject.toml"
 [tool.uv.build-backend]
 module-name = ["foo", "bar"]
 ```
 
-For packages with many modules or complex namespaces, the `namespace = true` option can be used to
-avoid explicitly declaring each module name, e.g.:
+برای packageهایی با ماژول‌های زیاد یا namespaceهای پیچیده، می‌توان از گزینهٔ `namespace = true` برای جلوگیری از اعلام صریح هر نام module استفاده کرد، مثلاً:
 
 ```toml title="pyproject.toml"
 [tool.uv.build-backend]
@@ -152,11 +125,9 @@ namespace = true
 
 !!! warning
 
-    Using `namespace = true` disables safety checks. Using an explicit list of module names is
-    strongly recommended outside of legacy projects.
+    استفاده از `namespace = true` بررسی‌های ایمنی را غیرفعال می‌کند. استفاده از یک فهرست صریح از نام‌های module خارج از پروژه‌های قدیمی به‌شدت توصیه می‌شود.
 
-The `namespace` option can also be used with `module-name` to explicitly declare the root, e.g., for
-the project structure:
+گزینهٔ `namespace` را می‌توان با `module-name` هم استفاده کرد تا ریشه را صراحتاً اعلام کند، مثلاً برای ساختار پروژه:
 
 ```text
 pyproject.toml
@@ -168,7 +139,7 @@ src
         └── __init__.py
 ```
 
-The recommended configuration would be:
+پیکربندی توصیه‌شده چنین خواهد بود:
 
 ```toml title="pyproject.toml"
 [tool.uv.build-backend]
@@ -176,12 +147,9 @@ module-name = "foo"
 namespace = true
 ```
 
-## Stub packages
+## پکیج‌های stub {#stub-packages}
 
-The build backend also supports building type stub packages, which are identified by the `-stubs`
-suffix on the package or module name, e.g., `foo-stubs`. The module name for type stub packages must
-end in `-stubs`, so uv will not normalize the `-` to an underscore. Additionally, uv will search for
-a `__init__.pyi` file. For example, the project structure would be:
+build backend همچنین از ساخت پکیج‌های stub مربوط به نوع پشتیبانی می‌کند که با پسوند `-stubs` در نام package یا module مشخص می‌شوند، مثلاً `foo-stubs`. نام module برای پکیج‌های stub مربوط به نوع باید به `-stubs` ختم شود، بنابراین uv علامت `-` را به زیرخط normalize نمی‌کند. علاوه بر این، uv به دنبال یک فایل `__init__.pyi` می‌گردد. برای مثال، ساختار پروژه چنین خواهد بود:
 
 ```text
 pyproject.toml
@@ -190,77 +158,63 @@ src
     └── __init__.pyi
 ```
 
-Type stub modules are also supported for [namespace packages](#namespace-packages).
+ماژول‌های stub مربوط به نوع برای [پکیج‌های namespace](#namespace-packages) هم پشتیبانی می‌شوند.
 
-## File inclusion and exclusion
+## گنجاندن و حذف فایل {#file-inclusion-and-exclusion}
 
-The build backend is responsible for determining which files in a source tree should be packaged
-into the distributions.
+build backend مسئول تعیین این است که کدام فایل‌ها در یک source tree باید در distributionها بسته‌بندی شوند.
 
-To determine which files to include in a source distribution, uv first adds the included files and
-directories, then removes the excluded files and directories. This means that exclusions always take
-precedence over inclusions.
+برای تعیین اینکه کدام فایل‌ها در یک source distribution گنجانده شوند، uv ابتدا فایل‌ها و پوشه‌های گنجانده‌شده را اضافه می‌کند و سپس فایل‌ها و پوشه‌های حذف‌شده را برمی‌دارد. این یعنی حذف‌ها همیشه بر گنجاندن‌ها اولویت دارند.
 
-By default, uv excludes `__pycache__`, `*.pyc`, and `*.pyo`.
+به‌طور پیش‌فرض، uv موارد `__pycache__` و `*.pyc` و `*.pyo` را حذف می‌کند.
 
-When building a source distribution, the following files and directories are included:
+هنگام ساخت یک source distribution، فایل‌ها و پوشه‌های زیر گنجانده می‌شوند:
 
-- The `pyproject.toml`, rewritten using TOML 1.0-compatible syntax. The original file is also
-  included as `pyproject.toml.orig`.
-- The [module](#modules) under
+- فایل `pyproject.toml`، که با سینتکس سازگار با TOML 1.0 بازنویسی شده است. فایل اصلی هم با نام `pyproject.toml.orig` گنجانده می‌شود.
+- [module](#modules) زیر
   [`tool.uv.build-backend.module-root`](../reference/settings.md#build-backend_module-root).
-- The files referenced by `project.license-files` and `project.readme`.
-- All directories under [`tool.uv.build-backend.data`](../reference/settings.md#build-backend_data).
-- All files matching patterns from
-  [`tool.uv.build-backend.source-include`](../reference/settings.md#build-backend_source-include).
+- فایل‌هایی که توسط `project.license-files` و `project.readme` ارجاع داده شده‌اند.
+- همهٔ پوشه‌های زیر [`tool.uv.build-backend.data`](../reference/settings.md#build-backend_data).
+- همهٔ فایل‌هایی که با الگوهای
+  [`tool.uv.build-backend.source-include`](../reference/settings.md#build-backend_source-include) مطابقت دارند.
 
-From these, items matching
-[`tool.uv.build-backend.source-exclude`](../reference/settings.md#build-backend_source-exclude) and
-the [default excludes](../reference/settings.md#build-backend_default-excludes) are removed.
+از میان این موارد، مواردی که با
+[`tool.uv.build-backend.source-exclude`](../reference/settings.md#build-backend_source-exclude) و
+[حذف‌های پیش‌فرض](../reference/settings.md#build-backend_default-excludes) مطابقت دارند حذف می‌شوند.
 
-When building a wheel, the following files and directories are included:
+هنگام ساخت یک wheel، فایل‌ها و پوشه‌های زیر گنجانده می‌شوند:
 
-- The [module](#modules) under
+- [module](#modules) زیر
   [`tool.uv.build-backend.module-root`](../reference/settings.md#build-backend_module-root)
-- The files referenced by `project.license-files`, which are copied into the `.dist-info` directory.
-- The `project.readme`, which is copied into the project metadata.
-- All directories under [`tool.uv.build-backend.data`](../reference/settings.md#build-backend_data),
-  which are copied into the `.data` directory.
+- فایل‌هایی که توسط `project.license-files` ارجاع داده شده‌اند و در پوشهٔ `.dist-info` کپی می‌شوند.
+- فایل `project.readme` که در metadata پروژه کپی می‌شود.
+- همهٔ پوشه‌های زیر [`tool.uv.build-backend.data`](../reference/settings.md#build-backend_data)،
+  که در پوشهٔ `.data` کپی می‌شوند.
 
-From these,
-[`tool.uv.build-backend.source-exclude`](../reference/settings.md#build-backend_source-exclude),
-[`tool.uv.build-backend.wheel-exclude`](../reference/settings.md#build-backend_wheel-exclude) and
-the default excludes are removed. The source distribution excludes are applied to prevent a wheel
-built directly from the source tree from including more files than one built from a source
-distribution.
+از میان این موارد،
+[`tool.uv.build-backend.source-exclude`](../reference/settings.md#build-backend_source-exclude)،
+[`tool.uv.build-backend.wheel-exclude`](../reference/settings.md#build-backend_wheel-exclude) و
+حذف‌های پیش‌فرض برداشته می‌شوند. حذف‌های مربوط به source distribution اعمال می‌شوند تا یک wheel
+که مستقیماً از source tree ساخته شده است، فایل‌های بیشتری نسبت به یک wheel ساخته‌شده از یک source
+distribution نداشته باشد.
 
-There are no specific wheel includes. There must only be one top level module, and all data files
-must either be under the module root or in the appropriate
-[data directory](../reference/settings.md#build-backend_data). Most packages store small data in the
-module root alongside the source code.
+هیچ include خاصی برای wheel وجود ندارد. فقط باید یک module سطح بالا وجود داشته باشد و همهٔ فایل‌های داده یا باید زیر ریشهٔ module باشند یا در [پوشهٔ دادهٔ مناسب](../reference/settings.md#build-backend_data). بیشتر packageها داده‌های کوچک را در ریشهٔ module در کنار کد منبع ذخیره می‌کنند.
 
 !!! tip
 
-    When using the uv build backend through a frontend that is not uv, such as pip or
-    `python -m build`, debug logging can be enabled through environment variables with
-    `RUST_LOG=uv=debug` or `RUST_LOG=uv=verbose`. When used through uv, the uv build backend shares
-    the verbosity level of uv.
+    هنگام استفاده از build backend مربوط به uv از طریق یک frontend که uv نیست، مانند pip یا
+    `python -m build`، می‌توان ثبت لاگ دیباگ را از طریق environment variableها با
+    `RUST_LOG=uv=debug` یا `RUST_LOG=uv=verbose` فعال کرد. هنگام استفاده از طریق uv، build backend
+    مربوط به uv سطح جزئیات (verbosity) uv را به اشتراک می‌گذارد.
 
-### Include and exclude syntax
+### سینتکس include و exclude {#include-and-exclude-syntax}
 
-Includes are anchored, which means that `pyproject.toml` includes only `<root>/pyproject.toml` and
-not `<root>/bar/pyproject.toml`. To recursively include all files under a directory, use a `/**`
-suffix, e.g. `src/**`. Recursive inclusions are also anchored, e.g., `assets/**/sample.csv` includes
-all `sample.csv` files in `<root>/assets` or any of its children.
+includeها anchored هستند، یعنی `pyproject.toml` فقط `<root>/pyproject.toml` را شامل می‌شود و نه `<root>/bar/pyproject.toml`. برای گنجاندن بازگشتی همهٔ فایل‌های زیر یک پوشه، از پسوند `/**` استفاده کنید، مثلاً `src/**`. گنجاندن‌های بازگشتی هم anchored هستند؛ مثلاً `assets/**/sample.csv` همهٔ فایل‌های `sample.csv` را در `<root>/assets` یا هر یک از فرزندان آن شامل می‌شود.
 
 !!! note
 
-    For performance and reproducibility, avoid patterns without an anchor such as `**/sample.csv`.
+    برای عملکرد و تکرارپذیری، از الگوهای بدون anchor مانند `**/sample.csv` خودداری کنید.
 
-Excludes are not anchored, which means that `__pycache__` excludes all directories named
-`__pycache__` regardless of its parent directory. All children of an exclusion are excluded as well.
-To anchor a directory, use a `/` prefix, e.g., `/dist` will exclude only `<root>/dist`.
+excludeها anchored نیستند، یعنی `__pycache__` همهٔ پوشه‌های با نام `__pycache__` را حذف می‌کند، صرف‌نظر از پوشهٔ والد آن. همهٔ فرزندان یک حذف هم حذف می‌شوند. برای anchor کردن یک پوشه، از پیشوند `/` استفاده کنید؛ مثلاً `/dist` فقط `<root>/dist` را حذف می‌کند.
 
-All fields accepting patterns use the reduced portable glob syntax from
-[PEP 639](https://peps.python.org/pep-0639/#add-license-FILES-key), with the addition that
-characters can be escaped with a backslash.
+همهٔ فیلدهایی که الگو می‌پذیرند از سینتکس glob قابل‌حملِ کاهش‌یافتهٔ [PEP 639](https://peps.python.org/pep-0639/#add-license-FILES-key) استفاده می‌کنند، با این اضافه که می‌توان کاراکترها را با یک backslash escape کرد.

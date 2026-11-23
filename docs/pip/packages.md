@@ -1,50 +1,50 @@
-# Managing packages
+# مدیریت package‌ها {#managing-packages}
 
-## Installing a package
+## نصب یک package {#installing-a-package}
 
-To install a package into the virtual environment, e.g., Flask:
+برای نصب یک package در virtual environment، مثلاً Flask:
 
 ```console
 $ uv pip install flask
 ```
 
-To install a package with optional dependencies enabled, e.g., Flask with the "dotenv" extra:
+برای نصب یک package با dependency‌های اختیاری فعال، مثلاً Flask با extra «dotenv»:
 
 ```console
 $ uv pip install "flask[dotenv]"
 ```
 
-To install multiple packages, e.g., Flask and Ruff:
+برای نصب چند package، مثلاً Flask و Ruff:
 
 ```console
 $ uv pip install flask ruff
 ```
 
-To install a package with a constraint, e.g., Ruff v0.2.0 or newer:
+برای نصب یک package با یک constraint، مثلاً Ruff نسخهٔ 0.2.0 یا جدیدتر:
 
 ```console
 $ uv pip install 'ruff>=0.2.0'
 ```
 
-To install a package at a specific version, e.g., Ruff v0.3.0:
+برای نصب یک package در یک نسخهٔ مشخص، مثلاً Ruff نسخهٔ 0.3.0:
 
 ```console
 $ uv pip install 'ruff==0.3.0'
 ```
 
-To install a package from the disk:
+برای نصب یک package از روی دیسک:
 
 ```console
 $ uv pip install "ruff @ ./projects/ruff"
 ```
 
-To install a package from GitHub:
+برای نصب یک package از GitHub:
 
 ```console
 $ uv pip install "git+https://github.com/astral-sh/ruff"
 ```
 
-To install a package from GitHub at a specific reference:
+برای نصب یک package از GitHub در یک مرجع مشخص:
 
 ```console
 $ # Install a tag
@@ -57,70 +57,67 @@ $ # Install a branch
 $ uv pip install "git+https://github.com/astral-sh/ruff@main"
 ```
 
-See the [Git authentication](../concepts/authentication/git.md) documentation for installation from
-a private repository.
+برای نصب از یک repository خصوصی، به مستندات [احراز هویت Git](../concepts/authentication/git.md) مراجعه کنید.
 
-## Editable packages
+## package‌های قابل ویرایش {#editable-packages}
 
-Editable packages do not need to be reinstalled for changes to their source code to be active.
+package‌های قابل ویرایش برای اینکه تغییرات کد منبع آن‌ها اعمال شود، نیازی به نصب دوباره ندارند.
 
-To install the current project as an editable package:
+برای نصب project فعلی به‌عنوان یک package قابل ویرایش:
 
 ```console
 $ uv pip install -e .
 ```
 
-To install a project in another directory as an editable package:
+برای نصب یک project در پوشه‌ای دیگر به‌عنوان یک package قابل ویرایش:
 
 ```console
 $ uv pip install -e "ruff @ ./project/ruff"
 ```
 
-## Installing packages from files
+## نصب package‌ها از فایل‌ها {#installing-packages-from-files}
 
-Multiple packages can be installed at once from standard file formats.
+می‌توان چند package را هم‌زمان از قالب‌های استاندارد فایل نصب کرد.
 
-Install from a `requirements.txt` file:
+نصب از یک فایل `requirements.txt`:
 
 ```console
 $ uv pip install -r requirements.txt
 ```
 
-See the [`uv pip compile`](./compile.md) documentation for more information on `requirements.txt`
-files.
+برای اطلاعات بیشتر دربارهٔ فایل‌های `requirements.txt`، به مستندات [`uv pip compile`](./compile.md) مراجعه کنید.
 
-Install from a `pyproject.toml` file:
+نصب از یک فایل `pyproject.toml`:
 
 ```console
 $ uv pip install -r pyproject.toml
 ```
 
-Install from a `pyproject.toml` file with optional dependencies enabled, e.g., the "foo" extra:
+نصب از یک فایل `pyproject.toml` با dependency‌های اختیاری فعال، مثلاً extra «foo»:
 
 ```console
 $ uv pip install -r pyproject.toml --extra foo
 ```
 
-Install from a `pyproject.toml` file with all optional dependencies enabled:
+نصب از یک فایل `pyproject.toml` با همهٔ dependency‌های اختیاری فعال:
 
 ```console
 $ uv pip install -r pyproject.toml --all-extras
 ```
 
-To install dependency groups in the current project directory's `pyproject.toml`, for example the
-group `foo`:
+برای نصب group‌های dependency در فایل `pyproject.toml` پوشهٔ project فعلی، مثلاً group `foo`:
 
 ```console
 $ uv pip install --group foo
 ```
 
-To specify the project directory where groups should be sourced from:
+برای مشخص کردن پوشهٔ project که group‌ها باید از آن خوانده شوند:
 
 ```console
 $ uv pip install --project some/path/ --group foo --group bar
 ```
 
-Alternatively, you can specify a path to a `pyproject.toml` for each group:
+همچنین می‌توانید برای هر group یک مسیر به فایل `pyproject.toml` مشخص کنید:
 
 ```console
 $ uv pip install --group some/path/pyproject.toml:foo --group other/pyproject.toml:bar
@@ -128,19 +125,17 @@ $ uv pip install --group some/path/pyproject.toml:foo --group other/pyproject.to
 
 !!! note
 
-    As in pip, `--group` flags do not apply to other sources specified with flags like `-r` or `-e`.
-    For instance, `uv pip install -r some/path/pyproject.toml --group foo` sources `foo`
-    from `./pyproject.toml` and **not** `some/path/pyproject.toml`.
+    مانند pip، فلگ‌های `--group` برای source‌های دیگری که با فلگ‌هایی مانند `-r` یا `-e` مشخص شده‌اند اعمال نمی‌شوند. برای مثال، `uv pip install -r some/path/pyproject.toml --group foo` مقدار `foo` را از `./pyproject.toml` می‌خواند و **نه** از `some/path/pyproject.toml`.
 
-## Uninstalling a package
+## حذف نصب یک package {#uninstalling-a-package}
 
-To uninstall a package, e.g., Flask:
+برای حذف نصب یک package، مثلاً Flask:
 
 ```console
 $ uv pip uninstall flask
 ```
 
-To uninstall multiple packages, e.g., Flask and Ruff:
+برای حذف نصب چند package، مثلاً Flask و Ruff:
 
 ```console
 $ uv pip uninstall flask ruff

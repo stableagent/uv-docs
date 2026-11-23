@@ -1,7 +1,6 @@
-# Benchmarks
+# بنچمارک‌ها {#benchmarks}
 
-uv's performance is continually benchmarked against previous releases, and regularly compared to
-other tools in the space, like pip and Poetry.
+عملکرد uv به‌طور مداوم در برابر نسخه‌های قبلی بنچمارک می‌شود و مرتباً با tool‌های دیگر این حوزه، مثل pip و Poetry، مقایسه می‌شود.
 
-The latest benchmarks and details on the benchmarking process can be found in the
-[GitHub repository](https://github.com/astral-sh/uv/blob/main/BENCHMARKS.md).
+جدیدترین بنچمارک‌ها و جزئیات فرایند بنچمارک را می‌توانید در
+[مخزن GitHub](https://github.com/astral-sh/uv/blob/main/BENCHMARKS.md) پیدا کنید.

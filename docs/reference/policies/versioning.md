@@ -1,39 +1,41 @@
-# Versioning
+# نسخه‌بندی {#versioning}
 
-uv is widely used in production and is stable software.
+uv به‌طور گسترده در production استفاده می‌شود و نرم‌افزاری پایدار است.
 
-uv uses a custom versioning scheme in which the minor version number is bumped for breaking changes,
-and the patch version number is bumped for bug fixes, enhancements, and other non-breaking changes.
+uv از یک طرح نسخه‌بندی سفارشی استفاده می‌کند که در آن شمارهٔ نسخهٔ minor برای تغییرات breaking
+افزایش می‌یابد و شمارهٔ نسخهٔ patch برای رفع باگ‌ها، بهبودها و دیگر تغییرات non-breaking افزایش
+می‌یابد.
 
-The care we take in backwards-incompatible changes is proportional to the expected real-world
-impact, not a function of arbitrary version numbering policies. We value the ability to iterate on
-new features quickly and gather changes that _could_ be breaking into clearly marked releases.
+دقتی که در تغییرات ناسازگار با نسخه‌های قبلی به خرج می‌دهیم، متناسب با تأثیر واقعی مورد انتظار
+آن‌هاست، نه تابعی از سیاست‌های دلخواه شماره‌گذاری نسخه. ما به توانایی تکرار سریع روی قابلیت‌های
+جدید و گردآوری تغییراتی که _می‌توانند_ breaking باشند در نسخه‌هایی که به‌وضوح مشخص شده‌اند، ارزش
+می‌دهیم.
 
-uv's changelog can be [viewed on GitHub](https://github.com/astral-sh/uv/blob/main/CHANGELOG.md).
+changelog مربوط به uv را می‌توانید در [GitHub ببینید](https://github.com/astral-sh/uv/blob/main/CHANGELOG.md).
 
-## Crate versioning
+## نسخه‌بندی crateها {#crate-versioning}
 
-uv's crates are published to [crates.io](https://crates.io). The following crates follow the normal
-uv versioning policy:
+crateهای uv در [crates.io](https://crates.io) منتشر می‌شوند. crateهای زیر از سیاست عادی نسخه‌بندی
+uv پیروی می‌کنند:
 
 - `uv`
 - `uv-build`
 - `uv-version`
 
-The `uv` and `uv-build` crates are versioned by the binary command-line interface. The Rust
-interface of these crates does not follow semantic versioning.
+crateهای `uv` و `uv-build` بر اساس رابط خط فرمان باینری نسخه‌بندی می‌شوند. رابط Rust این crateها
+از semantic versioning پیروی نمی‌کند.
 
-The remainder of uv's crates provide **no stability guarantees**. The Rust interface is considered
-internal and unstable. Consequently, they are versioned as `0.0.x`. The patch version is incremented
-on every uv release, regardless of changes to the crate.
+بقیهٔ crateهای uv **هیچ تضمین پایداری‌ای** ارائه نمی‌دهند. رابط Rust به‌عنوان داخلی و ناپایدار در
+نظر گرفته می‌شود. در نتیجه، آن‌ها به‌صورت `0.0.x` نسخه‌بندی می‌شوند. شمارهٔ نسخهٔ patch در هر
+انتشار uv افزایش می‌یابد، صرف‌نظر از تغییرات crate.
 
-## Cache versioning
+## نسخه‌بندی cache {#cache-versioning}
 
-Cache versions are considered internal to uv, and so may be changed in a minor or patch release. See
-[Cache versioning](../../concepts/cache.md#cache-versioning) for more.
+نسخه‌های cache داخلیِ uv محسوب می‌شوند و بنابراین ممکن است در یک نسخهٔ minor یا patch تغییر کنند.
+برای اطلاعات بیشتر، [نسخه‌بندی cache](../../concepts/cache.md#cache-versioning) را ببینید.
 
-## Lockfile versioning
+## نسخه‌بندی lockfile {#lockfile-versioning}
 
-The `uv.lock` schema version is considered part of the public API, and so will only be incremented
-in a minor release as a breaking change. See
-[Lockfile versioning](../../concepts/resolution.md#lockfile-versioning) for more.
+نسخهٔ schema در `uv.lock` بخشی از API عمومی محسوب می‌شود و بنابراین فقط در یک نسخهٔ minor
+به‌عنوان یک تغییر breaking افزایش می‌یابد. برای اطلاعات بیشتر،
+[نسخه‌بندی lockfile](../../concepts/resolution.md#lockfile-versioning) را ببینید.

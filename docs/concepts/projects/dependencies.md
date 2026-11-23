@@ -1,33 +1,33 @@
-# Managing dependencies
+# مدیریت dependencies {#managing-dependencies}
 
-## Dependency fields
+## فیلدهای dependency {#dependency-fields}
 
-Dependencies of the project are defined in several fields:
+dependencyهای project در چند فیلد تعریف می‌شوند:
 
-- [`project.dependencies`](#project-dependencies): Published dependencies.
-- [`project.optional-dependencies`](#optional-dependencies): Published optional dependencies, or
-  "extras".
-- [`dependency-groups`](#dependency-groups): Local dependencies for development.
-- [`tool.uv.sources`](#dependency-sources): Alternative sources for dependencies during development.
+- [`project.dependencies`](#project-dependencies): dependencyهای منتشرشده.
+- [`project.optional-dependencies`](#optional-dependencies): dependencyهای اختیاری منتشرشده، یا
+  «extra»ها.
+- [`dependency-groups`](#dependency-groups): dependencyهای محلی برای توسعه.
+- [`tool.uv.sources`](#dependency-sources): sourceهای جایگزین برای dependencyها در طول توسعه.
 
 !!! note
 
-    The `project.dependencies` and `project.optional-dependencies` fields can be used even if
-    the project isn't going to be published. `dependency-groups` are a recently standardized feature
-    and may not be supported by all tools yet.
+    فیلدهای `project.dependencies` و `project.optional-dependencies` را می‌توان حتی اگر قرار
+    نیست project منتشر شود هم استفاده کرد. `dependency-groups` یک قابلیت تازه استانداردشده است
+    و ممکن است هنوز همهٔ toolها از آن پشتیبانی نکنند.
 
-uv supports modifying the project's dependencies with `uv add` and `uv remove`, but dependency
-metadata can also be updated by editing the `pyproject.toml` directly.
+uv از تغییر dependencyهای project با `uv add` و `uv remove` پشتیبانی می‌کند، اما metadata مربوط
+به dependency را می‌توان با ویرایش مستقیم `pyproject.toml` هم به‌روز کرد.
 
-## Adding dependencies
+## افزودن dependencyها {#adding-dependencies}
 
-To add a dependency:
+برای افزودن یک dependency:
 
 ```console
 $ uv add httpx
 ```
 
-An entry will be added in the `project.dependencies` field:
+یک ورودی در فیلد `project.dependencies` اضافه خواهد شد:
 
 ```toml title="pyproject.toml" hl_lines="4"
 [project]
@@ -36,26 +36,26 @@ version = "0.1.0"
 dependencies = ["httpx>=0.27.2"]
 ```
 
-The [`--dev`](#development-dependencies), [`--group`](#dependency-groups), or
-[`--optional`](#optional-dependencies) flags can be used to add dependencies to an alternative
-field.
+می‌توان از فلگ‌های [`--dev`](#development-dependencies)، [`--group`](#dependency-groups) یا
+[`--optional`](#optional-dependencies) برای افزودن dependencyها به یک فیلد جایگزین استفاده کرد.
 
-The dependency will include a constraint, e.g., `>=0.27.2`, for the most recent, compatible version
-of the package. The kind of bound can be adjusted with
-[`--bounds`](../../reference/settings.md#add-bounds), or the constraint can be provided directly:
+dependency شامل یک constraint خواهد بود، مثلاً `>=0.27.2`، برای جدیدترین نسخهٔ سازگار package.
+نوع bound را می‌توان با
+[`--bounds`](../../reference/settings.md#add-bounds) تنظیم کرد، یا constraint را می‌توان مستقیم
+ارائه داد:
 
 ```console
 $ uv add "httpx>=0.20"
 ```
 
-When adding a dependency from a source other than a package registry, uv will add an entry in the
-sources field. For example, when adding `httpx` from GitHub:
+هنگام افزودن یک dependency از یک source غیر از registry پکیج، uv یک ورودی در فیلد sources اضافه
+می‌کند. برای مثال، هنگام افزودن `httpx` از GitHub:
 
 ```console
 $ uv add "httpx @ git+https://github.com/encode/httpx"
 ```
 
-The `pyproject.toml` will include a [Git source entry](#git):
+فایل `pyproject.toml` شامل یک [ورودی source از نوع Git](#git) خواهد بود:
 
 ```toml title="pyproject.toml" hl_lines="8-9"
 [project]
@@ -69,7 +69,7 @@ dependencies = [
 httpx = { git = "https://github.com/encode/httpx" }
 ```
 
-If a dependency cannot be used, uv will display an error:
+اگر نتوان از یک dependency استفاده کرد، uv یک خطا نمایش می‌دهد:
 
 ```console
 $ uv add "httpx>9999"
@@ -78,34 +78,35 @@ $ uv add "httpx>9999"
       we can conclude that your project's requirements are unsatisfiable.
 ```
 
-### Importing dependencies from requirements files
+### وارد کردن dependencyها از فایل‌های requirements {#importing-dependencies-from-requirements-files}
 
-Dependencies declared in a `requirements.txt` file can be added to the project with the `-r` option:
+dependencyهای اعلام‌شده در یک فایل `requirements.txt` را می‌توان با گزینهٔ `-r` به project اضافه
+کرد:
 
 ```
 uv add -r requirements.txt
 ```
 
-See the [pip migration guide](../../guides/migration/pip-to-project.md#importing-requirements-files)
-for more details.
+برای جزئیات بیشتر، [راهنمای مهاجرت از pip](../../guides/migration/pip-to-project.md#importing-requirements-files)
+را ببینید.
 
-## Removing dependencies
+## حذف dependencyها {#removing-dependencies}
 
-To remove a dependency:
+برای حذف یک dependency:
 
 ```console
 $ uv remove httpx
 ```
 
-The `--dev`, `--group`, or `--optional` flags can be used to remove a dependency from a specific
-table.
+می‌توان از فلگ‌های `--dev`، `--group` یا `--optional` برای حذف یک dependency از یک table مشخص
+استفاده کرد.
 
-If a [source](#dependency-sources) is defined for the removed dependency, and there are no other
-references to the dependency, it will also be removed.
+اگر برای dependency حذف‌شده یک [source](#dependency-sources) تعریف شده باشد و هیچ ارجاع دیگری به
+آن dependency وجود نداشته باشد، آن source هم حذف خواهد شد.
 
-## Changing dependencies
+## تغییر dependencyها {#changing-dependencies}
 
-To change an existing dependency, e.g., to use a different constraint for `httpx`:
+برای تغییر یک dependency موجود، مثلاً برای استفاده از constraint متفاوتی برای `httpx`:
 
 ```console
 $ uv add "httpx>0.1.0"
@@ -113,37 +114,38 @@ $ uv add "httpx>0.1.0"
 
 !!! note
 
-    In this example, we are changing the constraints for the dependency in the `pyproject.toml`.
-    The locked version of the dependency will only change if necessary to satisfy the new
-    constraints. To force the package version to update to the latest within the constraints, use `--upgrade-package <name>`, e.g.:
+    در این مثال، constraintهای dependency را در `pyproject.toml` تغییر می‌دهیم.
+    نسخهٔ قفل‌شدهٔ dependency فقط در صورت لزوم برای برآورده کردن constraintهای جدید
+    تغییر می‌کند. برای اینکه نسخهٔ package را مجبور کنید در محدودهٔ constraintها به جدیدترین
+    نسخه به‌روز شود، از `--upgrade-package <name>` استفاده کنید، مثلاً:
 
     ```console
     $ uv add "httpx>0.1.0" --upgrade-package httpx
     ```
 
-    See the [lockfile](./sync.md#upgrading-locked-package-versions) documentation for more details
-    on upgrading packages.
+    برای جزئیات بیشتر دربارهٔ به‌روزرسانی packageها، مستندات
+    [lockfile](./sync.md#upgrading-locked-package-versions) را ببینید.
 
-Requesting a different dependency source will update the `tool.uv.sources` table, e.g., to use
-`httpx` from a local path during development:
+درخواست یک source متفاوت برای dependency، جدول `tool.uv.sources` را به‌روز می‌کند، مثلاً برای
+استفاده از `httpx` از یک مسیر محلی در طول توسعه:
 
 ```console
 $ uv add "httpx @ ../httpx"
 ```
 
-## Platform-specific dependencies
+## dependencyهای مخصوص platform {#platform-specific-dependencies}
 
-To ensure that a dependency is only installed on a specific platform or on specific Python versions,
-use [environment markers](https://peps.python.org/pep-0508/#environment-markers).
+برای اینکه مطمئن شوید یک dependency فقط روی یک platform مشخص یا روی نسخه‌های مشخصی از Python نصب
+می‌شود، از [environment markerها](https://peps.python.org/pep-0508/#environment-markers) استفاده
+کنید.
 
-For example, to install `jax` on Linux, but not on Windows or macOS:
+برای مثال، برای نصب `jax` روی Linux، اما نه روی Windows یا macOS:
 
 ```console
 $ uv add "jax; sys_platform == 'linux'"
 ```
 
-The resulting `pyproject.toml` will then include the environment marker in the dependency
-definition:
+در نتیجه، فایل `pyproject.toml` در تعریف dependency شامل environment marker خواهد بود:
 
 ```toml title="pyproject.toml" hl_lines="6"
 [project]
@@ -153,31 +155,32 @@ requires-python = ">=3.11"
 dependencies = ["jax; sys_platform == 'linux'"]
 ```
 
-Similarly, to include `numpy` on Python 3.11 and later:
+به همین ترتیب، برای گنجاندن `numpy` در Python 3.11 و نسخه‌های بعدی:
 
 ```console
 $ uv add "numpy; python_version >= '3.11'"
 ```
 
-See Python's [environment marker](https://peps.python.org/pep-0508/#environment-markers)
-documentation for a complete enumeration of the available markers and operators.
+برای فهرست کامل markerها و عملگرهای موجود، مستندات
+[environment marker](https://peps.python.org/pep-0508/#environment-markers) مربوط به Python را
+ببینید.
 
 !!! tip
 
-    Dependency sources can also be [changed per-platform](#platform-specific-sources).
+    sourceهای dependency را می‌توان [به‌صورت جداگانه برای هر platform هم تغییر داد](#platform-specific-sources).
 
-## Project dependencies
+## dependencyهای project {#project-dependencies}
 
-The `project.dependencies` table represents the dependencies that are used when uploading to PyPI or
-building a wheel. Individual dependencies are specified using
-[dependency specifiers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/)
-syntax, and the table follows the
-[PEP 621](https://packaging.python.org/en/latest/specifications/pyproject-toml/) standard.
+جدول `project.dependencies` نشان‌دهندهٔ dependencyهایی است که هنگام آپلود در PyPI یا ساخت یک
+wheel استفاده می‌شوند. dependencyهای منفرد با سینتکس
+[dependency specifierها](https://packaging.python.org/en/latest/specifications/dependency-specifiers/)
+مشخص می‌شوند و جدول از استاندارد
+[PEP 621](https://packaging.python.org/en/latest/specifications/pyproject-toml/) پیروی می‌کند.
 
-`project.dependencies` defines the list of packages that are required for the project, along with
-any version constraints to use when installing them. Each entry includes a dependency name and may
-include version constraints, extras, or environment markers for platform-specific packages. For
-example:
+`project.dependencies` فهرست packageهایی را تعریف می‌کند که برای project لازم‌اند، همراه با هر
+constraint نسخه‌ای که هنگام نصب آن‌ها استفاده شود. هر ورودی شامل نام یک dependency است و ممکن است
+شامل constraintهای نسخه، extraها یا environment markerهایی برای packageهای مخصوص platform باشد.
+برای مثال:
 
 ```toml title="pyproject.toml"
 [project]
@@ -197,14 +200,14 @@ dependencies = [
 ]
 ```
 
-## Dependency sources
+## sourceهای dependency {#dependency-sources}
 
-The `tool.uv.sources` table extends the standard dependency tables with alternative dependency
-sources, which are used during development.
+جدول `tool.uv.sources` جدول‌های استاندارد dependency را با sourceهای جایگزین dependency گسترش
+می‌دهد که در طول توسعه استفاده می‌شوند.
 
-Dependency sources add support for common patterns that are not supported by the
-`project.dependencies` standard, like editable installations and relative paths. For example, to
-install `foo` from a directory relative to the project root:
+sourceهای dependency از الگوهای رایجی پشتیبانی می‌کنند که استاندارد `project.dependencies` از
+آن‌ها پشتیبانی نمی‌کند، مانند editable installها و مسیرهای نسبی. برای مثال، برای نصب `foo` از یک
+پوشه نسبت به ریشهٔ project:
 
 ```toml title="pyproject.toml" hl_lines="7"
 [project]
@@ -216,29 +219,29 @@ dependencies = ["foo"]
 foo = { path = "./packages/foo" }
 ```
 
-The following dependency sources are supported by uv:
+sourceهای dependency زیر توسط uv پشتیبانی می‌شوند:
 
-- [Index](#index): A package resolved from a specific package index.
-- [Git](#git): A Git repository.
-- [URL](#url): A remote wheel or source distribution.
-- [Path](#path): A local wheel, source distribution, or project directory.
-- [Workspace](#workspace-member): A member of the current workspace.
+- [Index](#index): یک package که از یک package index مشخص resolve می‌شود.
+- [Git](#git): یک repository از نوع Git.
+- [URL](#url): یک wheel یا source distribution راه دور.
+- [Path](#path): یک wheel، source distribution یا پوشهٔ project محلی.
+- [Workspace](#workspace-member): یک عضو از workspace فعلی.
 
 !!! important
 
-    Sources are only respected by uv. If another tool is used, only the definitions in the standard
-    project tables will be used. If another tool is being used for development, any metadata
-    provided in the source table will need to be re-specified in the other tool's format.
+    sourceها فقط توسط uv رعایت می‌شوند. اگر از tool دیگری استفاده شود، فقط تعریف‌های موجود در
+    جدول‌های استاندارد project استفاده خواهند شد. اگر برای توسعه از tool دیگری استفاده می‌شود، هر
+    metadata ارائه‌شده در جدول source باید دوباره در قالب آن tool دیگر مشخص شود.
 
-### Index
+### Index {#index}
 
-To add a Python package from a specific index, use the `--index` option:
+برای افزودن یک package از نوع Python از یک index مشخص، از گزینهٔ `--index` استفاده کنید:
 
 ```console
 $ uv add torch --index pytorch=https://download.pytorch.org/whl/cpu
 ```
 
-uv will store the index in `[[tool.uv.index]]` and add a `[tool.uv.sources]` entry:
+uv، index را در `[[tool.uv.index]]` ذخیره می‌کند و یک ورودی `[tool.uv.sources]` اضافه می‌کند:
 
 ```toml title="pyproject.toml"
 [project]
@@ -252,7 +255,8 @@ name = "pytorch"
 url = "https://download.pytorch.org/whl/cpu"
 ```
 
-If the index is already configured, you can select it by name (this feature is in preview):
+اگر index از قبل پیکربندی شده باشد، می‌توانید آن را با نام انتخاب کنید (این قابلیت در حالت preview
+است):
 
 ```console
 $ uv add --preview-features index-by-name torch --index pytorch
@@ -260,16 +264,17 @@ $ uv add --preview-features index-by-name torch --index pytorch
 
 !!! tip
 
-    The above example will only work on x86-64 Linux, due to the specifics of the PyTorch index.
-    See the [PyTorch guide](../../guides/integration/pytorch.md) for more information about setting
-    up PyTorch.
+    مثال بالا فقط روی Linux با معماری x86-64 کار می‌کند، به‌دلیل ویژگی‌های خاص index مربوط به
+    PyTorch. برای اطلاعات بیشتر دربارهٔ راه‌اندازی PyTorch،
+    [راهنمای PyTorch](../../guides/integration/pytorch.md) را ببینید.
 
-Using an `index` source _pins_ a package to the given index — it will not be downloaded from other
-indexes.
+استفاده از یک source از نوع `index`، یک package را به index داده‌شده _پین_ می‌کند — این package
+از indexهای دیگر دانلود نخواهد شد.
 
-When defining an index, an `explicit` flag can be included to indicate that the index should _only_
-be used for packages that explicitly specify it in `tool.uv.sources`. If `explicit` is not set,
-other packages may be resolved from the index, if not found elsewhere.
+هنگام تعریف یک index، می‌توان یک فلگ `explicit` گنجاند تا نشان دهد که index باید _فقط_ برای
+packageهایی استفاده شود که آن را به‌صراحت در `tool.uv.sources` مشخص کرده‌اند. اگر `explicit`
+تنظیم نشده باشد، packageهای دیگر هم ممکن است در صورت پیدا نشدن در جای دیگر، از آن index resolve
+شوند.
 
 ```toml title="pyproject.toml" hl_lines="4"
 [[tool.uv.index]]
@@ -278,11 +283,12 @@ url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 ```
 
-### Git
+### Git {#git}
 
-To add a Git dependency source, prefix a Git-compatible URL with `git+`.
+برای افزودن یک source از نوع dependency مربوط به Git، یک URL سازگار با Git را با پیشوند `git+`
+شروع کنید.
 
-For example:
+برای مثال:
 
 ```console
 $ # Install over HTTP(S).
@@ -300,7 +306,7 @@ dependencies = ["httpx"]
 httpx = { git = "https://github.com/encode/httpx" }
 ```
 
-Specific Git references can be requested, e.g., a tag:
+می‌توان referenceهای مشخص Git را درخواست کرد، مثلاً یک tag:
 
 ```console
 $ uv add git+https://github.com/encode/httpx --tag 0.27.0
@@ -314,7 +320,7 @@ dependencies = ["httpx"]
 httpx = { git = "https://github.com/encode/httpx", tag = "0.27.0" }
 ```
 
-Or, a branch:
+یا یک branch:
 
 ```console
 $ uv add git+https://github.com/encode/httpx --branch main
@@ -328,7 +334,7 @@ dependencies = ["httpx"]
 httpx = { git = "https://github.com/encode/httpx", branch = "main" }
 ```
 
-Or, a revision (commit):
+یا یک revision (commit):
 
 ```console
 $ uv add git+https://github.com/encode/httpx --rev 326b9431c761e1ef1e00b9f760d1f654c8db48c6
@@ -342,7 +348,7 @@ dependencies = ["httpx"]
 httpx = { git = "https://github.com/encode/httpx", rev = "326b9431c761e1ef1e00b9f760d1f654c8db48c6" }
 ```
 
-A `subdirectory` may be specified if the package isn't in the repository root:
+اگر package در ریشهٔ repository نباشد، می‌توان یک `subdirectory` مشخص کرد:
 
 ```console
 $ uv add git+https://github.com/langchain-ai/langchain#subdirectory=libs/langchain
@@ -356,8 +362,8 @@ dependencies = ["langchain"]
 langchain = { git = "https://github.com/langchain-ai/langchain", subdirectory = "libs/langchain" }
 ```
 
-Support for [Git LFS](https://git-lfs.com) is also configurable per source. By default, Git LFS
-objects will not be fetched.
+پشتیبانی از [Git LFS](https://git-lfs.com) را هم می‌توان برای هر source پیکربندی کرد. به‌صورت
+پیش‌فرض، objectهای Git LFS دریافت نخواهند شد.
 
 ```console
 $ uv add --lfs git+https://github.com/astral-sh/lfs-cowsay
@@ -371,29 +377,30 @@ dependencies = ["lfs-cowsay"]
 lfs-cowsay = { git = "https://github.com/astral-sh/lfs-cowsay", lfs = true }
 ```
 
-- When `lfs = true`, uv will always fetch LFS objects for this Git source.
-- When `lfs = false`, uv will never fetch LFS objects for this Git source.
-- When omitted, the `UV_GIT_LFS` environment variable is used for all Git sources without an
-  explicit `lfs` configuration.
+- وقتی `lfs = true` باشد، uv همیشه objectهای LFS را برای این source از نوع Git دریافت می‌کند.
+- وقتی `lfs = false` باشد، uv هرگز objectهای LFS را برای این source از نوع Git دریافت نمی‌کند.
+- وقتی این گزینه حذف شود، environment variable مربوط به `UV_GIT_LFS` برای همهٔ sourceهای Git بدون
+  پیکربندی صریح `lfs` استفاده می‌شود.
 
 !!! important
 
-    Ensure Git LFS is installed and configured on your system before attempting to install sources
-    using Git LFS, otherwise a build failure can occur.
+    پیش از تلاش برای نصب sourceهایی که از Git LFS استفاده می‌کنند، مطمئن شوید Git LFS روی سیستم
+    شما نصب و پیکربندی شده است، در غیر این صورت ممکن است خطای build رخ دهد.
 
-### URL
+### URL {#url}
 
-To add a URL source, provide a `https://` URL to either a wheel (ending in `.whl`) or a source
-distribution (typically ending in `.tar.gz` or `.zip`; see
-[here](../../concepts/resolution.md#source-distribution) for all supported formats).
+برای افزودن یک source از نوع URL، یک URL از نوع `https://` به یک wheel (که به `.whl` ختم
+می‌شود) یا یک source distribution (که معمولاً به `.tar.gz` یا `.zip` ختم می‌شود؛ برای همهٔ
+قالب‌های پشتیبانی‌شده [اینجا](../../concepts/resolution.md#source-distribution) را ببینید) ارائه
+دهید.
 
-For example:
+برای مثال:
 
 ```console
 $ uv add "https://files.pythonhosted.org/packages/5c/2d/3da5bdf4408b8b2800061c339f240c1802f2e82d55e50bd39c5a881f47f0/httpx-0.27.0.tar.gz"
 ```
 
-Will result in a `pyproject.toml` with:
+به یک `pyproject.toml` با محتوای زیر منجر می‌شود:
 
 ```toml title="pyproject.toml" hl_lines="5"
 [project]
@@ -403,24 +410,24 @@ dependencies = ["httpx"]
 httpx = { url = "https://files.pythonhosted.org/packages/5c/2d/3da5bdf4408b8b2800061c339f240c1802f2e82d55e50bd39c5a881f47f0/httpx-0.27.0.tar.gz" }
 ```
 
-URL dependencies can also be manually added or edited in the `pyproject.toml` with the
-`{ url = <url> }` syntax. A `subdirectory` may be specified if the source distribution isn't in the
-archive root.
+dependencyهای URL را می‌توان به‌صورت دستی هم در `pyproject.toml` با سینتکس `{ url = <url> }`
+اضافه یا ویرایش کرد. اگر source distribution در ریشهٔ archive نباشد، می‌توان یک `subdirectory`
+مشخص کرد.
 
-### Path
+### Path {#path}
 
-To add a path source, provide the path of a wheel (ending in `.whl`), a source distribution
-(typically ending in `.tar.gz` or `.zip`; see
-[here](../../concepts/resolution.md#source-distribution) for all supported formats), or a directory
-containing a `pyproject.toml`.
+برای افزودن یک source از نوع path، مسیر یک wheel (که به `.whl` ختم می‌شود)، یک source distribution
+(که معمولاً به `.tar.gz` یا `.zip` ختم می‌شود؛ برای همهٔ قالب‌های پشتیبانی‌شده
+[اینجا](../../concepts/resolution.md#source-distribution) را ببینید)، یا یک پوشهٔ حاوی
+`pyproject.toml` را ارائه دهید.
 
-For example:
+برای مثال:
 
 ```console
 $ uv add /example/foo-0.1.0-py3-none-any.whl
 ```
 
-Will result in a `pyproject.toml` with:
+به یک `pyproject.toml` با محتوای زیر منجر می‌شود:
 
 ```toml title="pyproject.toml"
 [project]
@@ -430,13 +437,13 @@ dependencies = ["foo"]
 foo = { path = "/example/foo-0.1.0-py3-none-any.whl" }
 ```
 
-The path may also be a relative path:
+مسیر همچنین می‌تواند یک مسیر نسبی باشد:
 
 ```console
 $ uv add ./foo-0.1.0-py3-none-any.whl
 ```
 
-Or, a path to a project directory:
+یا مسیری به یک پوشهٔ project:
 
 ```console
 $ uv add ~/projects/bar/
@@ -444,18 +451,18 @@ $ uv add ~/projects/bar/
 
 !!! important
 
-    When using a directory as a path dependency, uv will attempt to build and install the target as
-    a package by default. See the [virtual dependency](#virtual-dependencies) documentation for
-    details.
+    هنگام استفاده از یک پوشه به‌عنوان یک dependency از نوع path، uv به‌صورت پیش‌فرض تلاش می‌کند
+    هدف را به‌عنوان یک package بسازد و نصب کند. برای جزئیات، مستندات
+    [virtual dependency](#virtual-dependencies) را ببینید.
 
-An [editable installation](#editable-dependencies) is not used for path dependencies by default. An
-editable installation may be requested for project directories:
+برای dependencyهای path به‌صورت پیش‌فرض از یک [editable installation](#editable-dependencies)
+استفاده نمی‌شود. برای پوشه‌های project می‌توان یک editable installation درخواست کرد:
 
 ```console
 $ uv add --editable ../projects/bar/
 ```
 
-Which will result in a `pyproject.toml` with:
+که به یک `pyproject.toml` با محتوای زیر منجر می‌شود:
 
 ```toml title="pyproject.toml"
 [project]
@@ -467,17 +474,17 @@ bar = { path = "../projects/bar", editable = true }
 
 !!! tip
 
-    For multiple packages in the same repository, [_workspaces_](./workspaces.md) may be a better
-    fit.
+    برای چند package در یک repository، [_workspace_ها](./workspaces.md) ممکن است گزینهٔ بهتری
+    باشند.
 
-### Workspace member
+### عضو workspace {#workspace-member}
 
-To declare a dependency on a workspace member, add the member name with `{ workspace = true }`. All
-workspace members must be explicitly stated. Workspace members are always
-[editable](#editable-dependencies). See the [workspace](./workspaces.md) documentation for more
-details on workspaces.
+برای اعلام یک dependency روی یک عضو workspace، نام عضو را با `{ workspace = true }` اضافه کنید.
+همهٔ اعضای workspace باید به‌صراحت اعلام شوند. اعضای workspace همیشه
+[editable](#editable-dependencies) هستند. برای جزئیات بیشتر دربارهٔ workspaceها، مستندات
+[workspace](./workspaces.md) را ببینید.
 
-To source a dependency from a different workspace, `workspace` can also be a path string:
+برای گرفتن source یک dependency از یک workspace متفاوت، `workspace` می‌تواند یک رشتهٔ مسیر هم باشد:
 
 ```toml title="pyproject.toml"
 [tool.uv.sources]
@@ -497,13 +504,14 @@ members = [
 ]
 ```
 
-### Platform-specific sources
+### sourceهای مخصوص platform {#platform-specific-sources}
 
-You can limit a source to a given platform or Python version by providing
-[dependency specifiers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/)-compatible
-environment markers for the source.
+می‌توانید یک source را به یک platform مشخص یا نسخهٔ مشخصی از Python محدود کنید، با ارائهٔ
+environment markerهای سازگار با
+[dependency specifierها](https://packaging.python.org/en/latest/specifications/dependency-specifiers/)
+برای آن source.
 
-For example, to pull `httpx` from GitHub, but only on macOS, use the following:
+برای مثال، برای گرفتن `httpx` از GitHub، اما فقط روی macOS، از مورد زیر استفاده کنید:
 
 ```toml title="pyproject.toml" hl_lines="8"
 [project]
@@ -513,16 +521,16 @@ dependencies = ["httpx"]
 httpx = { git = "https://github.com/encode/httpx", tag = "0.27.2", marker = "sys_platform == 'darwin'" }
 ```
 
-By specifying the marker on the source, uv will still include `httpx` on all platforms, but will
-download the source from GitHub on macOS, and fall back to PyPI on all other platforms.
+با مشخص کردن marker روی source، uv همچنان `httpx` را روی همهٔ platformها شامل می‌شود، اما source
+را روی macOS از GitHub دانلود می‌کند و روی همهٔ platformهای دیگر به PyPI برمی‌گردد.
 
-### Multiple sources
+### چند source {#multiple-sources}
 
-You can specify multiple sources for a single dependency by providing a list of sources,
-disambiguated by [PEP 508](https://peps.python.org/pep-0508/#environment-markers)-compatible
-environment markers.
+می‌توانید چند source برای یک dependency واحد مشخص کنید، با ارائهٔ فهرستی از sourceها که با
+environment markerهای سازگار با [PEP 508](https://peps.python.org/pep-0508/#environment-markers)
+از هم متمایز می‌شوند.
 
-For example, to pull in different `httpx` tags on macOS vs. Linux:
+برای مثال، برای گرفتن tagهای متفاوت `httpx` روی macOS در برابر Linux:
 
 ```toml title="pyproject.toml" hl_lines="6-7"
 [project]
@@ -535,8 +543,8 @@ httpx = [
 ]
 ```
 
-This strategy extends to using different indexes based on environment markers. For example, to
-install `torch` from different PyTorch indexes based on the platform:
+این راهبرد به استفاده از indexهای متفاوت بر اساس environment markerها هم گسترش می‌یابد. برای مثال،
+برای نصب `torch` از indexهای متفاوت PyTorch بر اساس platform:
 
 ```toml title="pyproject.toml" hl_lines="6-7"
 [project]
@@ -559,32 +567,33 @@ url = "https://download.pytorch.org/whl/cu130"
 explicit = true
 ```
 
-### Disabling sources
+### غیرفعال کردن sourceها {#disabling-sources}
 
-To instruct uv to ignore the `tool.uv.sources` table (e.g., to simulate resolving with the package's
-published metadata), use the `--no-sources` flag:
+برای اینکه به uv دستور دهید جدول `tool.uv.sources` را نادیده بگیرد (مثلاً برای شبیه‌سازی resolve
+کردن با metadata منتشرشدهٔ package)، از فلگ `--no-sources` استفاده کنید:
 
 ```console
 $ uv lock --no-sources
 ```
 
-The use of `--no-sources` will also prevent uv from discovering any
-[workspace members](#workspace-member) that could satisfy a given dependency.
+استفاده از `--no-sources` همچنین مانع می‌شود uv هر [عضو workspace](#workspace-member)ای را که
+می‌تواند یک dependency مشخص را برآورده کند، کشف کند.
 
-## Optional dependencies
+## dependencyهای اختیاری {#optional-dependencies}
 
-It is common for projects that are published as libraries to make some features optional to reduce
-the default dependency tree. For example, Pandas has an
-[`excel` extra](https://pandas.pydata.org/docs/getting_started/install.html#excel-files) and a
-[`plot` extra](https://pandas.pydata.org/docs/getting_started/install.html#visualization) to avoid
-installation of Excel parsers and `matplotlib` unless someone explicitly requires them. Extras are
-requested with the `package[<extra>]` syntax, e.g., `pandas[plot, excel]`.
+برای projectهایی که به‌عنوان library منتشر می‌شوند، رایج است که برخی قابلیت‌ها را اختیاری کنند تا
+درخت dependency پیش‌فرض کوچک‌تر شود. برای مثال، Pandas یک
+[`excel` extra](https://pandas.pydata.org/docs/getting_started/install.html#excel-files) و یک
+[`plot` extra](https://pandas.pydata.org/docs/getting_started/install.html#visualization) دارد تا از
+نصب تجزیه‌کننده‌های Excel و `matplotlib` جلوگیری شود، مگر اینکه کسی به‌صراحت آن‌ها را درخواست کند.
+extraها با سینتکس `package[<extra>]` درخواست می‌شوند، مثلاً `pandas[plot, excel]`.
 
-Optional dependencies are specified in `[project.optional-dependencies]`, a TOML table that maps
-from extra name to its dependencies, following [dependency specifiers](#dependency-specifiers)
-syntax.
+dependencyهای اختیاری در `[project.optional-dependencies]` مشخص می‌شوند، یک جدول TOML که نام extra
+را به dependencyهای آن نگاشت می‌کند و از سینتکس [dependency specifierها](#dependency-specifiers)
+پیروی می‌کند.
 
-Optional dependencies can have entries in `tool.uv.sources` the same as normal dependencies.
+dependencyهای اختیاری می‌توانند ورودی‌هایی در `tool.uv.sources` داشته باشند، درست مانند dependencyهای
+معمولی.
 
 ```toml title="pyproject.toml"
 [project]
@@ -605,7 +614,7 @@ excel = [
 ]
 ```
 
-To add an optional dependency, use the `--optional <extra>` option:
+برای افزودن یک dependency از نوع اختیاری، از گزینهٔ `--optional <extra>` استفاده کنید:
 
 ```console
 $ uv add httpx --optional network
@@ -613,11 +622,12 @@ $ uv add httpx --optional network
 
 !!! note
 
-    If you have optional dependencies that conflict with one another, resolution will fail
-    unless you explicitly [declare them as conflicting](./config.md#conflicting-dependencies).
+    اگر dependencyهای اختیاری دارید که با یکدیگر در تضادند، resolution ناموفق خواهد بود، مگر
+    اینکه آن‌ها را به‌صراحت [به‌عنوان متضاد اعلام کنید](./config.md#conflicting-dependencies).
 
-Sources can also be declared as applying only to a specific optional dependency. For example, to
-pull `torch` from different PyTorch indexes based on an optional `cpu` or `gpu` extra:
+sourceها را می‌توان به‌گونه‌ای هم اعلام کرد که فقط برای یک dependency از نوع اختیاری مشخص اعمال
+شوند. برای مثال، برای گرفتن `torch` از indexهای متفاوت PyTorch بر اساس extra از نوع اختیاری به
+نام `cpu` یا `gpu`:
 
 ```toml title="pyproject.toml"
 [project]
@@ -646,22 +656,24 @@ name = "torch-gpu"
 url = "https://download.pytorch.org/whl/cu130"
 ```
 
-## Development dependencies
+## dependencyهای توسعه {#development-dependencies}
 
-Unlike optional dependencies, development dependencies are local-only and will _not_ be included in
-the project requirements when published to PyPI or other indexes. As such, development dependencies
-are not included in the `[project]` table.
+برخلاف dependencyهای اختیاری، dependencyهای توسعه فقط محلی‌اند و هنگام انتشار در PyPI یا indexهای
+دیگر در requirementهای project گنجانده _نخواهند_ شد. به همین دلیل، dependencyهای توسعه در جدول
+`[project]` گنجانده نمی‌شوند.
 
-Development dependencies can have entries in `tool.uv.sources` the same as normal dependencies.
+dependencyهای توسعه می‌توانند ورودی‌هایی در `tool.uv.sources` داشته باشند، درست مانند dependencyهای
+معمولی.
 
-To add a development dependency, use the `--dev` flag:
+برای افزودن یک dependency توسعه، از فلگ `--dev` استفاده کنید:
 
 ```console
 $ uv add --dev pytest
 ```
 
-uv uses the `[dependency-groups]` table (as defined in [PEP 735](https://peps.python.org/pep-0735/))
-for declaration of development dependencies. The above command will create a `dev` group:
+uv برای اعلام dependencyهای توسعه از جدول `[dependency-groups]` استفاده می‌کند (همان‌طور که در
+[PEP 735](https://peps.python.org/pep-0735/) تعریف شده است). دستور بالا یک group به نام `dev`
+ایجاد می‌کند:
 
 ```toml title="pyproject.toml"
 [dependency-groups]
@@ -670,21 +682,22 @@ dev = [
 ]
 ```
 
-The `dev` group is special-cased; there are `--dev`, `--only-dev`, and `--no-dev` flags to toggle
-inclusion or exclusion of its dependencies. See `--no-default-groups` to disable all default groups
-instead. Additionally, the `dev` group is [synced by default](#default-groups).
+group به نام `dev` به‌صورت ویژه در نظر گرفته می‌شود؛ فلگ‌های `--dev`، `--only-dev` و `--no-dev`
+برای تغییر وضعیت گنجاندن یا حذف dependencyهای آن وجود دارند. برای غیرفعال کردن همهٔ groupهای
+پیش‌فرض به‌جای آن، `--no-default-groups` را ببینید. علاوه بر این، group به نام `dev`
+[به‌صورت پیش‌فرض sync می‌شود](#default-groups).
 
-### Dependency groups
+### groupهای dependency {#dependency-groups}
 
-Development dependencies can be divided into multiple groups, using the `--group` flag.
+dependencyهای توسعه را می‌توان با استفاده از فلگ `--group` به چند group تقسیم کرد.
 
-For example, to add a development dependency in the `lint` group:
+برای مثال، برای افزودن یک dependency توسعه در group به نام `lint`:
 
 ```console
 $ uv add --group lint ruff
 ```
 
-Which results in the following `[dependency-groups]` definition:
+که به تعریف زیر از `[dependency-groups]` منجر می‌شود:
 
 ```toml title="pyproject.toml"
 [dependency-groups]
@@ -696,28 +709,28 @@ lint = [
 ]
 ```
 
-Once groups are defined, the `--all-groups`, `--no-default-groups`, `--group`, `--only-group`, and
-`--no-group` options can be used to include or exclude their dependencies.
+پس از تعریف groupها، می‌توان از گزینه‌های `--all-groups`، `--no-default-groups`، `--group`،
+`--only-group` و `--no-group` برای گنجاندن یا حذف dependencyهای آن‌ها استفاده کرد.
 
 !!! tip
 
-    The `--dev`, `--only-dev`, and `--no-dev` flags are equivalent to `--group dev`,
-    `--only-group dev`, and `--no-group dev` respectively.
+    فلگ‌های `--dev`، `--only-dev` و `--no-dev` به‌ترتیب معادل `--group dev`، `--only-group dev`
+    و `--no-group dev` هستند.
 
-uv requires that all dependency groups are compatible with each other and resolves all groups
-together when creating the lockfile.
+uv لازم می‌داند که همهٔ groupهای dependency با یکدیگر سازگار باشند و هنگام ایجاد lockfile، همهٔ
+groupها را با هم resolve می‌کند.
 
-If dependencies declared in one group are not compatible with those in another group, uv will fail
-to resolve the requirements of the project with an error.
+اگر dependencyهای اعلام‌شده در یک group با dependencyهای group دیگر سازگار نباشند، uv در resolve
+کردن requirementهای project با خطا ناموفق خواهد بود.
 
 !!! note
 
-    If you have dependency groups that conflict with one another, resolution will fail
-    unless you explicitly [declare them as conflicting](./config.md#conflicting-dependencies).
+    اگر groupهای dependency دارید که با یکدیگر در تضادند، resolution ناموفق خواهد بود، مگر اینکه
+    آن‌ها را به‌صراحت [به‌عنوان متضاد اعلام کنید](./config.md#conflicting-dependencies).
 
-### Nesting groups
+### گروه‌های تو در تو {#nesting-groups}
 
-A dependency group can include other dependency groups, e.g.:
+یک group از نوع dependency می‌تواند groupهای dependency دیگر را هم شامل شود، مثلاً:
 
 ```toml title="pyproject.toml"
 [dependency-groups]
@@ -733,19 +746,22 @@ test = [
 ]
 ```
 
-An included group's dependencies cannot conflict with the other dependencies declared in a group.
+dependencyهای یک group گنجانده‌شده نمی‌توانند با dependencyهای دیگری که در یک group اعلام شده‌اند،
+در تضاد باشند.
 
-### Default groups
+### groupهای پیش‌فرض {#default-groups}
 
-By default, uv includes the `dev` dependency group in the environment (e.g., during `uv run` or
-`uv sync`). The default groups to include can be changed using the `tool.uv.default-groups` setting.
+به‌صورت پیش‌فرض، uv group از نوع dependency به نام `dev` را در environment شامل می‌کند (مثلاً در
+طول `uv run` یا `uv sync`). groupهای پیش‌فرضی که باید گنجانده شوند را می‌توان با تنظیم
+`tool.uv.default-groups` تغییر داد.
 
 ```toml title="pyproject.toml"
 [tool.uv]
 default-groups = ["dev", "foo"]
 ```
 
-To enable all dependency groups by default, use `"all"` instead of listing group names:
+برای فعال کردن همهٔ groupهای dependency به‌صورت پیش‌فرض، به‌جای فهرست کردن نام groupها از `"all"`
+استفاده کنید:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -754,15 +770,16 @@ default-groups = "all"
 
 !!! tip
 
-    To disable this behaviour during `uv run` or `uv sync`, use `--no-default-groups`.
-    To exclude a specific default group, use `--no-group <name>`.
+    برای غیرفعال کردن این رفتار در طول `uv run` یا `uv sync`، از `--no-default-groups` استفاده
+    کنید. برای حذف یک group پیش‌فرض مشخص، از `--no-group <name>` استفاده کنید.
 
-### Group `requires-python`
+### group از نوع `requires-python` {#group-requires-python}
 
-By default, dependency groups must be compatible with your project's `requires-python` range.
+به‌صورت پیش‌فرض، groupهای dependency باید با بازهٔ `requires-python` مربوط به project شما سازگار
+باشند.
 
-If a dependency group requires a different range of Python versions than your project, you can
-specify a `requires-python` for the group in `[tool.uv.dependency-groups]`, e.g.:
+اگر یک group از نوع dependency به بازهٔ متفاوتی از نسخه‌های Python نسبت به project شما نیاز دارد،
+می‌توانید یک `requires-python` برای آن group در `[tool.uv.dependency-groups]` مشخص کنید، مثلاً:
 
 ```toml title="pyproject.toml" hl_lines="9-10"
 [project]
@@ -777,10 +794,10 @@ dev = ["pytest"]
 dev = {requires-python = ">=3.12"}
 ```
 
-### Legacy `dev-dependencies`
+### `dev-dependencies` قدیمی {#legacy-dev-dependencies}
 
-Before `[dependency-groups]` was standardized, uv used the `tool.uv.dev-dependencies` field to
-specify development dependencies, e.g.:
+پیش از اینکه `[dependency-groups]` استاندارد شود، uv از فیلد `tool.uv.dev-dependencies` برای مشخص
+کردن dependencyهای توسعه استفاده می‌کرد، مثلاً:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -789,23 +806,23 @@ dev-dependencies = [
 ]
 ```
 
-Dependencies declared in this section will be combined with the contents in the
-`dependency-groups.dev`. Eventually, the `dev-dependencies` field will be deprecated and removed.
+dependencyهای اعلام‌شده در این بخش با محتوای موجود در `dependency-groups.dev` ترکیب خواهند شد. در
+نهایت، فیلد `dev-dependencies` منسوخ و حذف خواهد شد.
 
 !!! note
 
-    If a `tool.uv.dev-dependencies` field exists, `uv add --dev` will use the existing section
-    instead of adding a new `dependency-groups.dev` section.
+    اگر یک فیلد `tool.uv.dev-dependencies` وجود داشته باشد، `uv add --dev` به‌جای افزودن یک بخش
+    جدید `dependency-groups.dev`، از بخش موجود استفاده خواهد کرد.
 
-## Build dependencies
+## dependencyهای build {#build-dependencies}
 
-If a project is structured as a [Python package](./config.md#build-systems), it may declare
-dependencies that are required to build the project, but not required to run it. These dependencies
-are specified in the `[build-system]` table under `build-system.requires`, following
-[PEP 518](https://peps.python.org/pep-0518/).
+اگر یک project به‌صورت یک [package از نوع Python](./config.md#build-systems) ساختاربندی شده باشد،
+ممکن است dependencyهایی را اعلام کند که برای ساخت project لازم‌اند، اما برای اجرای آن لازم نیستند.
+این dependencyها در جدول `[build-system]` زیر `build-system.requires` مشخص می‌شوند و از
+[PEP 518](https://peps.python.org/pep-0518/) پیروی می‌کنند.
 
-For example, if a project uses `setuptools` as its build backend, it should declare `setuptools` as
-a build dependency:
+برای مثال، اگر یک project از `setuptools` به‌عنوان build backend خود استفاده کند، باید `setuptools`
+را به‌عنوان یک dependency از نوع build اعلام کند:
 
 ```toml title="pyproject.toml"
 [project]
@@ -817,8 +834,9 @@ requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
 ```
 
-By default, uv will respect `tool.uv.sources` when resolving build dependencies. For example, to use
-a local version of `setuptools` for building, add the source to `tool.uv.sources`:
+به‌صورت پیش‌فرض، uv هنگام resolve کردن dependencyهای build به `tool.uv.sources` احترام می‌گذارد.
+برای مثال، برای استفاده از یک نسخهٔ محلی از `setuptools` برای ساخت، source را به `tool.uv.sources`
+اضافه کنید:
 
 ```toml title="pyproject.toml"
 [project]
@@ -833,50 +851,51 @@ build-backend = "setuptools.build_meta"
 setuptools = { path = "./packages/setuptools" }
 ```
 
-When publishing a package, we recommend running `uv build --no-sources` to ensure that the package
-builds correctly when `tool.uv.sources` is disabled, as is the case when using other build tools,
-like [`pypa/build`](https://github.com/pypa/build).
+هنگام انتشار یک package، توصیه می‌کنیم `uv build --no-sources` را اجرا کنید تا مطمئن شوید package
+وقتی `tool.uv.sources` غیرفعال است، به‌درستی ساخته می‌شود، همان‌طور که هنگام استفاده از toolهای
+build دیگر، مانند [`pypa/build`](https://github.com/pypa/build)، چنین است.
 
-## Editable dependencies
+## dependencyهای editable {#editable-dependencies}
 
-A regular installation of a directory with a Python package first builds a wheel and then installs
-that wheel into your virtual environment, copying all source files. When the package source files
-are edited, the virtual environment will contain outdated versions.
+یک نصب معمولی از یک پوشهٔ حاوی یک package از نوع Python، ابتدا یک wheel می‌سازد و سپس آن wheel را
+در virtual environment شما نصب می‌کند و همهٔ فایل‌های source را کپی می‌کند. وقتی فایل‌های source
+مربوط به package ویرایش شوند، virtual environment شامل نسخه‌های قدیمی خواهد بود.
 
-Editable installations solve this problem by adding a link to the project within the virtual
-environment (a `.pth` file), which instructs the interpreter to include the source files directly.
+نصب‌های editable این مشکل را با افزودن یک پیوند به project در داخل virtual environment (یک فایل
+`.pth`) حل می‌کنند، که به interpreter دستور می‌دهد فایل‌های source را مستقیم شامل شود.
 
-There are some limitations to editables (mainly: the build backend needs to support them, and native
-modules aren't recompiled before import), but they are useful for development, as the virtual
-environment will always use the latest changes to the package.
+برای editableها محدودیت‌هایی وجود دارد (عمدتاً: build backend باید از آن‌ها پشتیبانی کند و
+moduleهای native پیش از import دوباره کامپایل نمی‌شوند)، اما آن‌ها برای توسعه مفیدند، چون virtual
+environment همیشه از جدیدترین تغییرات package استفاده خواهد کرد.
 
-uv uses editable installation for workspace packages by default.
+uv به‌صورت پیش‌فرض از editable installation برای packageهای workspace استفاده می‌کند.
 
-To add an editable dependency, use the `--editable` flag:
+برای افزودن یک dependency از نوع editable، از فلگ `--editable` استفاده کنید:
 
 ```console
 $ uv add --editable ./path/foo
 ```
 
-Or, to opt-out of using an editable dependency in a workspace:
+یا، برای انصراف از استفاده از یک dependency از نوع editable در یک workspace:
 
 ```console
 $ uv add --no-editable ./path/foo
 ```
 
-## Virtual dependencies
+## dependencyهای virtual {#virtual-dependencies}
 
-uv allows dependencies to be "virtual", in which the dependency itself is not installed as a
-[package](./config.md#project-packaging), but its dependencies are.
+uv اجازه می‌دهد dependencyها «virtual» باشند، به این معنا که خود dependency به‌عنوان یک
+[package](./config.md#project-packaging) نصب نمی‌شود، اما dependencyهای آن نصب می‌شوند.
 
-By default, dependencies are never virtual.
+به‌صورت پیش‌فرض، dependencyها هرگز virtual نیستند.
 
-A dependency with a [`path` source](#path) can be virtual if it explicitly sets
-[`tool.uv.package = false`](../../reference/settings.md#package). Without this setting, uv treats
-the path dependency as a normal package and will attempt to build it, even if the project does not
-declare a [build system](./config.md#build-systems).
+یک dependency با یک [`path` source](#path) می‌تواند virtual باشد، اگر به‌صراحت
+[`tool.uv.package = false`](../../reference/settings.md#package) را تنظیم کند. بدون این تنظیم، uv
+dependency از نوع path را به‌عنوان یک package معمولی در نظر می‌گیرد و تلاش می‌کند آن را بسازد، حتی
+اگر project یک [build system](./config.md#build-systems) اعلام نکرده باشد.
 
-To treat a dependency as virtual, set `package = false` on the source:
+برای اینکه یک dependency به‌عنوان virtual در نظر گرفته شود، `package = false` را روی source تنظیم
+کنید:
 
 ```toml title="pyproject.toml"
 [project]
@@ -886,8 +905,8 @@ dependencies = ["bar"]
 bar = { path = "../projects/bar", package = false }
 ```
 
-If a dependency sets `tool.uv.package = false`, it can be overridden by declaring `package = true`
-on the source:
+اگر یک dependency مقدار `tool.uv.package = false` را تنظیم کند، می‌توان با اعلام `package = true`
+روی source، آن را لغو کرد:
 
 ```toml title="pyproject.toml"
 [project]
@@ -897,13 +916,13 @@ dependencies = ["bar"]
 bar = { path = "../projects/bar", package = true }
 ```
 
-Similarly, a dependency with a [`workspace` source](#workspace-member) can be virtual if it
-explicitly sets [`tool.uv.package = false`](../../reference/settings.md#package). Without this
-setting, the workspace member will be built even if a [build system](./config.md#build-systems) is
-not declared.
+به همین ترتیب، یک dependency با یک [`workspace` source](#workspace-member) می‌تواند virtual باشد،
+اگر به‌صراحت [`tool.uv.package = false`](../../reference/settings.md#package) را تنظیم کند. بدون
+این تنظیم، عضو workspace ساخته خواهد شد، حتی اگر یک
+[build system](./config.md#build-systems) اعلام نشده باشد.
 
-Workspace members that are _not_ dependencies can be virtual by default, e.g., if the parent
-`pyproject.toml` is:
+اعضای workspace که dependency _نیستند_ می‌توانند به‌صورت پیش‌فرض virtual باشند، مثلاً اگر فایل
+`pyproject.toml` مربوط به والد به این صورت باشد:
 
 ```toml title="pyproject.toml"
 [project]
@@ -915,7 +934,7 @@ dependencies = []
 members = ["child"]
 ```
 
-And the child `pyproject.toml` excluded a build system:
+و فایل `pyproject.toml` مربوط به فرزند شامل یک build system نباشد:
 
 ```toml title="pyproject.toml"
 [project]
@@ -924,10 +943,10 @@ version = "1.0.0"
 dependencies = ["anyio"]
 ```
 
-Then the `child` workspace member would not be installed, but the transitive dependency `anyio`
-would be.
+در این صورت، عضو workspace به نام `child` نصب نمی‌شود، اما dependency انتقالی `anyio` نصب خواهد
+شد.
 
-In contrast, if the parent declared a dependency on `child`:
+در مقابل، اگر والد یک dependency روی `child` اعلام کرده باشد:
 
 ```toml title="pyproject.toml"
 [project]
@@ -942,39 +961,38 @@ child = { workspace = true }
 members = ["child"]
 ```
 
-Then `child` would be built and installed.
+در این صورت، `child` ساخته و نصب می‌شود.
 
-## Dependency specifiers
+## dependency specifierها {#dependency-specifiers}
 
-uv uses standard
-[dependency specifiers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/),
-originally defined in [PEP 508](https://peps.python.org/pep-0508/). A dependency specifier is
-composed of, in order:
+uv از [dependency specifierهای](https://packaging.python.org/en/latest/specifications/dependency-specifiers/)
+استاندارد استفاده می‌کند که در اصل در [PEP 508](https://peps.python.org/pep-0508/) تعریف شده‌اند.
+یک dependency specifier به‌ترتیب از موارد زیر تشکیل شده است:
 
-- The dependency name
-- The extras you want (optional)
-- The version specifier
-- An environment marker (optional)
+- نام dependency
+- extraهایی که می‌خواهید (اختیاری)
+- specifier نسخه
+- یک environment marker (اختیاری)
 
-The version specifiers are comma separated and added together, e.g., `foo >=1.2.3,<2,!=1.4.0` is
-interpreted as "a version of `foo` that's at least 1.2.3, but less than 2, and not 1.4.0".
+specifierهای نسخه با کاما از هم جدا می‌شوند و با هم جمع می‌شوند، مثلاً `foo >=1.2.3,<2,!=1.4.0` به
+این صورت تفسیر می‌شود: «نسخه‌ای از `foo` که دست‌کم 1.2.3 باشد، اما کمتر از 2 باشد و 1.4.0 نباشد».
 
-Specifiers are padded with trailing zeros if required, so `foo ==2` matches foo 2.0.0, too.
+در صورت لزوم، specifierها با صفرهای انتهایی پر می‌شوند، پس `foo ==2` با foo نسخهٔ 2.0.0 هم مطابقت
+دارد.
 
-A star can be used for the last digit with equals, e.g., `foo ==2.1.*` will accept any release from
-the 2.1 series. Similarly, `~=` matches where the last digit is equal or higher, e.g., `foo ~=1.2`
-is equal to `foo >=1.2,<2`, and `foo ~=1.2.3` is equal to `foo >=1.2.3,<1.3`.
+می‌توان برای آخرین رقم با علامت مساوی از ستاره استفاده کرد، مثلاً `foo ==2.1.*` هر انتشار از سری
+2.1 را می‌پذیرد. به همین ترتیب، `~=` جایی مطابقت دارد که آخرین رقم برابر یا بیشتر باشد، مثلاً
+`foo ~=1.2` برابر است با `foo >=1.2,<2` و `foo ~=1.2.3` برابر است با `foo >=1.2.3,<1.3`.
 
-Extras are comma-separated in square brackets between the name and version, e.g.,
-`pandas[excel,plot] ==2.2`. Whitespace between extra names is ignored.
+extraها در براکت‌های مربع بین نام و نسخه با کاما از هم جدا می‌شوند، مثلاً `pandas[excel,plot] ==2.2`. فضای خالی بین نام extraها نادیده گرفته می‌شود.
 
-Some dependencies are only required in specific environments, e.g., a specific Python version or
-operating system. For example to install the `importlib-metadata` backport for the
-`importlib.metadata` module, use `importlib-metadata >=7.1.0,<8; python_version < '3.10'`. To
-install `colorama` on Windows (but omit it on other platforms), use
-`colorama >=0.4.6,<5; platform_system == "Windows"`.
+برخی dependencyها فقط در environmentهای مشخصی لازم‌اند، مثلاً یک نسخهٔ مشخص از Python یا یک
+سیستم‌عامل مشخص. برای مثال، برای نصب backport مربوط به `importlib-metadata` برای module به نام
+`importlib.metadata`، از `importlib-metadata >=7.1.0,<8; python_version < '3.10'` استفاده کنید.
+برای نصب `colorama` روی Windows (اما حذف آن روی platformهای دیگر)، از
+`colorama >=0.4.6,<5; platform_system == "Windows"` استفاده کنید.
 
-Markers are combined with `and`, `or`, and parentheses, e.g.,
+markerها با `and`، `or` و پرانتز ترکیب می‌شوند، مثلاً
 `aiohttp >=3.7.4,<4; (sys_platform != 'win32' or implementation_name != 'pypy') and python_version >= '3.10'`.
-Note that versions within markers must be quoted, while versions _outside_ of markers must _not_ be
-quoted.
+توجه کنید که نسخه‌های داخل markerها باید داخل گیومه باشند، در حالی که نسخه‌های _خارج_ از markerها
+_نباید_ داخل گیومه باشند.

@@ -1,67 +1,58 @@
-# Locking environments
+# قفل کردن environment‌ها {#locking-environments}
 
-Locking a dependency, e.g., `ruff`, means writing the exact version to use to a file. When working
-with many dependencies, locking exact versions makes it possible to reproduce the environment.
-Without locking, the versions of dependencies could change over time, when using a different tool,
-or across platforms.
+قفل کردن یک dependency، مثلاً `ruff`، یعنی نوشتن نسخهٔ دقیق مورد استفاده در یک فایل. هنگام کار با dependency‌های زیاد، قفل کردن نسخه‌های دقیق امکان بازتولید environment را فراهم می‌کند. بدون قفل کردن، نسخه‌های dependency‌ها ممکن است با گذشت زمان، هنگام استفاده از tool دیگر یا در platform‌های مختلف تغییر کنند.
 
-## Locking requirements
+## قفل کردن requirement‌ها {#locking-requirements}
 
-uv allows dependencies to be locked in the `requirements.txt` format. It is recommended to use the
-standard `pyproject.toml` to define dependencies, but other dependency formats are supported as
-well. See the documentation on [declaring dependencies](dependencies.md) for more details on how to
-define dependencies.
+uv امکان قفل کردن dependency‌ها در قالب `requirements.txt` را فراهم می‌کند. توصیه می‌شود برای تعریف dependency‌ها از `pyproject.toml` استاندارد استفاده کنید، اما قالب‌های دیگر dependency نیز پشتیبانی می‌شوند. برای جزئیات بیشتر دربارهٔ نحوهٔ تعریف dependency‌ها، به مستندات [اعلام dependency‌ها](dependencies.md) مراجعه کنید.
 
-To lock dependencies declared in a `pyproject.toml`:
+برای قفل کردن dependency‌های اعلام‌شده در یک فایل `pyproject.toml`:
 
 ```console
 $ uv pip compile pyproject.toml -o requirements.txt
 ```
 
-By default, `uv pip compile` displays its output. Use the `--output-file` / `-o` argument to write
-it to a file.
+به‌صورت پیش‌فرض، `uv pip compile` خروجی خود را نمایش می‌دهد. برای نوشتن آن در یک فایل، از آرگومان `--output-file` / `-o` استفاده کنید.
 
-To lock dependencies declared in a `requirements.in`:
+برای قفل کردن dependency‌های اعلام‌شده در یک فایل `requirements.in`:
 
 ```console
 $ uv pip compile requirements.in -o requirements.txt
 ```
 
-To lock dependencies declared in multiple files:
+برای قفل کردن dependency‌های اعلام‌شده در چند فایل:
 
 ```console
 $ uv pip compile pyproject.toml requirements-dev.in -o requirements-dev.txt
 ```
 
-uv also supports legacy `setup.py` and `setup.cfg` formats. To lock dependencies declared in a
-`setup.py`:
+uv همچنین از قالب‌های قدیمی `setup.py` و `setup.cfg` پشتیبانی می‌کند. برای قفل کردن dependency‌های اعلام‌شده در یک فایل `setup.py`:
 
 ```console
 $ uv pip compile setup.py -o requirements.txt
 ```
 
-To lock dependencies from stdin, use `-`:
+برای قفل کردن dependency‌ها از stdin، از `-` استفاده کنید:
 
 ```console
 $ echo "ruff" | uv pip compile -
 ```
 
-To lock with optional dependencies enabled, e.g., the "foo" extra:
+برای قفل کردن با dependency‌های اختیاری فعال، مثلاً extra «foo»:
 
 ```console
 $ uv pip compile pyproject.toml --extra foo
 ```
 
-To lock with all optional dependencies enabled:
+برای قفل کردن با همهٔ dependency‌های اختیاری فعال:
 
 ```console
 $ uv pip compile pyproject.toml --all-extras
 ```
 
-Note extras are not supported with the `requirements.in` format.
+توجه کنید که extra‌ها با قالب `requirements.in` پشتیبانی نمی‌شوند.
 
-To lock a dependency group in the current project directory's `pyproject.toml`, for example the
-group `foo`:
+برای قفل کردن یک group از dependency‌ها در فایل `pyproject.toml` پوشهٔ project فعلی، مثلاً group `foo`:
 
 ```console
 $ uv pip compile --group foo
@@ -69,15 +60,15 @@ $ uv pip compile --group foo
 
 !!! important
 
-    A `--group` flag has to be added to pip-tools' `pip compile`, [although they're considering it](https://github.com/jazzband/pip-tools/issues/2062). We expect to support whatever syntax and semantics they adopt.
+    یک فلگ `--group` باید به `pip compile` در pip-tools اضافه شود، [هرچند در حال بررسی آن هستند](https://github.com/jazzband/pip-tools/issues/2062). ما انتظار داریم از هر نحو و معنایی که آن‌ها بپذیرند پشتیبانی کنیم.
 
-To specify the project directory where groups should be sourced from:
+برای مشخص کردن پوشهٔ project که group‌ها باید از آن خوانده شوند:
 
 ```console
 $ uv pip compile --project some/path/ --group foo --group bar
 ```
 
-Alternatively, you can specify a path to a `pyproject.toml` for each group:
+همچنین می‌توانید برای هر group یک مسیر به فایل `pyproject.toml` مشخص کنید:
 
 ```console
 $ uv pip compile --group some/path/pyproject.toml:foo --group other/pyproject.toml:bar
@@ -85,14 +76,11 @@ $ uv pip compile --group some/path/pyproject.toml:foo --group other/pyproject.to
 
 !!! note
 
-    `--group` flags do not apply to other specified sources. For instance,
-    `uv pip compile some/path/pyproject.toml --group foo` sources `foo`
-    from `./pyproject.toml` and **not** `some/path/pyproject.toml`.
+    فلگ‌های `--group` برای source‌های مشخص‌شدهٔ دیگر اعمال نمی‌شوند. برای مثال، `uv pip compile some/path/pyproject.toml --group foo` مقدار `foo` را از `./pyproject.toml` می‌خواند و **نه** از `some/path/pyproject.toml`.
 
-## Upgrading requirements
+## به‌روزرسانی requirement‌ها {#upgrading-requirements}
 
-When using an output file, uv will consider the versions pinned in an existing output file. If a
-dependency is pinned it will not be upgraded on a subsequent compile run. For example:
+هنگام استفاده از یک فایل خروجی، uv نسخه‌های پین‌شده در فایل خروجی موجود را در نظر می‌گیرد. اگر یک dependency پین شده باشد، در اجرای بعدی کامپایل به‌روزرسانی نمی‌شود. برای مثال:
 
 ```console
 $ echo "ruff==0.3.0" > requirements.txt
@@ -102,73 +90,59 @@ $ echo "ruff" | uv pip compile - -o requirements.txt
 ruff==0.3.0
 ```
 
-To upgrade a dependency, use the `--upgrade-package` flag:
+برای به‌روزرسانی یک dependency، از فلگ `--upgrade-package` استفاده کنید:
 
 ```console
 $ uv pip compile - -o requirements.txt --upgrade-package ruff
 ```
 
-To upgrade all dependencies, there is an `--upgrade` flag.
+برای به‌روزرسانی همهٔ dependency‌ها، یک فلگ `--upgrade` وجود دارد.
 
-## Syncing an environment
+## همگام‌سازی یک environment {#syncing-an-environment}
 
-Dependencies can be installed directly from their definition files or from compiled
-`requirements.txt` files with `uv pip install`. See the documentation on
-[installing packages from files](packages.md#installing-packages-from-files) for more details.
+می‌توان dependency‌ها را مستقیماً از فایل‌های تعریف آن‌ها یا از فایل‌های `requirements.txt` کامپایل‌شده با `uv pip install` نصب کرد. برای جزئیات بیشتر، به مستندات [نصب package‌ها از فایل‌ها](packages.md#installing-packages-from-files) مراجعه کنید.
 
-When installing with `uv pip install`, packages that are already installed will not be removed
-unless they conflict with the lockfile. This means that the environment can have dependencies that
-aren't declared in the lockfile, which isn't great for reproducibility. To ensure the environment
-exactly matches the lockfile, use `uv pip sync` instead.
+هنگام نصب با `uv pip install`، package‌هایی که از قبل نصب شده‌اند حذف نمی‌شوند، مگر اینکه با lockfile تداخل داشته باشند. این یعنی environment می‌تواند dependency‌هایی داشته باشد که در lockfile اعلام نشده‌اند، که برای بازتولیدپذیری خوب نیست. برای اینکه environment دقیقاً با lockfile مطابقت داشته باشد، به‌جای آن از `uv pip sync` استفاده کنید.
 
-To sync an environment with a `requirements.txt` file:
+برای همگام‌سازی یک environment با یک فایل `requirements.txt`:
 
 ```console
 $ uv pip sync requirements.txt
 ```
 
-To sync an environment with a [PEP 751](https://peps.python.org/pep-0751/) `pylock.toml` file:
+برای همگام‌سازی یک environment با یک فایل `pylock.toml` مطابق [PEP 751](https://peps.python.org/pep-0751/):
 
 ```console
 $ uv pip sync pylock.toml
 ```
 
-## Adding constraints
+## افزودن constraint‌ها {#adding-constraints}
 
-Constraints files are `requirements.txt`-like files that only control the _version_ of a requirement
-that's installed. However, including a package in a constraints file will _not_ trigger the
-installation of that package. Constraints can be used to add bounds to dependencies that are not
-dependencies of the current project.
+فایل‌های constraint فایل‌هایی شبیه `requirements.txt` هستند که فقط _نسخهٔ_ یک requirement نصب‌شده را کنترل می‌کنند. با این حال، قرار دادن یک package در فایل constraint باعث نصب آن package نمی‌شود. می‌توان از constraint‌ها برای افزودن کران به dependency‌هایی استفاده کرد که dependency‌های project فعلی نیستند.
 
-To define a constraint, define a bound for a package:
+برای تعریف یک constraint، یک کران برای یک package تعریف کنید:
 
 ```requirements title="constraints.txt"
 pydantic<2.0
 ```
 
-To use a constraints file:
+برای استفاده از یک فایل constraint:
 
 ```console
 $ uv pip compile requirements.in --constraint constraints.txt
 ```
 
-Note that multiple constraints can be defined in each file and multiple files can be used.
+توجه کنید که می‌توان در هر فایل چند constraint تعریف کرد و از چند فایل استفاده کرد.
 
-uv will also read `constraint-dependencies` from the `pyproject.toml` at the workspace root, and
-append them to those specified in the constraints file.
+uv همچنین `constraint-dependencies` را از فایل `pyproject.toml` در ریشهٔ workspace می‌خواند و آن‌ها را به موارد مشخص‌شده در فایل constraint اضافه می‌کند.
 
-## Adding build constraints
+## افزودن build constraint‌ها {#adding-build-constraints}
 
-Similar to `constraints`, but specifically for build-time dependencies, including those required
-when building runtime dependencies.
+مشابه `constraint`‌ها، اما به‌طور خاص برای dependency‌های زمان build، از جمله مواردی که هنگام build کردن dependency‌های زمان اجرا لازم هستند.
 
-Build constraint files are `requirements.txt`-like files that constrain build-time requirements.
-However, including a package in a build constraints file will _not_ trigger its installation at
-build time; instead, constraints apply only when the package is required as a direct or transitive
-build-time dependency. Build constraints can be used to add bounds to dependencies that are not
-explicitly declared as build-time dependencies of the current project.
+فایل‌های build constraint فایل‌هایی شبیه `requirements.txt` هستند که requirement‌های زمان build را محدود می‌کنند. با این حال، قرار دادن یک package در فایل build constraint باعث نصب آن در زمان build نمی‌شود؛ در عوض، constraint‌ها فقط زمانی اعمال می‌شوند که package به‌عنوان یک dependency مستقیم یا انتقالی زمان build لازم باشد. می‌توان از build constraint‌ها برای افزودن کران به dependency‌هایی استفاده کرد که به‌صورت صریح به‌عنوان dependency‌های زمان build در project فعلی اعلام نشده‌اند.
 
-For example, if a package defines its build dependencies as follows:
+برای مثال، اگر یک package dependency‌های build خود را به این صورت تعریف کند:
 
 ```toml title="pyproject.toml"
 [build-system]
@@ -176,59 +150,48 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 ```
 
-Build constraints could be used to ensure that a specific version of `setuptools` is used for every
-package in the workspace:
+می‌توان از build constraint‌ها برای اطمینان از اینکه یک نسخهٔ مشخص از `setuptools` برای هر package در workspace استفاده می‌شود، بهره برد:
 
 ```requirements title="build-constraints.txt"
 setuptools==75.0.0
 ```
 
-uv will also read `build-constraint-dependencies` from the `pyproject.toml` at the workspace root,
-and append them to those specified in the build constraints file.
+uv همچنین `build-constraint-dependencies` را از فایل `pyproject.toml` در ریشهٔ workspace می‌خواند و آن‌ها را به موارد مشخص‌شده در فایل build constraint اضافه می‌کند.
 
-To require hashes for build dependencies, add them to a build constraints file:
+برای الزامی کردن hash‌ها برای dependency‌های build، آن‌ها را به یک فایل build constraint اضافه کنید:
 
 ```requirements title="build-constraints.txt"
 setuptools==83.0.0 --hash=sha256:29b23c360f22f414dc7336bb39178cc7bcbf6021ed2733cde173f09dba19abb3
 ```
 
-Then pass the file with `--require-build-hashes`:
+سپس فایل را با `--require-build-hashes` ارسال کنید:
 
 ```console
 $ uv pip compile requirements.in --build-constraint build-constraints.txt --require-build-hashes
 ```
 
-This option only applies to build dependencies. To check runtime dependencies with `uv pip install`
-or `uv pip sync`, use `--require-hashes`. For details and limitations, see
-[project build dependency hashes](../concepts/projects/build.md#project-build-dependency-hashes).
+این گزینه فقط برای dependency‌های build اعمال می‌شود. برای بررسی dependency‌های زمان اجرا با `uv pip install` یا `uv pip sync`، از `--require-hashes` استفاده کنید. برای جزئیات و محدودیت‌ها، به [hash‌های dependency‌های build در project](../concepts/projects/build.md#project-build-dependency-hashes) مراجعه کنید.
 
-## Overriding dependency versions
+## جایگزین کردن نسخه‌های dependency {#overriding-dependency-versions}
 
-Overrides files are `requirements.txt`-like files that force a specific version of a requirement to
-be installed, regardless of the requirements declared by any constituent package, and regardless of
-whether this would be considered an invalid resolution.
+فایل‌های override فایل‌هایی شبیه `requirements.txt` هستند که نصب یک نسخهٔ مشخص از یک requirement را اجباری می‌کنند، صرف‌نظر از requirement‌های اعلام‌شده توسط هر package تشکیل‌دهنده، و صرف‌نظر از اینکه این کار یک resolution نامعتبر محسوب شود یا نه.
 
-While constraints are _additive_, in that they're combined with the requirements of the constituent
-packages, overrides are _absolute_, in that they completely replace the requirements of the
-constituent packages.
+در حالی که constraint‌ها _افزایشی_ هستند، به این معنا که با requirement‌های package‌های تشکیل‌دهنده ترکیب می‌شوند، override‌ها _مطلق_ هستند، به این معنا که requirement‌های package‌های تشکیل‌دهنده را کاملاً جایگزین می‌کنند.
 
-Overrides are most often used to remove upper bounds from a transitive dependency. For example, if
-`a` requires `c>=1.0,<2.0` and `b` requires `c>=2.0` and the current project requires `a` and `b`
-then the dependencies cannot be resolved.
+override‌ها بیشتر برای حذف کران‌های بالا از یک dependency انتقالی استفاده می‌شوند. برای مثال، اگر `a` به `c>=1.0,<2.0` نیاز داشته باشد و `b` به `c>=2.0` نیاز داشته باشد و project فعلی به `a` و `b` نیاز داشته باشد، آنگاه dependency‌ها قابل حل نیستند.
 
-To define an override, define the new requirement for the problematic package:
+برای تعریف یک override، requirement جدید را برای package مشکل‌دار تعریف کنید:
 
 ```requirements title="overrides.txt"
 c>=2.0
 ```
 
-To use an overrides file:
+برای استفاده از یک فایل override:
 
 ```console
 $ uv pip compile requirements.in --override overrides.txt
 ```
 
-Now, resolution can succeed. However, note that if `a` is _correct_ that it does not support
-`c>=2.0` then a runtime error will likely be encountered when using the packages.
+حالا resolution می‌تواند موفق شود. با این حال، توجه کنید که اگر `a` _به‌درستی_ اعلام کرده باشد که از `c>=2.0` پشتیبانی نمی‌کند، احتمالاً هنگام استفاده از package‌ها با یک خطای زمان اجرا روبه‌رو خواهید شد.
 
-Note that multiple overrides can be defined in each file and multiple files can be used.
+توجه کنید که می‌توان در هر فایل چند override تعریف کرد و از چند فایل استفاده کرد.

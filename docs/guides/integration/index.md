@@ -1,24 +1,23 @@
-# Integration guides
+# راهنمای یکپارچه‌سازی‌ها {#integration-guides}
 
-Learn how to integrate uv with other software:
+یاد بگیرید چگونه uv را با نرم‌افزارهای دیگر یکپارچه کنید:
 
-- [Using in Docker images](./docker.md)
-- [Using with Jupyter notebooks](./jupyter.md)
-- [Using with marimo notebooks](./marimo.md)
-- [Using with pre-commit](./pre-commit.md)
-- [Using in GitHub Actions](./github.md)
-- [Using in GitLab CI/CD](./gitlab.md)
-- [Installing PyTorch](./pytorch.md)
-- [Building a FastAPI application](./fastapi.md)
-- [Using with Bazel](./bazel.md)
-- [Using with Azure Artifacts](./azure.md)
-- [Using with Google Artifact Registry](./google.md)
-- [Using with AWS CodeArtifact](./aws.md)
-- [Using with JFrog Artifactory](./jfrog.md)
-- [Using with Renovate](./renovate.md)
-- [Using with Dependabot](./dependabot.md)
-- [Using with AWS Lambda](./aws-lambda.md)
-- [Using with Coiled](./coiled.md)
+- [استفاده در ایمیج‌های Docker](./docker.md)
+- [استفاده با نوت‌بوک‌های Jupyter](./jupyter.md)
+- [استفاده با نوت‌بوک‌های marimo](./marimo.md)
+- [استفاده با pre-commit](./pre-commit.md)
+- [استفاده در GitHub Actions](./github.md)
+- [استفاده در GitLab CI/CD](./gitlab.md)
+- [نصب PyTorch](./pytorch.md)
+- [ساختن یک برنامهٔ FastAPI](./fastapi.md)
+- [استفاده با Bazel](./bazel.md)
+- [استفاده با Azure Artifacts](./azure.md)
+- [استفاده با Google Artifact Registry](./google.md)
+- [استفاده با AWS CodeArtifact](./aws.md)
+- [استفاده با JFrog Artifactory](./jfrog.md)
+- [استفاده با Renovate](./renovate.md)
+- [استفاده با Dependabot](./dependabot.md)
+- [استفاده با AWS Lambda](./aws-lambda.md)
+- [استفاده با Coiled](./coiled.md)
 
-Or, explore the [concept documentation](../../concepts/index.md) for a comprehensive breakdown of
-each feature.
+یا مستندات [مفهومی](../../concepts/index.md) را برای بررسی جامع هر قابلیت مرور کنید.

@@ -1,70 +1,68 @@
-# Git credentials
+# credentialهای Git {#git-credentials}
 
-uv allows packages to be installed from private Git repositories using SSH or HTTP authentication.
+uv امکان نصب packageها از مخزن‌های خصوصی Git را با استفاده از احراز هویت SSH یا HTTP فراهم می‌کند.
 
-## SSH authentication
+## احراز هویت SSH {#ssh-authentication}
 
-To authenticate using an SSH key, use the `ssh://` protocol:
+برای احراز هویت با استفاده از یک کلید SSH، از پروتکل `ssh://` استفاده کنید:
 
-- `git+ssh://git@<hostname>/...` (e.g., `git+ssh://git@github.com/astral-sh/uv`)
-- `git+ssh://git@<host>/...` (e.g., `git+ssh://git@github.com-key-2/astral-sh/uv`)
+- `git+ssh://git@<hostname>/...` (برای نمونه، `git+ssh://git@github.com/astral-sh/uv`)
+- `git+ssh://git@<host>/...` (برای نمونه، `git+ssh://git@github.com-key-2/astral-sh/uv`)
 
-SSH authentication requires using the username `git`.
+احراز هویت SSH نیازمند استفاده از نام کاربری `git` است.
 
-See the
-[GitHub SSH documentation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh)
-for more details on how to configure SSH.
+برای جزئیات بیشتر دربارهٔ نحوهٔ پیکربندی SSH، به
+[مستندات SSH در GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh)
+مراجعه کنید.
 
-### HTTP authentication
+### احراز هویت HTTP {#http-authentication}
 
-To authenticate over HTTP Basic authentication using a password or token:
+برای احراز هویت روی احراز هویت Basic در HTTP با استفاده از یک رمز عبور یا token:
 
-- `git+https://<user>:<token>@<hostname>/...` (e.g.,
+- `git+https://<user>:<token>@<hostname>/...` (برای نمونه،
   `git+https://git:github_pat_asdf@github.com/astral-sh/uv`)
-- `git+https://<token>@<hostname>/...` (e.g., `git+https://github_pat_asdf@github.com/astral-sh/uv`)
-- `git+https://<user>@<hostname>/...` (e.g., `git+https://git@github.com/astral-sh/uv`)
+- `git+https://<token>@<hostname>/...` (برای نمونه، `git+https://github_pat_asdf@github.com/astral-sh/uv`)
+- `git+https://<user>@<hostname>/...` (برای نمونه، `git+https://git@github.com/astral-sh/uv`)
 
 !!! note
 
-    When using a GitHub personal access token, the username is arbitrary. GitHub doesn't allow you to
-    use your account name and password in URLs like this, although other hosts may.
+    هنگام استفاده از یک personal access token در GitHub، نام کاربری دلخواه است. GitHub به شما اجازه نمی‌دهد
+    از نام حساب و رمز عبور خود در URLهایی مانند این استفاده کنید، هرچند hostهای دیگر ممکن است این کار را مجاز بدانند.
 
-If there are no credentials present in the URL and authentication is needed, the
-[Git credential helper](#git-credential-helpers) will be queried.
+اگر در URL هیچ credentialای وجود نداشت و احراز هویت لازم بود،
+[credential helper در Git](#git-credential-helpers) مورد پرس‌وجو قرار می‌گیرد.
 
-## Persistence of credentials
+## پایداری credentialها {#persistence-of-credentials}
 
-When using `uv add`, uv _will not_ persist Git credentials to the `pyproject.toml` or `uv.lock`.
-These files are often included in source control and distributions, so it is generally unsafe to
-include credentials in them.
+هنگام استفاده از `uv add`، uv credentialهای Git را در `pyproject.toml` یا `uv.lock` ذخیره _نمی‌کند_.
+این فایل‌ها اغلب در کنترل نسخه و توزیع‌ها گنجانده می‌شوند، بنابراین به‌طور کلی گنجاندن credentialها در
+آن‌ها ناامن است.
 
-If you have a Git credential helper configured, your credentials may be automatically persisted,
-resulting in successful subsequent fetches of the dependency. However, if you do not have a Git
-credential helper or the project is used on a machine without credentials seeded, uv will fail to
-fetch the dependency.
+اگر یک credential helper در Git پیکربندی کرده باشید، ممکن است credentialهای شما به‌صورت خودکار ذخیره شوند
+و در نتیجه دریافت‌های بعدی آن dependency موفق شوند. با این حال، اگر credential helper در Git ندارید یا
+project روی ماشینی استفاده می‌شود که credentialها در آن ذخیره نشده‌اند، uv در دریافت dependency ناموفق خواهد بود.
 
-You _may_ force uv to persist Git credentials by passing the `--raw` option to `uv add`. However, we
-strongly recommend setting up a [credential helper](#git-credential-helpers) instead.
+شما _می‌توانید_ با ارسال گزینهٔ `--raw` به `uv add`، uv را وادار کنید credentialهای Git را ذخیره کند. با این حال، ما
+به‌شدت توصیه می‌کنیم به‌جای آن یک [credential helper](#git-credential-helpers) تنظیم کنید.
 
-## Git credential helpers
+## credential helperهای Git {#git-credential-helpers}
 
-Git credential helpers are used to store and retrieve Git credentials. See the
-[Git documentation](https://git-scm.com/doc/credential-helpers) to learn more.
+credential helperهای Git برای ذخیره و بازیابی credentialهای Git استفاده می‌شوند. برای اطلاعات بیشتر، به
+[مستندات Git](https://git-scm.com/doc/credential-helpers) مراجعه کنید.
 
-If you're using GitHub, the simplest way to set up a credential helper is to
-[install the `gh` CLI](https://github.com/cli/cli#installation) and use:
+اگر از GitHub استفاده می‌کنید، ساده‌ترین راه برای تنظیم یک credential helper این است که
+[CLI ابزار `gh`](https://github.com/cli/cli#installation) را نصب کنید و از این دستور استفاده کنید:
 
 ```console
 $ gh auth login
 ```
 
-See the [`gh auth login`](https://cli.github.com/manual/gh_auth_login) documentation for more
-details.
+برای جزئیات بیشتر، به مستندات [`gh auth login`](https://cli.github.com/manual/gh_auth_login) مراجعه کنید.
 
 !!! note
 
-    When using `gh auth login` interactively, the credential helper will be configured automatically.
-    But when using `gh auth login --with-token`, as in the uv
-    [GitHub Actions guide](../../guides/integration/github.md#private-repos), the
-    [`gh auth setup-git`](https://cli.github.com/manual/gh_auth_setup-git) command will need to be
-    run afterwards to configure the credential helper.
+    هنگام استفادهٔ تعاملی از `gh auth login`، credential helper به‌صورت خودکار پیکربندی می‌شود.
+    اما هنگام استفاده از `gh auth login --with-token`، مانند راهنمای
+    [GitHub Actions در uv](../../guides/integration/github.md#private-repos)،
+    دستور [`gh auth setup-git`](https://cli.github.com/manual/gh_auth_setup-git) پس از آن باید
+    اجرا شود تا credential helper پیکربندی شود.

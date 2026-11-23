@@ -1,43 +1,45 @@
-# uv
+# uv {#uv}
 
-An extremely fast Python package and project manager, written in Rust.
+یک مدیر package و project بسیار سریع برای Python که با Rust نوشته شده است.
 
 <p align="center">
-  <img alt="Shows a bar chart with benchmark results." src="https://github.com/astral-sh/uv/assets/1309177/629e59c0-9c6e-4013-9ad4-adb2bcf5080d#only-light">
+  <img alt="نمودار میله‌ای با نتایج benchmark را نشان می‌دهد." src="https://github.com/astral-sh/uv/assets/1309177/629e59c0-9c6e-4013-9ad4-adb2bcf5080d#only-light">
 </p>
 
 <p align="center">
-  <img alt="Shows a bar chart with benchmark results." src="https://github.com/astral-sh/uv/assets/1309177/03aa9163-1c79-4a87-a31d-7a9311ed9310#only-dark">
+  <img alt="نمودار میله‌ای با نتایج benchmark را نشان می‌دهد." src="https://github.com/astral-sh/uv/assets/1309177/03aa9163-1c79-4a87-a31d-7a9311ed9310#only-dark">
 </p>
 
 <p align="center">
-  <i>Installing <a href="https://trio.readthedocs.io/">Trio</a>'s dependencies with a warm cache.</i>
+  <i>نصب dependencies های <a href="https://trio.readthedocs.io/">Trio</a> با یک cache گرم.</i>
 </p>
 
-## Highlights
+## نکات برجسته {#highlights}
 
-- A single tool to replace `pip`, `pip-tools`, `pipx`, `poetry`, `pyenv`, `twine`, `virtualenv`, and
-  more.
-- [10-100x faster](https://github.com/astral-sh/uv/blob/main/BENCHMARKS.md) than `pip`.
-- Provides [comprehensive project management](#projects), with a
-  [universal lockfile](./concepts/projects/layout.md#the-lockfile).
-- [Runs scripts](#scripts), with support for
-  [inline dependency metadata](./guides/scripts.md#declaring-script-dependencies).
-- [Installs and manages](#python-versions) Python versions.
-- [Runs and installs](#tools) tools published as Python packages.
-- Includes a [pip-compatible interface](#the-pip-interface) for a performance boost with a familiar
-  CLI.
-- Supports Cargo-style [workspaces](./concepts/projects/workspaces.md) for scalable projects.
-- Disk-space efficient, with a [global cache](./concepts/cache.md) for dependency deduplication.
-- Installable without Rust or Python via `curl` or `pip`.
-- Supports macOS, Linux, and Windows.
+- یک tool واحد که جایگزین `pip`، `pip-tools`، `pipx`، `poetry`، `pyenv`، `twine`، `virtualenv` و
+  موارد دیگر می‌شود.
+- [۱۰ تا ۱۰۰ برابر سریع‌تر](https://github.com/astral-sh/uv/blob/main/BENCHMARKS.md) از `pip`.
+- [مدیریت جامع project](#projects) را فراهم می‌کند، همراه با یک
+  [lockfile سراسری](./concepts/projects/layout.md#the-lockfile).
+- [اجرای script ها](#scripts)، با پشتیبانی از
+  [metadata درون‌خطی dependency](./guides/scripts.md#declaring-script-dependencies).
+- [نصب و مدیریت](#python-versions) Python version ها.
+- [اجرا و نصب](#tools) tool های منتشرشده به‌عنوان package های Python.
+- شامل یک [رابط سازگار با pip](#the-pip-interface) برای افزایش کارایی با یک CLI
+  آشنا است.
+- از [workspace](./concepts/projects/workspaces.md) های به‌سبک Cargo برای project های
+  مقیاس‌پذیر پشتیبانی می‌کند.
+- بهینه در مصرف فضای دیسک، با یک [cache سراسری](./concepts/cache.md) برای حذف تکراری
+  dependency ها.
+- قابل نصب بدون Rust یا Python با `curl` یا `pip`.
+- از macOS و Linux و Windows پشتیبانی می‌کند.
 
-uv is backed by [Astral](https://astral.sh), the creators of
+uv از سوی [Astral](https://astral.sh) پشتیبانی می‌شود؛ سازندگان
 [Ruff](https://github.com/astral-sh/ruff).
 
-## Installation
+## نصب {#installation}
 
-Install uv with our official standalone installer:
+uv را با نصب‌کنندهٔ مستقل رسمی ما نصب کنید:
 
 === "macOS and Linux"
 
@@ -51,17 +53,17 @@ Install uv with our official standalone installer:
     PS> powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
     ```
 
-Then, check out the [first steps](./getting-started/first-steps.md) or read on for a brief overview.
+سپس، [قدم‌های اول](./getting-started/first-steps.md) را ببینید یا برای یک مرور کوتاه ادامه دهید.
 
 !!! tip
 
-    uv may also be installed with pip, Homebrew, and more. See all of the methods on the
-    [installation page](./getting-started/installation.md).
+    uv را می‌توان با pip و Homebrew و موارد دیگر هم نصب کرد. همهٔ روش‌ها را در
+    [صفحهٔ نصب](./getting-started/installation.md) ببینید.
 
-## Projects
+## Project ها {#projects}
 
-uv manages project dependencies and environments, with support for lockfiles, workspaces, and more,
-similar to `rye` or `poetry`:
+uv dependency ها و environment های project را مدیریت می‌کند، با پشتیبانی از lockfile ها،
+workspace ها و موارد دیگر، مشابه `rye` یا `poetry`:
 
 ```console
 $ uv init example
@@ -89,16 +91,16 @@ Resolved 2 packages in 0.70ms
 Checked 1 package in 0.02ms
 ```
 
-See the [project guide](./guides/projects.md) to get started.
+برای شروع، [راهنمای project](./guides/projects.md) را ببینید.
 
-uv also supports building and publishing projects, even if they're not managed with uv. See the
-[packaging guide](./guides/package.md) to learn more.
+uv از build و منتشر کردن project ها هم پشتیبانی می‌کند، حتی اگر با uv مدیریت نشوند. برای
+اطلاعات بیشتر، [راهنمای packaging](./guides/package.md) را ببینید.
 
-## Scripts
+## Script ها {#scripts}
 
-uv manages dependencies and environments for single-file scripts.
+uv dependency ها و environment ها را برای script های تک‌فایلی مدیریت می‌کند.
 
-Create a new script and add inline metadata declaring its dependencies:
+یک script جدید بسازید و metadata درون‌خطی که dependency های آن را اعلام می‌کند اضافه کنید:
 
 ```console
 $ echo 'import requests; print(requests.get("https://astral.sh"))' > example.py
@@ -107,7 +109,7 @@ $ uv add --script example.py requests
 Updated `example.py`
 ```
 
-Then, run the script in an isolated virtual environment:
+سپس، script را در یک virtual environment مجزا اجرا کنید:
 
 ```console
 $ uv run example.py
@@ -116,13 +118,13 @@ Installed 5 packages in 12ms
 <Response [200]>
 ```
 
-See the [scripts guide](./guides/scripts.md) to get started.
+برای شروع، [راهنمای script ها](./guides/scripts.md) را ببینید.
 
-## Tools
+## Tool ها {#tools}
 
-uv executes and installs command-line tools provided by Python packages, similar to `pipx`.
+uv tool های خط فرمان ارائه‌شده توسط package های Python را اجرا و نصب می‌کند، مشابه `pipx`.
 
-Run a tool in an ephemeral environment using `uvx` (an alias for `uv tool run`):
+یک tool را در یک environment موقت با `uvx` اجرا کنید (نام مستعار `uv tool run`):
 
 ```console
 $ uvx pycowsay 'hello world!'
@@ -141,7 +143,7 @@ Installed 1 package in 9ms
            ||     ||
 ```
 
-Install a tool with `uv tool install`:
+یک tool را با `uv tool install` نصب کنید:
 
 ```console
 $ uv tool install ruff
@@ -154,13 +156,13 @@ $ ruff --version
 ruff 0.5.4
 ```
 
-See the [tools guide](./guides/tools.md) to get started.
+برای شروع، [راهنمای tool ها](./guides/tools.md) را ببینید.
 
-## Python versions
+## Python version ها {#python-versions}
 
-uv installs Python and allows quickly switching between versions.
+uv Python را نصب می‌کند و امکان جابه‌جایی سریع بین version ها را می‌دهد.
 
-Install multiple Python versions:
+چند Python version نصب کنید:
 
 ```console
 $ uv python install 3.10 3.11 3.12
@@ -173,7 +175,7 @@ Installed 3 versions in 3.42s
  + cpython-3.12.4-macos-aarch64-none
 ```
 
-Download Python versions as needed:
+Python version ها را در صورت نیاز دانلود کنید:
 
 ```console
 $ uv venv --python 3.12.0
@@ -188,27 +190,27 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>>>
 ```
 
-Use a specific Python version in the current directory:
+از یک Python version مشخص در پوشهٔ جاری استفاده کنید:
 
 ```console
 $ uv python pin 3.11
 Pinned `.python-version` to `3.11`
 ```
 
-See the [installing Python guide](./guides/install-python.md) to get started.
+برای شروع، [راهنمای نصب Python](./guides/install-python.md) را ببینید.
 
-## The pip interface
+## رابط pip {#the-pip-interface}
 
-uv provides a drop-in replacement for common `pip`, `pip-tools`, and `virtualenv` commands.
+uv یک جایگزین drop-in برای دستورهای رایج `pip`، `pip-tools` و `virtualenv` فراهم می‌کند.
 
-uv extends their interfaces with advanced features, such as dependency version overrides,
-platform-independent resolutions, reproducible resolutions, alternative resolution strategies, and
-more.
+uv رابط‌های آن‌ها را با قابلیت‌های پیشرفته گسترش می‌دهد؛ مانند override های version
+dependency، resolution های مستقل از platform، resolution های قابل بازتولید، استراتژی‌های
+جایگزین resolution و موارد دیگر.
 
-Migrate to uv without changing your existing workflows — and experience a 10-100x speedup — with the
-`uv pip` interface.
+بدون تغییر workflow های موجود خود به uv مهاجرت کنید — و با رابط `uv pip`، سرعت ۱۰ تا ۱۰۰
+برابری را تجربه کنید.
 
-Compile requirements into a platform-independent requirements file:
+requirement ها را در یک فایل requirement مستقل از platform کامپایل کنید:
 
 ```console
 $ uv pip compile requirements.in \
@@ -217,7 +219,7 @@ $ uv pip compile requirements.in \
 Resolved 43 packages in 12ms
 ```
 
-Create a virtual environment:
+یک virtual environment بسازید:
 
 ```console
 $ uv venv
@@ -226,7 +228,7 @@ Creating virtual environment at: .venv
 Activate with: source .venv/bin/activate
 ```
 
-Install the locked requirements:
+requirement های قفل‌شده را نصب کنید:
 
 ```console
 $ uv pip sync requirements.txt
@@ -238,9 +240,9 @@ Installed 43 packages in 208ms
  ...
 ```
 
-See the [pip interface documentation](./pip/index.md) to get started.
+برای شروع، [مستندات رابط pip](./pip/index.md) را ببینید.
 
-## Learn more
+## بیشتر بدانید {#learn-more}
 
-See the [first steps](./getting-started/first-steps.md) or jump straight to the
-[guides](./guides/index.md) to start using uv.
+[قدم‌های اول](./getting-started/first-steps.md) را ببینید یا مستقیم به
+[راهنماها](./guides/index.md) بروید تا استفاده از uv را شروع کنید.

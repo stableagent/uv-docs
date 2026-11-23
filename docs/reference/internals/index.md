@@ -1,6 +1,6 @@
-# Internals
+# بخش‌های داخلی {#internals}
 
-The internals section describes uv's internal components and implementation.
+بخش بخش‌های داخلی، مؤلفه‌ها و پیاده‌سازی داخلی uv را توصیف می‌کند.
 
-- [Resolver](./resolver.md)
-- [Workspace Metadata](./metadata.md)
+- [resolver](./resolver.md)
+- [metadata مربوط به workspace](./metadata.md)

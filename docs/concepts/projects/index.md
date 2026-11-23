@@ -1,19 +1,19 @@
-# Projects
+# projectها {#projects}
 
-Projects help manage Python code spanning multiple files.
+projectها به مدیریت کد Python در چند فایل کمک می‌کنند.
 
 !!! tip
 
-    Looking for an introduction to creating a project with uv? See the [projects guide](../../guides/projects.md) first.
+    به‌دنبال معرفی‌ای برای ساخت project با uv هستید؟ ابتدا راهنمای [projectها](../../guides/projects.md) را ببینید.
 
-Working on projects is a core part of the uv experience. Learn more about using projects:
+کار روی projectها بخش اصلی تجربهٔ کار با uv است. دربارهٔ استفاده از projectها بیشتر بدانید:
 
-- [Understanding project structure and files](./layout.md)
-- [Creating new projects](./init.md)
-- [Managing project dependencies](./dependencies.md)
-- [Running commands and scripts in a project](./run.md)
-- [Using lockfiles and syncing the environment](./sync.md)
-- [Configuring the project for advanced use cases](./config.md)
-- [Building distributions to publish a project](./build.md)
-- [Exporting a lockfile to different formats](./export.md)
-- [Using workspaces to work on multiple projects at once](./workspaces.md)
+- [درک ساختار و فایل‌های project](./layout.md)
+- [ساخت projectهای جدید](./init.md)
+- [مدیریت dependencyهای project](./dependencies.md)
+- [اجرای دستورها و scriptها در project](./run.md)
+- [استفاده از lockfileها و همگام‌سازی environment](./sync.md)
+- [پیکربندی project برای کاربردهای پیشرفته](./config.md)
+- [ساخت distributionها برای منتشر کردن project](./build.md)
+- [خروجی‌گرفتن از lockfile در قالب‌های مختلف](./export.md)
+- [استفاده از workspaceها برای کار هم‌زمان روی چند project](./workspaces.md)

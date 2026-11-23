@@ -1,14 +1,12 @@
-# Declaring dependencies
+# اعلام dependency‌ها {#declaring-dependencies}
 
-It is best practice to declare dependencies in a static file instead of modifying environments with
-ad-hoc installations. Once dependencies are defined, they can be [locked](./compile.md) to create a
-consistent, reproducible environment.
+بهترین روش این است که dependency‌ها را در یک فایل ایستا اعلام کنید، به‌جای اینکه environment‌ها را با نصب‌های موردی تغییر دهید. وقتی dependency‌ها تعریف شدند، می‌توان آن‌ها را [قفل](./compile.md) کرد تا یک environment سازگار و قابل بازتولید ساخته شود.
 
-## Using `pyproject.toml`
+## استفاده از `pyproject.toml` {#using-pyprojecttoml}
 
-The `pyproject.toml` file is the Python standard for defining configuration for a project.
+فایل `pyproject.toml` استاندارد Python برای تعریف پیکربندی یک project است.
 
-To define project dependencies in a `pyproject.toml` file:
+برای تعریف dependency‌های project در یک فایل `pyproject.toml`:
 
 ```toml title="pyproject.toml"
 [project]
@@ -18,7 +16,7 @@ dependencies = [
 ]
 ```
 
-To define optional dependencies in a `pyproject.toml` file:
+برای تعریف dependency‌های اختیاری در یک فایل `pyproject.toml`:
 
 ```toml title="pyproject.toml"
 [project.optional-dependencies]
@@ -28,27 +26,19 @@ cli = [
 ]
 ```
 
-Each of the keys defines an "extra", which can be installed using the `--extra` and `--all-extras`
-flags or `package[<extra>]` syntax. See the documentation on
-[installing packages](./packages.md#installing-packages-from-files) for more details.
+هر یک از کلیدها یک «extra» تعریف می‌کند که می‌توان آن را با فلگ‌های `--extra` و `--all-extras` یا نحو `package[<extra>]` نصب کرد. برای جزئیات بیشتر، به مستندات [نصب package‌ها](./packages.md#installing-packages-from-files) مراجعه کنید.
 
-See the official
-[`pyproject.toml` guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/) for
-more details on getting started with a `pyproject.toml`.
+برای جزئیات بیشتر دربارهٔ شروع کار با `pyproject.toml`، به [راهنمای رسمی `pyproject.toml`](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/) مراجعه کنید.
 
-## Using `requirements.in`
+## استفاده از `requirements.in` {#using-requirementsin}
 
-It is also common to use a lightweight
-[requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/) to
-declare the dependencies for the project. Each requirement is defined on its own line. Commonly,
-this file is called `requirements.in` to distinguish it from `requirements.txt` which is used for
-the locked dependencies.
+همچنین رایج است که از یک [قالب فایل requirements](https://pip.pypa.io/en/stable/reference/requirements-file-format/) سبک برای اعلام dependency‌های project استفاده شود. هر requirement در یک خط جداگانه تعریف می‌شود. معمولاً این فایل `requirements.in` نامیده می‌شود تا از `requirements.txt` که برای dependency‌های قفل‌شده استفاده می‌شود، متمایز شود.
 
-To define dependencies in a `requirements.in` file:
+برای تعریف dependency‌ها در یک فایل `requirements.in`:
 
 ```requirements title="requirements.in"
 httpx
 ruff>=0.3.0
 ```
 
-Optional dependency groups are not supported in this format.
+group‌های dependency اختیاری در این قالب پشتیبانی نمی‌شوند.

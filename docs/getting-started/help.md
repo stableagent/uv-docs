@@ -1,64 +1,63 @@
-# Getting help
+# دریافت کمک {#getting-help}
 
-## Help menus
+## منوهای راهنما {#help-menus}
 
-The `--help` flag can be used to view the help menu for a command, e.g., for `uv`:
+از فلگ `--help` می‌توان برای مشاهدهٔ منوی راهنما برای یک دستور استفاده کرد؛ مثلاً برای `uv`:
 
 ```console
 $ uv --help
 ```
 
-To view the help menu for a specific command, e.g., for `uv init`:
+برای مشاهدهٔ منوی راهنما برای یک دستور مشخص؛ مثلاً برای `uv init`:
 
 ```console
 $ uv init --help
 ```
 
-When using the `--help` flag, uv displays a condensed help menu. To view a longer help menu for a
-command, use `uv help`:
+هنگام استفاده از فلگ `--help`، uv یک منوی راهنمای خلاصه نمایش می‌دهد. برای مشاهدهٔ یک منوی
+راهنمای طولانی‌تر برای یک دستور، از `uv help` استفاده کنید:
 
 ```console
 $ uv help
 ```
 
-To view the long help menu for a specific command, e.g., for `uv init`:
+برای مشاهدهٔ منوی راهنمای طولانی برای یک دستور مشخص؛ مثلاً برای `uv init`:
 
 ```console
 $ uv help init
 ```
 
-When using the long help menu, uv will attempt to use `less` or `more` to "page" the output so it is
-not all displayed at once. To exit the pager, press `q`.
+هنگام استفاده از منوی راهنمای طولانی، uv تلاش می‌کند از `less` یا `more` برای صفحه‌بندی خروجی
+استفاده کند تا همهٔ آن یک‌باره نمایش داده نشود. برای خروج از pager، `q` را فشار دهید.
 
-## Displaying verbose output
+## نمایش خروجی verbose {#displaying-verbose-output}
 
-The `-v` flag can be used to display verbose output for a command, e.g., for `uv sync`:
+از فلگ `-v` می‌توان برای نمایش خروجی verbose برای یک دستور استفاده کرد؛ مثلاً برای `uv sync`:
 
 ```console
 $ uv sync -v
 ```
 
-The `-v` flag can be repeated to increase verbosity, e.g.:
+فلگ `-v` را می‌توان برای افزایش verbosity تکرار کرد؛ مثلاً:
 
 ```console
 $ uv sync -vv
 ```
 
-Often, the verbose output will include additional information about why uv is behaving in a certain
-way.
+اغلب، خروجی verbose شامل اطلاعات بیشتری دربارهٔ علت رفتار uv به شیوه‌ای خاص است.
 
-## Viewing the version
+## مشاهدهٔ version {#viewing-the-version}
 
-When seeking help, it's important to determine the version of uv that you're using — sometimes the
-problem is already solved in a newer version.
+هنگام درخواست کمک، مهم است که version ی uv را که استفاده می‌کنید مشخص کنید — گاهی مشکل در یک
+version جدیدتر از قبل حل شده است.
 
-To check the installed version:
+برای بررسی version نصب‌شده:
 
 ```console
 $ uv self version
 ```
 
-The following are also valid:
+موارد زیر هم معتبرند:
 
 ```console
 $ uv --version      # Same output as `uv self version`
@@ -67,20 +66,20 @@ $ uv -V             # Will not include the build commit and date
 
 !!! note
 
-    Before uv 0.7.0, `uv version` was used instead of `uv self version`.
+    پیش از uv 0.7.0، به‌جای `uv self version` از `uv version` استفاده می‌شد.
 
-## Troubleshooting issues
+## عیب‌یابی مشکلات {#troubleshooting-issues}
 
-The reference documentation contains a
-[troubleshooting guide](../reference/troubleshooting/index.md) for common issues.
+مستندات مرجع شامل یک [راهنمای عیب‌یابی](../reference/troubleshooting/index.md) برای مشکلات رایج
+است.
 
-## Open an issue on GitHub
+## ثبت issue در GitHub {#open-an-issue-on-github}
 
-The [issue tracker](https://github.com/astral-sh/uv/issues) on GitHub is a good place to report bugs
-and request features. Make sure to search for similar issues first, as it is common for someone else
-to encounter the same problem.
+[ردیاب issue](https://github.com/astral-sh/uv/issues) در GitHub مکان خوبی برای گزارش باگ‌ها و
+درخواست قابلیت‌هاست. اول مطمئن شوید که issue های مشابه را جستجو کرده‌اید، چون معمول است که شخص
+دیگری هم با همان مشکل روبه‌رو شده باشد.
 
-## Chat on Discord
+## گفتگو در Discord {#chat-on-discord}
 
-Astral has a [Discord server](https://discord.com/invite/astral-sh), which is a great place to ask
-questions, learn more about uv, and engage with other community members.
+Astral یک [سرور Discord](https://discord.com/invite/astral-sh) دارد که مکان خوبی برای پرسیدن
+سؤال‌ها، یادگیری بیشتر دربارهٔ uv و تعامل با سایر اعضای جامعه است.

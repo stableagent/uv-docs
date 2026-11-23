@@ -1,29 +1,29 @@
 ---
-title: Using uv with Renovate
-description: A guide to using uv with the Renovate dependency bot.
+title: استفاده از uv با Renovate
+description: راهنمای استفاده از uv با bot مربوط به dependency در Renovate.
 ---
 
-# Renovate
+# Renovate {#renovate}
 
-It is considered best practice to regularly update dependencies, to avoid being exposed to
-vulnerabilities, limit incompatibilities between dependencies, and avoid complex upgrades when
-upgrading from a too old version.
+به‌روز نگه داشتن منظم dependencyها بهترین روش محسوب می‌شود تا در معرض آسیب‌پذیری‌ها قرار نگیرید،
+ناسازگاری‌های بین dependencyها را محدود کنید و از ارتقاهای پیچیده هنگام ارتقا از نسخه‌ای خیلی قدیمی
+جلوگیری کنید.
 
-uv is supported by [Renovate](https://github.com/renovatebot/renovate).
+uv توسط [Renovate](https://github.com/renovatebot/renovate) پشتیبانی می‌شود.
 
-## `uv.lock` output
+## خروجی `uv.lock` {#uvlock-output}
 
-Renovate uses the presence of a `uv.lock` file to determine that uv is used for managing
-dependencies, and will suggest upgrades to
-[project dependencies](../../concepts/projects/dependencies.md#project-dependencies),
-[optional dependencies](../../concepts/projects/dependencies.md#optional-dependencies) and
-[development dependencies](../../concepts/projects/dependencies.md#development-dependencies).
-Renovate will update both the `pyproject.toml` and `uv.lock` files.
+Renovate از وجود فایل `uv.lock` برای تشخیص اینکه uv برای مدیریت dependencyها استفاده می‌شود،
+استفاده می‌کند و ارتقاهایی را برای
+[dependencyهای project](../../concepts/projects/dependencies.md#project-dependencies)،
+[dependencyهای optional](../../concepts/projects/dependencies.md#optional-dependencies) و
+[dependencyهای development](../../concepts/projects/dependencies.md#development-dependencies)
+پیشنهاد می‌دهد. Renovate هر دو فایل `pyproject.toml` و `uv.lock` را به‌روز می‌کند.
 
-The lockfile can also be refreshed on a regular basis (for instance to update transitive
-dependencies) by enabling the
+lockfile را می‌توان به‌صورت منظم (مثلاً برای به‌روزرسانی dependencyهای transitive) با فعال‌کردن
+گزینهٔ
 [`lockFileMaintenance`](https://docs.renovatebot.com/configuration-options/#lockfilemaintenance)
-option:
+تازه‌سازی کرد:
 
 ```jsx title="renovate.json5"
 {
@@ -34,15 +34,15 @@ option:
 }
 ```
 
-## Inline script metadata
+## متادیتای درون‌خطی script {#inline-script-metadata}
 
-Renovate supports updating dependencies defined using
-[inline script metadata](../scripts.md#declaring-script-dependencies).
+Renovate از به‌روزرسانی dependencyهای تعریف‌شده با استفاده از
+[inline script metadata](../scripts.md#declaring-script-dependencies) پشتیبانی می‌کند.
 
-Since it cannot automatically detect which Python files use inline script metadata, their locations
-need to be explicitly defined using
-[`managerFilePatterns`](https://docs.renovatebot.com/configuration-options/#managerfilepatterns),
-like so:
+از آنجا که نمی‌تواند به‌صورت خودکار تشخیص دهد کدام فایل‌های Python از inline script metadata
+استفاده می‌کنند، مکان‌های آن‌ها باید به‌صراحت با استفاده از
+[`managerFilePatterns`](https://docs.renovatebot.com/configuration-options/#managerfilepatterns)
+تعریف شوند، به این شکل:
 
 ```jsx title="renovate.json5"
 {
@@ -58,19 +58,19 @@ like so:
 
 !!! note
 
-    Renovate does not yet support updating the lock file associated to the
-    script (https://github.com/renovatebot/renovate/issues/33591), so if you rely on this feature
-    for a script, the lock file will need to be manually updated.
+    Renovate هنوز از به‌روزرسانی lockfile مربوط به
+    script پشتیبانی نمی‌کند (https://github.com/renovatebot/renovate/issues/33591)، پس اگر برای
+    یک script به این قابلیت متکی هستید، lockfile باید به‌صورت دستی به‌روز شود.
 
-## Dependency cooldown
+## Dependency cooldown {#dependency-cooldown}
 
-If you use the [`exclude-newer`](../../reference/settings.md#exclude-newer) option, it is
-recommended to also set the equivalent
-[`minimumReleaseAge`](https://docs.renovatebot.com/configuration-options/#minimumreleaseage) option
-in Renovate, to avoid ending up with pull requests where uv would not be able to lock the
-dependencies.
+اگر از گزینهٔ [`exclude-newer`](../../reference/settings.md#exclude-newer) استفاده می‌کنید، توصیه
+می‌شود گزینهٔ معادل
+[`minimumReleaseAge`](https://docs.renovatebot.com/configuration-options/#minimumreleaseage) را
+نیز در Renovate تنظیم کنید تا در نهایت با pull requestهایی مواجه نشوید که uv نتواند
+dependencyهای آن‌ها را lock کند.
 
-For instance, if you've set `exclude-newer` to `1 week`, you can set:
+برای مثال، اگر `exclude-newer` را روی `1 week` تنظیم کرده‌اید، می‌توانید این را تنظیم کنید:
 
 ```jsx title="renovate.json5"
 {

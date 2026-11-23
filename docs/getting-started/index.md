@@ -1,14 +1,14 @@
-# Getting started
+# شروع کار {#getting-started}
 
-To help you get started with uv, we'll cover a few important topics:
+برای اینکه با uv شروع کنید، چند موضوع مهم را پوشش می‌دهیم:
 
-- [Installing uv](./installation.md)
-- [First steps after installation](./first-steps.md)
-- [An overview of uv's features](./features.md)
-- [How to get help](./help.md)
+- [نصب uv](./installation.md)
+- [قدم‌های اول پس از نصب](./first-steps.md)
+- [مروری بر قابلیت‌های uv](./features.md)
+- [چطور کمک بگیرید](./help.md)
 
-Read on, or jump ahead to another section:
+ادامه دهید، یا مستقیم به بخش دیگری بروید:
 
-- Get going quickly with [guides](../guides/index.md) for common workflows.
-- Learn more about the core [concepts](../concepts/index.md) in uv.
-- Use the [reference](../reference/index.md) documentation to find details about something specific.
+- با [راهنماها](../guides/index.md) برای workflow های رایج سریع شروع کنید.
+- دربارهٔ [مفاهیم](../concepts/index.md) اصلی uv بیشتر بدانید.
+- از مستندات [مرجع](../reference/index.md) برای پیدا کردن جزئیات یک موضوع خاص استفاده کنید.

@@ -1,19 +1,19 @@
 ---
-title: Using uv with Dependabot
-description: A guide to using uv with the Dependabot dependency bot.
+title: استفاده از uv با Dependabot
+description: راهنمای استفاده از uv با bot مربوط به dependency در Dependabot.
 ---
 
-# Dependabot
+# Dependabot {#dependabot}
 
-It is considered best practice to regularly update dependencies, to avoid being exposed to
-vulnerabilities, limit incompatibilities between dependencies, and avoid complex upgrades when
-upgrading from a too old version.
+به‌روز نگه داشتن منظم dependencyها بهترین روش محسوب می‌شود تا در معرض آسیب‌پذیری‌ها قرار نگیرید،
+ناسازگاری‌های بین dependencyها را محدود کنید و از ارتقاهای پیچیده هنگام ارتقا از نسخه‌ای خیلی قدیمی
+جلوگیری کنید.
 
-Dependabot has announced support for uv, but there are some use cases that are not yet working. See
-[astral-sh/uv#2512](https://github.com/astral-sh/uv/issues/2512) for updates.
+Dependabot پشتیبانی از uv را اعلام کرده است، اما برخی موردهای استفاده هنوز کار نمی‌کنند. برای به‌روزرسانی‌ها
+به [astral-sh/uv#2512](https://github.com/astral-sh/uv/issues/2512) مراجعه کنید.
 
-Dependabot supports updating `uv.lock` files. To enable it, add the uv `package-ecosystem` to your
-`updates` list in the `dependabot.yml`:
+Dependabot از به‌روزرسانی فایل‌های `uv.lock` پشتیبانی می‌کند. برای فعال‌کردن آن، `package-ecosystem`
+مربوط به uv را به فهرست `updates` خود در `dependabot.yml` اضافه کنید:
 
 ```yaml title="dependabot.yml"
 version: 2
@@ -25,15 +25,15 @@ updates:
       interval: "weekly"
 ```
 
-## Dependency cooldown
+## Dependency cooldown {#dependency-cooldown}
 
-If you use the [`exclude-newer`](../../reference/settings.md#exclude-newer) option, it is
-recommended to also set the equivalent
+اگر از گزینهٔ [`exclude-newer`](../../reference/settings.md#exclude-newer) استفاده می‌کنید، توصیه
+می‌شود گزینهٔ معادل
 [`cooldown`](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#cooldown-)
-option in Dependabot, to avoid ending up with pull requests where uv would not be able to lock the
-dependencies.
+را نیز در Dependabot تنظیم کنید تا در نهایت با pull requestهایی مواجه نشوید که uv نتواند
+dependencyهای آن‌ها را lock کند.
 
-For instance, if you've set `exclude-newer` to `1 week`, you can set:
+برای مثال، اگر `exclude-newer` را روی `1 week` تنظیم کرده‌اید، می‌توانید این را تنظیم کنید:
 
 ```yaml title="dependabot.yml"
 version: 2

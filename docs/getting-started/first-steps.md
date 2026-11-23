@@ -1,7 +1,6 @@
-# First steps with uv
+# قدم‌های اول با uv {#first-steps-with-uv}
 
-After [installing uv](./installation.md), you can check that uv is available by running the `uv`
-command:
+پس از [نصب uv](./installation.md)، می‌توانید با اجرای دستور `uv` بررسی کنید که uv در دسترس است:
 
 ```console
 $ uv
@@ -12,10 +11,10 @@ Usage: uv [OPTIONS] <COMMAND>
 ...
 ```
 
-You should see a help menu listing the available commands.
+باید یک منوی راهنما ببینید که دستورهای موجود را فهرست می‌کند.
 
-## Next steps
+## قدم‌های بعدی {#next-steps}
 
-Now that you've confirmed uv is installed, check out an [overview of features](./features.md), learn
-how to [get help](./help.md) if you run into any problems, or jump to the
-[guides](../guides/index.md) to start using uv.
+حالا که تأیید کردید uv نصب شده است، یک [مرور کلی بر قابلیت‌ها](./features.md) را ببینید، یاد
+بگیرید در صورت بروز مشکل چطور [کمک بگیرید](./help.md)، یا به [راهنماها](../guides/index.md)
+بروید تا استفاده از uv را شروع کنید.

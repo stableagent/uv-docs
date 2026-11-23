@@ -1,86 +1,54 @@
-# Caching
+# cache کردن {#caching}
 
-## Dependency caching
+## cache کردن dependencyها {#dependency-caching}
 
-uv uses aggressive caching to avoid re-downloading (and re-building) dependencies that have already
-been accessed in prior runs.
+uv از cache کردن تهاجمی استفاده می‌کند تا از دانلود دوباره (و بیلد دوبارهٔ) dependencyهایی که در اجراهای قبلی به آن‌ها دسترسی پیدا شده است، جلوگیری کند.
 
-The specifics of uv's caching semantics vary based on the nature of the dependency:
+جزئیات معنای cache کردن در uv بسته به ماهیت dependency متفاوت است:
 
-- **For registry dependencies** (like those downloaded from PyPI), uv respects HTTP caching headers.
-- **For direct URL dependencies**, uv respects HTTP caching headers, and also caches based on the
-  URL itself.
-- **For Git dependencies**, uv caches based on the fully-resolved Git commit hash. As such,
-  `uv pip compile` will pin Git dependencies to a specific commit hash when writing the resolved
-  dependency set.
-- **For local dependencies**, uv caches based on the last-modified time of the source archive (i.e.,
-  the local `.whl` or `.tar.gz` file). For directories, uv caches based on the last-modified time of
-  the `pyproject.toml`, `setup.py`, or `setup.cfg` file.
-- **For flat indexes** (i.e., `--find-links` locations), uv assumes the index contents are
-  immutable, caching each file by name. As such, replacing a file with new contents under the same
-  name (e.g., rebuilding a wheel into a `--find-links` directory) will not be picked up until the
-  cache is refreshed.
+- **برای dependencyهای registry** (مانند مواردی که از PyPI دانلود می‌شوند)، uv به هدرهای cache کردن HTTP احترام می‌گذارد.
+- **برای dependencyهای URL مستقیم**، uv به هدرهای cache کردن HTTP احترام می‌گذارد و همچنین بر اساس خود URL، cache می‌کند.
+- **برای dependencyهای Git**، uv بر اساس هش کامیت Git که کاملاً حل شده است، cache می‌کند. به همین دلیل، `uv pip compile` هنگام نوشتن مجموعهٔ dependency حل‌شده، dependencyهای Git را به یک هش کامیت خاص پین می‌کند.
+- **برای dependencyهای محلی**، uv بر اساس زمان آخرین تغییر آرشیو منبع (یعنی فایل محلی `.whl` یا `.tar.gz`) cache می‌کند. برای پوشه‌ها، uv بر اساس زمان آخرین تغییر فایل `pyproject.toml`، `setup.py` یا `setup.cfg` cache می‌کند.
+- **برای indexهای تخت** (یعنی مکان‌های `--find-links`)، uv فرض می‌کند که محتوای index تغییرناپذیر است و هر فایل را بر اساس نام cache می‌کند. به همین دلیل، جایگزین‌کردن یک فایل با محتوای جدید تحت همان نام (مثلاً بیلد دوبارهٔ یک wheel در یک پوشهٔ `--find-links`) تا زمانی که cache تازه‌سازی نشود، شناسایی نمی‌شود.
 
-If you're running into caching issues, uv includes a few escape hatches:
+اگر با مشکلاتی در cache کردن مواجه شدید، uv چند راه فرار دارد:
 
-- To clear the cache entirely, run `uv cache clean`. To clear the cache for a specific package, run
-  `uv cache clean <package-name>`. For example, `uv cache clean ruff` will clear the cache for the
-  `ruff` package.
-- To force uv to revalidate cached data for all dependencies, pass `--refresh` to any command (e.g.,
-  `uv sync --refresh` or `uv pip install --refresh ...`).
-- To force uv to revalidate cached data for a specific dependency pass `--refresh-package` to any
-  command (e.g., `uv sync --refresh-package ruff` or `uv pip install --refresh-package ruff ...`).
-- To force uv to ignore existing installed versions, pass `--reinstall` to any installation command
-  (e.g., `uv sync --reinstall` or `uv pip install --reinstall ...`). (Consider running
-  `uv cache clean <package-name>` first, to ensure that the cache is cleared prior to
-  reinstallation.)
+- برای پاک‌کردن کامل cache، `uv cache clean` را اجرا کنید. برای پاک‌کردن cache یک package خاص، `uv cache clean <package-name>` را اجرا کنید. برای مثال، `uv cache clean ruff`، cache مربوط به package `ruff` را پاک می‌کند.
+- برای وادارکردن uv به اعتبارسنجی دوبارهٔ داده‌های cacheشده برای همهٔ dependencyها، `--refresh` را به هر دستوری بدهید (مثلاً `uv sync --refresh` یا `uv pip install --refresh ...`).
+- برای وادارکردن uv به اعتبارسنجی دوبارهٔ داده‌های cacheشده برای یک dependency خاص، `--refresh-package` را به هر دستوری بدهید (مثلاً `uv sync --refresh-package ruff` یا `uv pip install --refresh-package ruff ...`).
+- برای وادارکردن uv به نادیده‌گرفتن نسخه‌های نصب‌شدهٔ موجود، `--reinstall` را به هر دستور نصبی بدهید (مثلاً `uv sync --reinstall` یا `uv pip install --reinstall ...`). (بهتر است اول `uv cache clean <package-name>` را اجرا کنید تا مطمئن شوید cache پیش از نصب دوباره پاک شده است.)
 
-As a special case, uv will always rebuild and reinstall any local directory dependencies passed
-explicitly on the command-line (e.g., `uv pip install .`).
+به‌عنوان یک مورد خاص، uv همیشه dependencyهای پوشهٔ محلی را که به‌صراحت در خط دستور داده شده‌اند، دوباره بیلد و نصب می‌کند (مثلاً `uv pip install .`).
 
-## Dynamic metadata
+## metadata پویا {#dynamic-metadata}
 
-By default, uv will _only_ rebuild and reinstall local directory dependencies (e.g., editables) if
-the `pyproject.toml`, `setup.py`, or `setup.cfg` file in the directory root has changed, or if a
-`src` directory is added or removed. This is a heuristic and, in some cases, may lead to fewer
-re-installs than desired.
+به‌طور پیش‌فرض، uv dependencyهای پوشهٔ محلی (مثلاً editableها) را _فقط_ در صورتی دوباره بیلد و نصب می‌کند که فایل `pyproject.toml`، `setup.py` یا `setup.cfg` در ریشهٔ پوشه تغییر کرده باشد یا یک پوشهٔ `src` اضافه یا حذف شده باشد. این یک روش اکتشافی است و در برخی موارد ممکن است به نصب‌های دوبارهٔ کمتری نسبت به مقدار موردنظر منجر شود.
 
-To incorporate additional information into the cache key for a given package, you can add cache key
-entries under [`tool.uv.cache-keys`](../reference/settings.md#cache-keys), which covers both file
-paths and Git commit hashes. Setting [`tool.uv.cache-keys`](../reference/settings.md#cache-keys)
-will replace defaults, so any necessary files (like `pyproject.toml`) should still be included in
-the user-defined cache keys.
+برای گنجاندن اطلاعات اضافه در کلید cache یک package مشخص، می‌توانید ورودی‌های کلید cache را در بخش [`tool.uv.cache-keys`](../reference/settings.md#cache-keys) اضافه کنید که هم مسیرهای فایل و هم هش‌های کامیت Git را پوشش می‌دهد. تنظیم [`tool.uv.cache-keys`](../reference/settings.md#cache-keys) مقادیر پیش‌فرض را جایگزین می‌کند، پس هر فایل لازم (مانند `pyproject.toml`) باید همچنان در کلیدهای cache تعریف‌شده توسط کاربر گنجانده شود.
 
-For example, if a project specifies dependencies in `pyproject.toml` but uses
-[`setuptools-scm`](https://pypi.org/project/setuptools-scm/) to manage its version, and should thus
-be rebuilt whenever the commit hash or dependencies change, you can add the following to the
-project's `pyproject.toml`:
+برای مثال، اگر یک project، dependencyها را در `pyproject.toml` مشخص کند اما برای مدیریت نسخهٔ خود از [`setuptools-scm`](https://pypi.org/project/setuptools-scm/) استفاده کند و در نتیجه هر زمان که هش کامیت یا dependencyها تغییر کنند باید دوباره بیلد شود، می‌توانید موارد زیر را به `pyproject.toml` آن project اضافه کنید:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true } }]
 ```
 
-If your dynamic metadata incorporates information from the set of Git tags, you can expand the cache
-key to include the tags:
+اگر metadata پویای شما اطلاعاتی از مجموعهٔ تگ‌های Git را در بر می‌گیرد، می‌توانید کلید cache را گسترش دهید تا تگ‌ها را هم شامل شود:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
 ```
 
-Similarly, if a project reads from a `requirements.txt` to populate its dependencies, you can add
-the following to the project's `pyproject.toml`:
+به‌همین ترتیب، اگر یک project برای پرکردن dependencyهای خود از یک `requirements.txt` می‌خواند، می‌توانید موارد زیر را به `pyproject.toml` آن project اضافه کنید:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { file = "requirements.txt" }]
 ```
 
-Globs are supported for `file` keys, following the syntax of the
-[`glob`](https://docs.rs/glob/0.3.1/glob/struct.Pattern.html) crate. For example, to invalidate the
-cache whenever a `.toml` file in the project directory or any of its subdirectories is modified, use
-the following:
+برای کلیدهای `file`، globها پشتیبانی می‌شوند و از نحو crate [`glob`](https://docs.rs/glob/0.3.1/glob/struct.Pattern.html) پیروی می‌کنند. برای مثال، برای بی‌اعتبارکردن cache هر زمان که یک فایل `.toml` در پوشهٔ project یا هر یک از زیرپوشه‌های آن تغییر کند، از موارد زیر استفاده کنید:
 
 ```toml title="pyproject.toml"
 [tool.uv]
@@ -89,141 +57,91 @@ cache-keys = [{ file = "**/*.toml" }]
 
 !!! note
 
-    Globs can be expensive because uv may need to traverse large or deeply nested directories to
-    determine whether any files have changed.
+    globها می‌توانند پرهزینه باشند، زیرا ممکن است uv برای تعیین اینکه آیا فایلی تغییر کرده است یا نه، نیاز به پیمایش پوشه‌های بزرگ یا عمیقاً تو در تو داشته باشد.
 
-Similarly, if a project relies on an environment variable, you can add the following to the
-project's `pyproject.toml` to invalidate the cache whenever the environment variable changes:
+به‌همین ترتیب، اگر یک project به یک environment variable وابسته باشد، می‌توانید موارد زیر را به `pyproject.toml` آن project اضافه کنید تا هر زمان که environment variable تغییر کند، cache بی‌اعتبار شود:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { env = "MY_ENV_VAR" }]
 ```
 
-Finally, to invalidate a project whenever a specific directory (like `src`) is created or removed,
-add the following to the project's `pyproject.toml`:
+در نهایت، برای بی‌اعتبارکردن یک project هر زمان که یک پوشهٔ خاص (مانند `src`) ساخته یا حذف شود، موارد زیر را به `pyproject.toml` آن project اضافه کنید:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 cache-keys = [{ file = "pyproject.toml" }, { dir = "src" }]
 ```
 
-Note that the `dir` key will only track changes to the directory itself, and not arbitrary changes
-within the directory.
+توجه کنید که کلید `dir` فقط تغییرات خود پوشه را دنبال می‌کند و تغییرات دلخواهِ داخل پوشه را دنبال نمی‌کند.
 
-As an escape hatch, if a project uses `dynamic` metadata that isn't covered by `tool.uv.cache-keys`,
-you can instruct uv to _always_ rebuild and reinstall it by adding the project to the
-`tool.uv.reinstall-package` list:
+به‌عنوان راه فرار، اگر یک project از metadata `dynamic` استفاده می‌کند که در `tool.uv.cache-keys` پوشش داده نشده است، می‌توانید با اضافه‌کردن project به فهرست `tool.uv.reinstall-package`، به uv دستور دهید که آن را _همیشه_ دوباره بیلد و نصب کند:
 
 ```toml title="pyproject.toml"
 [tool.uv]
 reinstall-package = ["my-package"]
 ```
 
-This will force uv to rebuild and reinstall `my-package` on every run, regardless of whether the
-package's `pyproject.toml`, `setup.py`, or `setup.cfg` file has changed.
+این کار uv را وادار می‌کند که `my-package` را در هر اجرا دوباره بیلد و نصب کند، صرف‌نظر از اینکه فایل `pyproject.toml`، `setup.py` یا `setup.cfg` آن package تغییر کرده باشد یا نه.
 
-## Cache safety
+## امنیت cache {#cache-safety}
 
-It's safe to run multiple uv commands concurrently, even against the same virtual environment. uv's
-cache supports multiple concurrent readers and writers. uv applies a file-based lock to the target
-virtual environment when installing, to avoid concurrent modifications across processes.
+اجرای هم‌زمان چند دستور uv امن است، حتی روی یک virtual environment. cache uv از چند خواننده و نویسندهٔ هم‌زمان پشتیبانی می‌کند. uv هنگام نصب، یک قفل مبتنی بر فایل روی virtual environment هدف اعمال می‌کند تا از تغییرات هم‌زمان در فرآیندهای مختلف جلوگیری کند.
 
-Interrupted or overlapping HTTP cache refreshes can invalidate individual cache entries. uv detects
-incomplete policy updates and downloads the response again instead of using the invalid entry. With
-`--offline`, an affected entry is unavailable until it can be refreshed online.
+تازه‌سازی‌های cache HTTP که قطع یا هم‌پوشانی شده‌اند، می‌توانند ورودی‌های تکی cache را بی‌اعتبار کنند. uv به‌روزرسانی‌های ناقصِ سیاست را تشخیص می‌دهد و به‌جای استفاده از ورودی نامعتبر، پاسخ را دوباره دانلود می‌کند. با `--offline`، یک ورودیِ آسیب‌دیده تا زمانی که بتوان آن را به‌صورت آنلاین تازه‌سازی کرد، در دسترس نیست.
 
-Note that it's _never_ safe to modify the cache directly (e.g., by removing a file or directory).
+توجه کنید که تغییر مستقیم cache _هرگز_ امن نیست (مثلاً با حذف یک فایل یا پوشه).
 
-## Clearing the cache
+## پاک‌کردن cache {#clearing-the-cache}
 
-uv provides a few different mechanisms for removing entries from the cache:
+uv چند سازوکار مختلف برای حذف ورودی‌ها از cache ارائه می‌دهد:
 
-- `uv cache clean` removes _all_ cache entries from the cache directory, clearing it out entirely.
-  The directory and its lock file remain so that other uv processes can safely share the cache.
-- `uv cache clean ruff` removes all cache entries for the `ruff` package, useful for invalidating
-  the cache for a single or finite set of packages.
-- `uv cache prune` removes all _unused_ cache entries and all centralized project environments. For
-  example, the cache directory may contain entries created in previous uv versions that are no
-  longer necessary and can be safely removed. Centralized project environments are recreated as
-  needed. `uv cache prune` is safe to run periodically, to keep the cache directory clean.
+- `uv cache clean` _همهٔ_ ورودی‌های cache را از پوشهٔ cache حذف می‌کند و آن را کاملاً پاک می‌کند. پوشه و فایل قفل آن باقی می‌مانند تا فرآیندهای دیگر uv بتوانند cache را به‌صورت امن به اشتراک بگذارند.
+- `uv cache clean ruff` همهٔ ورودی‌های cache مربوط به package `ruff` را حذف می‌کند که برای بی‌اعتبارکردن cache یک package تکی یا مجموعهٔ محدودی از packageها مفید است.
+- `uv cache prune` همهٔ ورودی‌های cache _استفاده‌نشده_ و همهٔ environmentهای متمرکز project را حذف می‌کند. برای مثال، پوشهٔ cache ممکن است شامل ورودی‌هایی باشد که در نسخه‌های قبلی uv ساخته شده‌اند و دیگر لازم نیستند و می‌توان آن‌ها را به‌صورت امن حذف کرد. environmentهای متمرکز project در صورت نیاز دوباره ساخته می‌شوند. اجرای دوره‌ای `uv cache prune` برای تمیز نگه‌داشتن پوشهٔ cache امن است.
 
-By default, cache cleanup estimates the disk space reclaimed. Enable the `cache-physical-space`
-[preview feature](./preview.md) for a more accurate estimate that accounts for hardlinks and
-copy-on-write clones:
+به‌طور پیش‌فرض، پاک‌سازی cache، فضای دیسک بازیابی‌شده را تخمین می‌زند. برای تخمین دقیق‌تری که hardlinkها و کلون‌های copy-on-write را در نظر می‌گیرد، [قابلیت پیش‌نمایش](./preview.md) `cache-physical-space` را فعال کنید:
 
 ```console
 $ uv cache clean --preview-features cache-physical-space
 ```
 
-If an entry's allocated size cannot be measured, such as a compressed extent on Btrfs, uv reports a
-lower bound for the space reclaimed from the remaining entries. The preview feature is currently
-supported on macOS and Linux; other platforms continue reporting a coarser estimate of the space
-reclaimed.
+اگر اندازهٔ تخصیص‌یافتهٔ یک ورودی قابل اندازه‌گیری نباشد، مانند یک extent فشرده در Btrfs، uv یک حد پایین برای فضای بازیابی‌شده از ورودی‌های باقی‌مانده گزارش می‌کند. این قابلیت پیش‌نمایش در حال حاضر در macOS و Linux پشتیبانی می‌شود؛ platformهای دیگر همچنان تخمین درشت‌تری از فضای بازیابی‌شده گزارش می‌کنند.
 
-uv blocks cache-modifying operations while other uv commands are running. By default, those
-`uv cache` commands have a 5 min timeout waiting for other uv processes to terminate to avoid
-deadlocks. This timeout can be changed with
-[`UV_LOCK_TIMEOUT`](../reference/environment.md#uv_lock_timeout). In cases where it is known that no
-other uv processes are reading or writing from the cache, `--force` can be used to ignore the lock.
+uv عملیات تغییر‌دهندهٔ cache را در حالی که دستورهای دیگر uv در حال اجرا هستند، مسدود می‌کند. به‌طور پیش‌فرض، آن دستورهای `uv cache` یک مهلت ۵ دقیقه‌ای برای منتظر ماندنِ پایان فرآیندهای دیگر uv دارند تا از بن‌بست جلوگیری شود. این مهلت را می‌توان با [`UV_LOCK_TIMEOUT`](../reference/environment.md#uv_lock_timeout) تغییر داد. در مواردی که مشخص است هیچ فرآیند دیگر uv از cache نمی‌خواند یا در آن نمی‌نویسد، می‌توان از `--force` برای نادیده‌گرفتن قفل استفاده کرد.
 
-## Caching in continuous integration
+## cache کردن در یکپارچه‌سازی پیوسته {#caching-in-continuous-integration}
 
-It's common to cache package installation artifacts in continuous integration environments (like
-GitHub Actions or GitLab CI) to speed up subsequent runs.
+معمول است که artifactهای نصب package در environmentهای یکپارچه‌سازی پیوسته (مانند GitHub Actions یا GitLab CI) cache شوند تا اجراهای بعدی سریع‌تر شوند.
 
-By default, uv caches both the wheels that it builds from source and the pre-built wheels that it
-downloads directly, to enable high-performance package installation.
+به‌طور پیش‌فرض، uv هم wheelهایی را که از منبع می‌سازد و هم wheelهای از پیش ساخته‌شده‌ای را که مستقیماً دانلود می‌کند، cache می‌کند تا نصب package با کارایی بالا ممکن شود.
 
-However, in continuous integration environments, persisting pre-built wheels may be undesirable.
-With uv, it turns out that it's often faster to _omit_ pre-built wheels from the cache (and instead
-re-download them from the registry on each run). On the other hand, caching wheels that are built
-from source tends to be worthwhile, since the wheel building process can be expensive, especially
-for extension modules.
+با این حال، در environmentهای یکپارچه‌سازی پیوسته، نگه‌داشتن wheelهای از پیش ساخته‌شده ممکن است نامطلوب باشد. با uv، مشخص می‌شود که اغلب سریع‌تر است که wheelهای از پیش ساخته‌شده را از cache _حذف_ کنیم (و در عوض در هر اجرا آن‌ها را دوباره از registry دانلود کنیم). از سوی دیگر، cache کردن wheelهایی که از منبع ساخته می‌شوند معمولاً ارزش دارد، زیرا فرآیند ساخت wheel می‌تواند پرهزینه باشد، به‌ویژه برای moduleهای افزونه‌ای.
 
-To support this caching strategy, uv provides a `uv cache prune --ci` command, which removes all
-pre-built wheels and unzipped source distributions from the cache, but retains any wheels that were
-built from source. We recommend running `uv cache prune --ci` at the end of your continuous
-integration job to ensure maximum cache efficiency. For an example, see the
-[GitHub integration guide](../guides/integration/github.md#caching).
+برای پشتیبانی از این راهبرد cache کردن، uv یک دستور `uv cache prune --ci` ارائه می‌دهد که همهٔ wheelهای از پیش ساخته‌شده و distributionهای منبعِ بازشده را از cache حذف می‌کند، اما wheelهایی را که از منبع ساخته شده‌اند نگه می‌دارد. توصیه می‌کنیم `uv cache prune --ci` را در پایان job یکپارچه‌سازی پیوستهٔ خود اجرا کنید تا بیشترین کارایی cache تضمین شود. برای مثال، [راهنمای یکپارچه‌سازی GitHub](../guides/integration/github.md#caching) را ببینید.
 
-## Cache directory
+## پوشهٔ cache {#cache-directory}
 
-uv determines the cache directory in the following order:
+uv پوشهٔ cache را به ترتیب زیر تعیین می‌کند:
 
-1. A temporary cache directory, if `--no-cache` was requested.
-2. The specific cache directory specified via `--cache-dir`, `UV_CACHE_DIR`, or
-   [`tool.uv.cache-dir`](../reference/settings.md#cache-dir).
-3. A system-appropriate cache directory, e.g., `$XDG_CACHE_HOME/uv` or `$HOME/.cache/uv` on Unix and
-   `%LOCALAPPDATA%\uv\cache` on Windows
+1. یک پوشهٔ cache موقت، اگر `--no-cache` درخواست شده باشد.
+2. پوشهٔ cache مشخصی که از طریق `--cache-dir`، `UV_CACHE_DIR` یا [`tool.uv.cache-dir`](../reference/settings.md#cache-dir) مشخص شده است.
+3. یک پوشهٔ cache مناسب سیستم، مثلاً `$XDG_CACHE_HOME/uv` یا `$HOME/.cache/uv` در Unix و `%LOCALAPPDATA%\uv\cache` در Windows
 
 !!! note
 
-    uv _always_ requires a cache directory. When `--no-cache` is requested, uv will still use
-    a temporary cache for sharing data within that single invocation.
+    uv _همیشه_ به یک پوشهٔ cache نیاز دارد. وقتی `--no-cache` درخواست شود، uv همچنان از یک cache موقت برای به‌اشتراک‌گذاری داده‌ها در همان فراخوانیِ تکی استفاده می‌کند.
 
-    In most cases, `--refresh` should be used instead of `--no-cache` — as it will update the cache
-    for subsequent operations but not read from the cache.
+    در بیشتر موارد، باید به‌جای `--no-cache` از `--refresh` استفاده کرد، زیرا cache را برای عملیات‌های بعدی به‌روز می‌کند اما از cache نمی‌خواند.
 
-For best performance, locate the cache directory on the same file system as the Python environment
-uv is operating on. Otherwise, uv cannot link files from the cache into the environment and must
-fall back to slower copy operations.
+برای بهترین کارایی، پوشهٔ cache را در همان سیستم فایلِ environment Python قرار دهید که uv روی آن کار می‌کند. در غیر این صورت، uv نمی‌تواند فایل‌ها را از cache به environment پیوند دهد و باید به عملیات‌های کپیِ کندتر برگردد.
 
-## Cache versioning
+## نسخه‌بندی cache {#cache-versioning}
 
-The uv cache is composed of a number of buckets (e.g., a bucket for wheels, a bucket for source
-distributions, a bucket for Git repositories, and so on). Each bucket is versioned, such that if a
-release contains a breaking change to the cache format, uv will not attempt to read from or write to
-an incompatible cache bucket.
+cache uv از تعدادی bucket تشکیل شده است (مثلاً یک bucket برای wheelها، یک bucket برای distributionهای منبع، یک bucket برای مخزن‌های Git و غیره). هر bucket نسخه‌بندی شده است، به‌طوری که اگر یک نسخه شامل یک تغییر ناسازگار در قالب cache باشد، uv تلاش نمی‌کند از یک bucket ناسازگار cache بخواند یا در آن بنویسد.
 
-For example, uv 0.4.13 included a breaking change to the core metadata bucket. As such, the bucket
-version was increased from v12 to v13. Within a cache version, changes are guaranteed to be both
-forwards- and backwards-compatible.
+برای مثال، uv 0.4.13 شامل یک تغییر ناسازگار در bucket اصلی metadata بود. به همین دلیل، نسخهٔ bucket از v12 به v13 افزایش یافت. در یک نسخهٔ cache، تضمین می‌شود که تغییرات هم سازگار با نسخه‌های بعدی و هم سازگار با نسخه‌های قبلی باشند.
 
-Since changes in the cache format are accompanied by changes in the cache version, multiple versions
-of uv can safely read and write to the same cache directory. However, if the cache version changed
-between a given pair of uv releases, then those releases may not be able to share the same
-underlying cache entries.
+از آنجا که تغییرات در قالب cache با تغییرات در نسخهٔ cache همراه است، چند نسخهٔ uv می‌توانند به‌صورت امن از یک پوشهٔ cache بخوانند و در آن بنویسند. با این حال، اگر نسخهٔ cache بین یک جفت مشخص از نسخه‌های uv تغییر کرده باشد، آن نسخه‌ها ممکن است نتوانند ورودی‌های cache زیرینِ یکسانی را به اشتراک بگذارند.
 
-For example, it's safe to use a single shared cache for uv 0.4.12 and uv 0.4.13, though the cache
-itself may contain duplicate entries in the core metadata bucket due to the change in cache version.
+برای مثال، استفاده از یک cache مشترک تکی برای uv 0.4.12 و uv 0.4.13 امن است، هرچند خود cache ممکن است به دلیل تغییر نسخهٔ cache، ورودی‌های تکراری در bucket اصلی metadata داشته باشد.

@@ -1,26 +1,26 @@
 ---
-title: Using uv with Coiled
+title: استفاده از uv با Coiled
 description:
-  A complete guide to using uv with Coiled to manage Python dependencies and deploy serverless
-  scripts.
+  راهنمای کامل استفاده از uv با Coiled برای مدیریت dependencyهای Python و مستقر کردن scriptهای
+  serverless.
 ---
 
-# Using uv with Coiled
+# استفاده از uv با Coiled {#using-uv-with-coiled}
 
-[Coiled](https://coiled.io?utm_source=uv-docs) is a serverless, UX-focused cloud computing platform
-that makes it easy to run code on cloud hardware (AWS, GCP, and Azure).
+[Coiled](https://coiled.io?utm_source=uv-docs) یک پلتفرم محاسبات ابری serverless و کاربرمحور است که
+اجرای کد روی سخت‌افزار ابری (AWS ،GCP و Azure) را آسان می‌کند.
 
-This guide shows how to run Python scripts on the cloud using uv for dependency management and
-Coiled for cloud deployment.
+این راهنما نشان می‌دهد چگونه scriptهای Python را روی ابر، با استفاده از uv برای مدیریت dependency و
+Coiled برای استقرار ابری، اجرا کنید.
 
-## Managing script dependencies with uv
+## مدیریت dependencyهای script با uv {#managing-script-dependencies-with-uv}
 
 !!! note
 
-    We'll use this concrete example throughout this guide, but any Python script can be used with
-    uv and Coiled.
+    در سراسر این راهنما از این مثال مشخص استفاده می‌کنیم، اما هر script مربوط به Python را
+    می‌توان با uv و Coiled استفاده کرد.
 
-We'll use the following script as an example:
+از script زیر به‌عنوان مثال استفاده می‌کنیم:
 
 ```python title="process.py" hl_lines="1-8"
 # /// script
@@ -41,46 +41,50 @@ df = pd.read_parquet(
 print(df.head())
 ```
 
-The script uses [`pandas`](https://pandas.pydata.org/docs/) to load a Parquet file hosted in a
-public bucket on S3, then prints the first few rows. It uses
-[inline script metadata](https://peps.python.org/pep-0723/) to enumerate its dependencies.
+این script از [`pandas`](https://pandas.pydata.org/docs/) برای بارگذاری یک فایل Parquet میزبانی‌شده
+در یک bucket عمومی روی S3 استفاده می‌کند، سپس چند ردیف اول را چاپ می‌کند. این script از
+[inline script metadata](https://peps.python.org/pep-0723/) برای فهرست‌کردن dependencyهای خود
+استفاده می‌کند.
 
-When running this script locally, e.g., with:
+هنگام اجرای این script به‌صورت محلی، مثلاً با دستور:
 
 ```bash
 $ uv run process.py
 ```
 
-uv will automatically create a virtual environment and install its dependencies.
+uv به‌صورت خودکار یک virtual environment می‌سازد و dependencyهای آن را نصب می‌کند.
 
-To learn more about using inline script metadata with uv, see the
-[script guide](../scripts.md#declaring-script-dependencies).
+برای یادگیری بیشتر دربارهٔ استفاده از inline script metadata با uv، به
+[راهنمای script](../scripts.md#declaring-script-dependencies) مراجعه کنید.
 
-## Running scripts on the cloud with Coiled
+## اجرای scriptها روی ابر با Coiled {#running-scripts-on-the-cloud-with-coiled}
 
-Using inline script metadata makes the script fully self-contained: it includes the information that
-is needed to run it. This makes it easier to run on other machines, like a machine in the cloud.
+استفاده از inline script metadata، script را کاملاً خودکفا می‌کند: این script اطلاعاتی را که برای
+اجرای آن لازم است، در خود دارد. این کار اجرای آن روی ماشین‌های دیگر، مثل یک ماشین در ابر، را آسان‌تر
+می‌کند.
 
-There are many use cases where resources beyond what's available on a local workstation are needed,
-e.g.:
+موردهای استفادهٔ زیادی وجود دارد که در آن‌ها به منابعی فراتر از آنچه در یک ایستگاه کاری محلی در دسترس است
+نیاز است، مثلاً:
 
-- Processing large amounts of cloud-hosted data
-- Needing accelerated hardware like GPUs or a big machine with more memory
-- Running the same script with hundreds or thousands of different inputs, in parallel
+- پردازش حجم زیادی از داده‌های میزبانی‌شده در ابر
+- نیاز به سخت‌افزار شتاب‌دهنده مانند GPU یا یک ماشین بزرگ با حافظهٔ بیشتر
+- اجرای همان script با صدها یا هزاران ورودی مختلف، به‌صورت موازی
 
-Coiled makes it simple to run code on cloud hardware.
+Coiled اجرای کد روی سخت‌افزار ابری را ساده می‌کند.
 
-First, authenticate with Coiled using
-[`coiled login`](https://docs.coiled.io/user_guide/api.html?utm_source=uv-docs#coiled-login):
+ابتدا، با استفاده از
+[`coiled login`](https://docs.coiled.io/user_guide/api.html?utm_source=uv-docs#coiled-login) با
+Coiled احراز هویت کنید:
 
 ```bash
 $ uvx coiled login
 ```
 
-You'll be prompted to create a Coiled account if you don't already have one — it's free to start
-using Coiled.
+از شما خواسته می‌شود اگر هنوز حساب Coiled ندارید، یک حساب بسازید — شروع استفاده از Coiled رایگان
+است.
 
-To instruct Coiled to run the script on a virtual machine on AWS, add two comments to the top:
+برای اینکه به Coiled دستور دهید script را روی یک ماشین مجازی در AWS اجرا کند، دو کامنت به بالای
+script اضافه کنید:
 
 ```python title="process.py" hl_lines="1-2"
 # COILED container ghcr.io/astral-sh/uv:debian-slim
@@ -106,37 +110,35 @@ print(df.head())
 
 !!! tip
 
-    While Coiled supports AWS, GCP, and Azure, this example assumes AWS is being used
-    (see the `region` option above). If you're new to Coiled, you'll automatically have
-    access to a free account running on AWS. If you're not running on AWS, you can either use
-    a valid `region` for your cloud provider or remove the `region` line above.
+    با اینکه Coiled از AWS ،GCP و Azure پشتیبانی می‌کند، این مثال فرض می‌کند که AWS استفاده
+    می‌شود (به گزینهٔ `region` در بالا مراجعه کنید). اگر در Coiled تازه‌کار هستید، به‌صورت خودکار به
+    یک حساب رایگان در حال اجرا روی AWS دسترسی خواهید داشت. اگر روی AWS اجرا نمی‌کنید، می‌توانید یا
+    یک `region` معتبر برای ارائه‌دهندهٔ ابری خود استفاده کنید، یا خط مربوط به `region` در بالا را حذف
+    کنید.
 
-The comments tell Coiled to use the official [uv Docker image](../integration/docker.md) when
-running the script (ensuring uv is available) and to run in the `us-east-2` region on AWS (where
-this example data file happens to live) to avoid any data egress.
+این کامنت‌ها به Coiled می‌گویند هنگام اجرای script از [ایمیج رسمی Docker مربوط به uv](../integration/docker.md) استفاده کند (تا از در دسترس بودن uv مطمئن شود) و در region مربوط به `us-east-2` در AWS اجرا کند (جایی که این فایل دادهٔ نمونه اتفاقاً در آن قرار دارد) تا از هرگونه خروج داده جلوگیری شود.
 
-To submit a batch job for Coiled to run, use
+برای ارسال یک batch job تا Coiled آن را اجرا کند، از
 [`coiled batch run`](https://docs.coiled.io/user_guide/api.html?utm_source=uv-docs#coiled-batch-run)
-to execute the `uv run` command in the cloud:
+برای اجرای دستور `uv run` در ابر استفاده کنید:
 
 ```bash hl_lines="1"
 $ uvx coiled batch run \
     uv run process.py
 ```
 
-The same process that previously ran locally is now running on a remote cloud VM on AWS.
+همان فرایندی که پیش‌تر به‌صورت محلی اجرا می‌شد، اکنون روی یک VM ابری راه‌دور در AWS در حال اجراست.
 
-You can monitor the progress of the batch job in the UI at
-[cloud.coiled.io](https://cloud.coiled.io) or from the terminal using the `coiled batch status`,
-`coiled batch wait`, and `coiled batch logs` commands.
+می‌توانید پیشرفت batch job را در رابط کاربری در آدرس
+[cloud.coiled.io](https://cloud.coiled.io) یا از ترمینال با استفاده از دستورهای `coiled batch status` ،`coiled batch wait` و `coiled batch logs` پایش کنید.
 
-![Coiled UI](https://docs.coiled.io/_images/uv-coiled.png)
+![رابط کاربری Coiled](https://docs.coiled.io/_images/uv-coiled.png)
 
-Note there's additional configuration we could have specified, e.g., the instance type (the default
-is a 4-core virtual machine with 16 GiB of memory), disk size, whether to use spot instance, and
-more. See the
-[Coiled Batch documentation](https://docs.coiled.io/user_guide/batch.html?utm_source=uv-docs) for
-more details.
+توجه کنید که پیکربندی بیشتری هم می‌توانستیم مشخص کنیم، مثلاً نوع نمونه (پیش‌فرض یک ماشین مجازی
+۴ هسته‌ای با ۱۶ GiB حافظه است)، اندازهٔ دیسک، اینکه آیا از spot instance استفاده شود یا نه، و موارد
+دیگر. برای جزئیات بیشتر، به
+[مستندات Coiled Batch](https://docs.coiled.io/user_guide/batch.html?utm_source=uv-docs) مراجعه
+کنید.
 
-For more details on Coiled, and how it can help with other use cases, see the
-[Coiled documentation](https://docs.coiled.io?utm_source=uv-docs).
+برای جزئیات بیشتر دربارهٔ Coiled و اینکه چگونه می‌تواند در use caseهای دیگر کمک کند، به
+[مستندات Coiled](https://docs.coiled.io?utm_source=uv-docs) مراجعه کنید.

@@ -1,16 +1,15 @@
 ---
-title: Using uv in GitLab CI/CD
-description: A guide to using uv in GitLab CI/CD, including installation, setting up Python,
-  installing dependencies, and more.
+title: استفاده از uv در GitLab CI/CD
+description: راهنمای استفاده از uv در GitLab CI/CD، شامل نصب، راه‌اندازی Python، نصب dependencyها و موارد دیگر.
 ---
 
-# Using uv in GitLab CI/CD
+# استفاده از uv در GitLab CI/CD {#using-uv-in-gitlab-cicd}
 
-## Using the uv image
+## استفاده از ایمیج uv {#using-the-uv-image}
 
-Astral provides [Docker images](docker.md#available-images) with uv preinstalled.
-Use a variant with a shell, such as the Debian-based image below, so GitLab Runner can execute the
-job's `script`.
+Astral [ایمیج‌های Docker](docker.md#available-images) را با uv از پیش نصب‌شده ارائه می‌دهد.
+از یک نوع (variant) دارای shell استفاده کنید، مثل ایمیج مبتنی بر Debian زیر، تا GitLab Runner بتواند
+`script` مربوط به job را اجرا کند.
 
 ```yaml title=".gitlab-ci.yml"
 variables:
@@ -27,9 +26,9 @@ uv:
     # your `uv` commands
 ```
 
-## Caching
+## کش کردن {#caching}
 
-Persisting the uv cache between workflow runs can improve performance.
+پایدار نگه داشتن cache مربوط به uv بین اجراهای workflow می‌تواند عملکرد را بهبود دهد.
 
 ```yaml
 uv-install:
@@ -47,22 +46,21 @@ uv-install:
     - uv cache prune --ci
 ```
 
-See the [GitLab caching documentation](https://docs.gitlab.com/ee/ci/caching/) for more details on
-configuring caching.
+برای جزئیات بیشتر دربارهٔ پیکربندی کش کردن، به [مستندات کش کردن در GitLab](https://docs.gitlab.com/ee/ci/caching/) مراجعه کنید.
 
-Using `uv cache prune --ci` at the end of the job is recommended to reduce cache size. See the [uv
-cache documentation](../../concepts/cache.md#caching-in-continuous-integration) for more details.
+استفاده از `uv cache prune --ci` در پایان job برای کاهش اندازهٔ cache توصیه می‌شود. برای جزئیات
+بیشتر، به [مستندات cache در uv](../../concepts/cache.md#caching-in-continuous-integration) مراجعه کنید.
 
-## Using `uv pip`
+## استفاده از `uv pip` {#using-uv-pip}
 
-If using the `uv pip` interface instead of the uv project interface, uv requires a virtual
-environment by default. To allow installing packages into the system environment, use the `--system`
-flag on all uv invocations or set the `UV_SYSTEM_PYTHON` variable.
+اگر به‌جای رابط مربوط به project در uv از رابط مربوط به `uv pip` استفاده می‌کنید، uv
+به‌طور پیش‌فرض به یک virtual environment نیاز دارد. برای اجازهٔ نصب packageها در system environment،
+فلگ `--system` را در همهٔ فراخوانی‌های uv به کار ببرید یا متغیر `UV_SYSTEM_PYTHON` را تنظیم کنید.
 
-The `UV_SYSTEM_PYTHON` variable can be defined at different scopes. You can read more about
-how [variables and their precedence works in GitLab here](https://docs.gitlab.com/ee/ci/variables/).
+متغیر `UV_SYSTEM_PYTHON` را می‌توان در دامنه‌های مختلف تعریف کرد. دربارهٔ نحوهٔ کار
+[متغیرها و اولویت آن‌ها در GitLab، اینجا](https://docs.gitlab.com/ee/ci/variables/) بیشتر بخوانید.
 
-Opt-in for the entire workflow by defining it at the top level:
+با تعریف آن در سطح بالایی، برای کل workflow فعالش کنید:
 
 ```yaml title=".gitlab-ci.yml"
 variables:
@@ -71,7 +69,7 @@ variables:
 # [...]
 ```
 
-To opt-out again, the `--no-system` flag can be used in any uv invocation.
+برای غیرفعال‌کردن دوبارهٔ آن، می‌توان در هر فراخوانی uv از فلگ `--no-system` استفاده کرد.
 
-When persisting the cache, you may want to use `requirements.txt` or `pyproject.toml` as
-your cache key files instead of `uv.lock`.
+هنگام پایدار نگه داشتن cache، شاید بخواهید به‌جای `uv.lock` از `requirements.txt` یا
+`pyproject.toml` به‌عنوان فایل‌های کلید cache استفاده کنید.

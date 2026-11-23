@@ -1,25 +1,25 @@
 ---
-title: Using uv with FastAPI
+title: استفاده از uv با FastAPI
 description:
-  A guide to using uv with FastAPI to manage Python dependencies, run applications, and deploy with
-  Docker.
+  راهنمای استفاده از uv با FastAPI برای مدیریت dependencyهای Python، اجرای برنامه‌ها و استقرار
+  با Docker.
 ---
 
-# Using uv with FastAPI
+# استفاده از uv با FastAPI {#using-uv-with-fastapi}
 
-[FastAPI](https://github.com/fastapi/fastapi) is a modern, high-performance Python web framework.
-You can use uv to manage your FastAPI project, including installing dependencies, managing
-environments, running FastAPI applications, and more.
+[FastAPI](https://github.com/fastapi/fastapi) یک فریم‌ورک وب مدرن و پُرسرعت برای Python است.
+می‌توانید از uv برای مدیریت project مربوط به FastAPI خود استفاده کنید، از جمله نصب dependencyها،
+مدیریت environmentها، اجرای برنامه‌های FastAPI و موارد دیگر.
 
 !!! note
 
-    You can view the source code for this guide in the [uv-fastapi-example](https://github.com/astral-sh/uv-fastapi-example) repository.
+    می‌توانید کد منبع این راهنما را در مخزن [uv-fastapi-example](https://github.com/astral-sh/uv-fastapi-example) مشاهده کنید.
 
-## Migrating an existing FastAPI project
+## مهاجرت یک project موجود در FastAPI {#migrating-an-existing-fastapi-project}
 
-As an example, consider the sample application defined in the
-[FastAPI documentation](https://fastapi.tiangolo.com/tutorial/bigger-applications/), structured as
-follows:
+به‌عنوان مثال، برنامهٔ نمونه‌ای را در نظر بگیرید که در
+[مستندات FastAPI](https://fastapi.tiangolo.com/tutorial/bigger-applications/) تعریف شده و به این
+شکل ساختار یافته است:
 
 ```plaintext
 project
@@ -36,22 +36,22 @@ project
         └── admin.py
 ```
 
-To use uv with this application, inside the `project` directory run:
+برای استفاده از uv با این برنامه، در داخل پوشهٔ `project` این دستور را اجرا کنید:
 
 ```console
 $ uv init --no-package
 ```
 
-This creates a `pyproject.toml` file for a
-[flat, unpackaged project](../../concepts/projects/init.md#creating-a-project-without-a-build-system).
+این دستور یک فایل `pyproject.toml` برای یک
+[project تخت و بدون package](../../concepts/projects/init.md#creating-a-project-without-a-build-system) ایجاد می‌کند.
 
-Then, add a dependency on FastAPI:
+سپس، یک dependency به FastAPI اضافه کنید:
 
 ```console
 $ uv add fastapi --extra standard
 ```
 
-You should now have the following structure:
+اکنون باید ساختار زیر را داشته باشید:
 
 ```plaintext
 project
@@ -69,7 +69,7 @@ project
         └── admin.py
 ```
 
-And the contents of the `pyproject.toml` file should look something like this:
+و محتوای فایل `pyproject.toml` باید چیزی شبیه به این باشد:
 
 ```toml title="pyproject.toml"
 [project]
@@ -83,21 +83,21 @@ dependencies = [
 ]
 ```
 
-From there, you can run the FastAPI application with:
+از آنجا می‌توانید برنامهٔ FastAPI را با این دستور اجرا کنید:
 
 ```console
 $ uv run fastapi dev
 ```
 
-`uv run` will automatically resolve and lock the project dependencies (i.e., create a `uv.lock`
-alongside the `pyproject.toml`), create a virtual environment, and run the command in that
-environment.
+`uv run` به‌صورت خودکار dependencyهای project را resolve و lock می‌کند (یعنی یک `uv.lock` در کنار
+`pyproject.toml` ایجاد می‌کند)، یک virtual environment می‌سازد و دستور را در آن environment اجرا
+می‌کند.
 
-Test the app by opening http://127.0.0.1:8000/?token=jessica in a web browser.
+برنامه را با باز کردن http://127.0.0.1:8000/?token=jessica در یک مرورگر وب تست کنید.
 
-## Deployment
+## استقرار {#deployment}
 
-To deploy the FastAPI application with Docker, you can use the following `Dockerfile`:
+برای مستقر کردن برنامهٔ FastAPI با Docker، می‌توانید از `Dockerfile` زیر استفاده کنید:
 
 ```dockerfile title="Dockerfile"
 FROM python:3.12-slim
@@ -116,21 +116,21 @@ RUN uv sync --frozen --no-cache
 CMD ["/app/.venv/bin/fastapi", "run", "app/main.py", "--port", "80", "--host", "0.0.0.0"]
 ```
 
-Build the Docker image with:
+ایمیج Docker را با این دستور build کنید:
 
 ```console
 $ docker build -t fastapi-app .
 ```
 
-Run the Docker container locally with:
+کانتینر Docker را به‌صورت محلی با این دستور اجرا کنید:
 
 ```console
 $ docker run -p 8000:80 fastapi-app
 ```
 
-Navigate to http://127.0.0.1:8000/?token=jessica in your browser to verify that the app is running
-correctly.
+برای بررسی اینکه برنامه به‌درستی در حال اجراست، به آدرس http://127.0.0.1:8000/?token=jessica در
+مرورگر خود بروید.
 
 !!! tip
 
-    For more on using uv with Docker, see the [Docker guide](./docker.md).
+    برای اطلاعات بیشتر دربارهٔ استفاده از uv با Docker، به [راهنمای Docker](./docker.md) مراجعه کنید.

@@ -1,28 +1,28 @@
-# Installing uv
+# نصب uv {#installing-uv}
 
-## Installation methods
+## روش‌های نصب {#installation-methods}
 
-Install uv with our standalone installers or your package manager of choice.
+uv را با installer های مستقل ما یا package manager دلخواه خود نصب کنید.
 
-### Standalone installer
+### نصب‌کنندهٔ مستقل {#standalone-installer}
 
-uv provides a standalone installer to download and install uv:
+uv یک installer مستقل برای دانلود و نصب uv ارائه می‌دهد:
 
 === "macOS and Linux"
 
-    Use `curl` to download the script and execute it with `sh`:
+    از `curl` برای دانلود script استفاده کنید و آن را با `sh` اجرا کنید:
 
     ```console
     $ curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
 
-    If your system doesn't have `curl`, you can use `wget`:
+    اگر سیستم شما `curl` ندارد، می‌توانید از `wget` استفاده کنید:
 
     ```console
     $ wget -qO- https://astral.sh/uv/install.sh | sh
     ```
 
-    Request a specific version by including it in the URL:
+    با گنجاندن version موردنظر در URL، یک version مشخص درخواست کنید:
 
     ```console
     $ curl -LsSf https://astral.sh/uv/0.13.9/install.sh | sh
@@ -30,15 +30,15 @@ uv provides a standalone installer to download and install uv:
 
 === "Windows"
 
-    Use `irm` to download the script and execute it with `iex`:
+    از `irm` برای دانلود script استفاده کنید و آن را با `iex` اجرا کنید:
 
     ```pwsh-session
     PS> powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
     ```
 
-    Changing the [execution policy](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4#powershell-execution-policies) allows running a script from the internet.
+    تغییر [execution policy](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-7.4#powershell-execution-policies) امکان اجرای یک script از اینترنت را می‌دهد.
 
-    Request a specific version by including it in the URL:
+    با گنجاندن version موردنظر در URL، یک version مشخص درخواست کنید:
 
     ```pwsh-session
     PS> powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/0.13.9/install.ps1 | iex"
@@ -46,7 +46,7 @@ uv provides a standalone installer to download and install uv:
 
 !!! tip
 
-    The installation script may be inspected before use:
+    می‌توانید script نصب را پیش از استفاده بررسی کنید:
 
     === "macOS and Linux"
 
@@ -60,22 +60,22 @@ uv provides a standalone installer to download and install uv:
         PS> powershell -c "irm https://astral.sh/uv/install.ps1 | more"
         ```
 
-    Alternatively, the installer or binaries can be downloaded directly from [GitHub](#github-releases).
+    همچنین، می‌توانید installer یا binary ها را مستقیم از [GitHub](#github-releases) دانلود کنید.
 
-See the reference documentation on the [installer](../reference/installer.md) for details on
-customizing your uv installation.
+برای جزئیات سفارشی‌سازی نصب uv خود، مستندات مرجع [installer](../reference/installer.md) را
+ببینید.
 
-### PyPI
+### PyPI {#pypi}
 
-For convenience, uv is published to [PyPI](https://pypi.org/project/uv/).
+برای راحتی، uv در [PyPI](https://pypi.org/project/uv/) منتشر شده است.
 
-If installing from PyPI, we recommend installing uv into an isolated environment, e.g., with `pipx`:
+اگر از PyPI نصب می‌کنید، توصیه می‌کنیم uv را در یک environment مجزا نصب کنید؛ مثلاً با `pipx`:
 
 ```console
 $ pipx install uv
 ```
 
-However, `pip` can also be used:
+با این حال، می‌توان از `pip` هم استفاده کرد:
 
 ```console
 $ pip install uv
@@ -83,61 +83,62 @@ $ pip install uv
 
 !!! note
 
-    uv ships with prebuilt distributions (wheels) for many platforms; if a wheel is not available for a given
-    platform, uv will be built from source, which requires a Rust toolchain. See the
-    [contributing setup guide](https://github.com/astral-sh/uv/blob/main/CONTRIBUTING.md#setup)
-    for details on building uv from source.
+    uv با distribution های ازپیش‌ساخته‌شده (wheel) برای platform های زیادی عرضه می‌شود؛ اگر
+    برای یک platform مشخص wheel در دسترس نباشد، uv از source ساخته می‌شود که به یک Rust toolchain
+    نیاز دارد. برای جزئیات ساخت uv از source، [راهنمای راه‌اندازی مشارکت](https://github.com/astral-sh/uv/blob/main/CONTRIBUTING.md#setup)
+    را ببینید.
 
-### Homebrew
+### Homebrew {#homebrew}
 
-uv is available in the core Homebrew packages.
+uv در package های اصلی Homebrew در دسترس است.
 
 ```console
 $ brew install uv
 ```
 
-### MacPorts
+### MacPorts {#macports}
 
-uv is available via [MacPorts](https://ports.macports.org/port/uv/).
+uv از طریق [MacPorts](https://ports.macports.org/port/uv/) در دسترس است.
 
 ```console
 $ sudo port install uv
 ```
 
-### WinGet
+### WinGet {#winget}
 
-uv is available via [WinGet](https://winstall.app/apps/astral-sh.uv).
+uv از طریق [WinGet](https://winstall.app/apps/astral-sh.uv) در دسترس است.
 
 ```console
 $ winget install --id=astral-sh.uv  -e
 ```
 
-### Scoop
+### Scoop {#scoop}
 
-uv is available via [Scoop](https://scoop.sh/#/apps?q=uv).
+uv از طریق [Scoop](https://scoop.sh/#/apps?q=uv) در دسترس است.
 
 ```console
 $ scoop install main/uv
 ```
 
-### Docker
+### Docker {#docker}
 
-uv provides a Docker image at
-[`ghcr.io/astral-sh/uv`](https://github.com/astral-sh/uv/pkgs/container/uv).
+uv یک image Docker در
+[`ghcr.io/astral-sh/uv`](https://github.com/astral-sh/uv/pkgs/container/uv) ارائه می‌دهد.
 
-See our guide on [using uv in Docker](../guides/integration/docker.md) for more details.
+برای جزئیات بیشتر، راهنمای ما دربارهٔ [استفاده از uv در Docker](../guides/integration/docker.md) را
+ببینید.
 
-### GitHub Releases
+### GitHub Releases {#github-releases}
 
-uv release artifacts can be downloaded directly from
-[GitHub Releases](https://github.com/astral-sh/uv/releases).
+artifact های انتشار uv را می‌توان مستقیم از
+[GitHub Releases](https://github.com/astral-sh/uv/releases) دانلود کرد.
 
-Each release page includes binaries for all supported platforms as well as instructions for using
-the standalone installer via `github.com` instead of `astral.sh`.
+هر صفحهٔ انتشار شامل binary هایی برای همهٔ platform های پشتیبانی‌شده و همچنین دستورالعمل‌هایی
+برای استفاده از installer مستقل از طریق `github.com` به‌جای `astral.sh` است.
 
-### Cargo
+### Cargo {#cargo}
 
-uv is available via [crates.io](https://crates.io).
+uv از طریق [crates.io](https://crates.io) در دسترس است.
 
 ```console
 $ cargo install --locked uv
@@ -145,11 +146,11 @@ $ cargo install --locked uv
 
 !!! note
 
-    This method builds uv from source, which requires a compatible Rust toolchain.
+    این روش uv را از source می‌سازد که به یک Rust toolchain سازگار نیاز دارد.
 
-## Upgrading uv
+## به‌روزرسانی uv {#upgrading-uv}
 
-When uv is installed via the standalone installer, it can update itself on-demand:
+وقتی uv با installer مستقل نصب شده باشد، می‌تواند در صورت نیاز خودش را به‌روز کند:
 
 ```console
 $ uv self update
@@ -157,23 +158,23 @@ $ uv self update
 
 !!! tip
 
-    Updating uv will re-run the installer and can modify your shell profiles. To disable this
-    behavior, set `UV_NO_MODIFY_PATH=1`.
+    به‌روزرسانی uv، installer را دوباره اجرا می‌کند و می‌تواند profile های shell شما را تغییر
+    دهد. برای غیرفعال کردن این رفتار، `UV_NO_MODIFY_PATH=1` را تنظیم کنید.
 
-When another installation method is used, self-updates are disabled. Use the package manager's
-upgrade method instead. For example, with `pip`:
+وقتی روش نصب دیگری استفاده شود، به‌روزرسانی خودکار غیرفعال است. به‌جای آن از روش ارتقای package
+manager استفاده کنید؛ مثلاً با `pip`:
 
 ```console
 $ pip install --upgrade uv
 ```
 
-## Shell autocompletion
+## تکمیل خودکار shell {#shell-autocompletion}
 
 !!! tip
 
-    You can run `echo $SHELL` to help you determine your shell.
+    می‌توانید `echo $SHELL` را اجرا کنید تا shell خود را مشخص کنید.
 
-To enable shell autocompletion for uv commands, run one of the following:
+برای فعال کردن تکمیل خودکار shell برای دستورهای uv، یکی از موارد زیر را اجرا کنید:
 
 === "Bash"
 
@@ -208,7 +209,7 @@ To enable shell autocompletion for uv commands, run one of the following:
     Add-Content -Path $PROFILE -Value '(& uv generate-shell-completion powershell) | Out-String | Invoke-Expression'
     ```
 
-To enable shell autocompletion for uvx, run one of the following:
+برای فعال کردن تکمیل خودکار shell برای uvx، یکی از موارد زیر را اجرا کنید:
 
 === "Bash"
 
@@ -243,13 +244,13 @@ To enable shell autocompletion for uvx, run one of the following:
     Add-Content -Path $PROFILE -Value '(& uvx --generate-shell-completion powershell) | Out-String | Invoke-Expression'
     ```
 
-Then restart the shell or source the shell config file.
+سپس shell را دوباره راه‌اندازی کنید یا فایل پیکربندی shell را source کنید.
 
-## Uninstallation
+## حذف نصب {#uninstallation}
 
-If you need to remove uv from your system, follow these steps:
+اگر نیاز دارید uv را از سیستم خود حذف کنید، این مراحل را دنبال کنید:
 
-1.  Clean up stored data (optional):
+1.  پاک کردن داده‌های ذخیره‌شده (اختیاری):
 
     ```console
     $ uv cache clean
@@ -259,10 +260,10 @@ If you need to remove uv from your system, follow these steps:
 
     !!! tip
 
-        Before removing the binaries, you may want to remove any data that uv has stored. See the
-        [storage reference](../reference/storage.md) for details on where uv stores data.
+        پیش از حذف binary ها، شاید بخواهید داده‌هایی را که uv ذخیره کرده است حذف کنید. برای
+        جزئیات محل ذخیرهٔ داده‌ها توسط uv، [مرجع storage](../reference/storage.md) را ببینید.
 
-2.  Remove the uv, uvx, and uvw binaries:
+2.  binary های uv و uvx و uvw را حذف کنید:
 
     === "macOS and Linux"
 
@@ -280,11 +281,11 @@ If you need to remove uv from your system, follow these steps:
 
     !!! note
 
-        Prior to 0.5.0, uv was installed into `~/.cargo/bin`. The binaries can be removed from there to
-        uninstall. Upgrading from an older version will not automatically remove the binaries from
-        `~/.cargo/bin`.
+        پیش از 0.5.0، uv در `~/.cargo/bin` نصب می‌شد. برای حذف نصب، می‌توان binary ها را از
+        آنجا حذف کرد. ارتقا از یک version قدیمی‌تر، binary ها را به‌صورت خودکار از `~/.cargo/bin`
+        حذف نمی‌کند.
 
-## Next steps
+## قدم‌های بعدی {#next-steps}
 
-See the [first steps](./first-steps.md) or jump straight to the [guides](../guides/index.md) to
-start using uv.
+[قدم‌های اول](./first-steps.md) را ببینید یا مستقیم به [راهنماها](../guides/index.md) بروید تا
+استفاده از uv را شروع کنید.

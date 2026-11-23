@@ -1,18 +1,17 @@
-# Running commands in projects
+# اجرای دستورها در projectها {#running-commands-in-projects}
 
-When working on a project, it is installed into the virtual environment at `.venv`. This environment
-is isolated from the current shell by default, so invocations that require the project, e.g.,
-`python -c "import example"`, will fail. Instead, use `uv run` to run commands in the project
-environment:
+هنگام کار روی یک project، آن project در virtual environment واقع در `.venv` نصب می‌شود. این environment
+به‌طور پیش‌فرض از shell فعلی جداست، بنابراین فراخوانی‌هایی که به project نیاز دارند، برای مثال
+`python -c "import example"`، با شکست مواجه می‌شوند. در عوض، از `uv run` برای اجرای دستورها در environment
+project استفاده کنید:
 
 ```console
 $ uv run python -c "import example"
 ```
 
-When using `run`, uv will ensure that the project environment is up-to-date before running the given
-command.
+هنگام استفاده از `run`، uv پیش از اجرای دستور داده‌شده، اطمینان حاصل می‌کند که environment مربوط به project به‌روز است.
 
-The given command can be provided by the project environment or exist outside of it, e.g.:
+دستور داده‌شده می‌تواند توسط environment مربوط به project فراهم شود یا خارج از آن وجود داشته باشد، برای مثال:
 
 ```console
 $ # Presuming the project provides `example-cli`
@@ -22,12 +21,12 @@ $ # Running a `bash` script that requires the project to be available
 $ uv run bash scripts/foo.sh
 ```
 
-## Requesting additional dependencies
+## درخواست dependencyهای اضافی {#requesting-additional-dependencies}
 
-Additional dependencies or different versions of dependencies can be requested per invocation.
+می‌توان dependencyهای اضافی یا نسخه‌های متفاوتی از dependencyها را برای هر فراخوانی درخواست کرد.
 
-The `--with` option is used to include a dependency for the invocation, e.g., to request a different
-version of `httpx`:
+گزینهٔ `--with` برای گنجاندن یک dependency در فراخوانی استفاده می‌شود، برای مثال برای درخواست یک نسخهٔ متفاوت
+از `httpx`:
 
 ```console
 $ uv run --with httpx==0.26.0 python -c "import httpx; print(httpx.__version__)"
@@ -36,16 +35,15 @@ $ uv run --with httpx==0.25.0 python -c "import httpx; print(httpx.__version__)"
 0.25.0
 ```
 
-The requested version will be respected regardless of the project's requirements. For example, even
-if the project requires `httpx==0.24.0`, the output above would be the same.
+نسخهٔ درخواستی صرف‌نظر از requirementهای project رعایت خواهد شد. برای مثال، حتی
+اگر project به `httpx==0.24.0` نیاز داشته باشد، خروجی بالا همان خواهد بود.
 
-## Running scripts
+## اجرای scriptها {#running-scripts}
 
-Scripts that declare inline metadata are automatically executed in environments isolated from the
-project. See the [scripts guide](../../guides/scripts.md#declaring-script-dependencies) for more
-details.
+scriptهایی که metadata درون‌خطی اعلام می‌کنند، به‌طور خودکار در environmentهایی جدا از
+project اجرا می‌شوند. برای جزئیات بیشتر، به [راهنمای scriptها](../../guides/scripts.md#declaring-script-dependencies) مراجعه کنید.
 
-For example, given a script:
+برای مثال، با داشتن یک script:
 
 ```python title="example.py"
 # /// script
@@ -61,40 +59,37 @@ data = resp.json()
 print([(k, v["title"]) for k, v in data.items()][:10])
 ```
 
-The invocation `uv run example.py` would run _isolated_ from the project with only the given
-dependencies listed.
+فراخوانی `uv run example.py` به‌صورت _جدا_ از project و تنها با dependencyهای
+داده‌شده اجرا می‌شود.
 
-## Legacy scripts on Windows
+## scriptهای قدیمی در Windows {#legacy-scripts-on-windows}
 
-Support is provided for
-[legacy setuptools scripts](https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#scripts).
-These types of scripts are additional files installed by setuptools in `.venv\Scripts`.
+پشتیبانی از
+[scriptهای قدیمی setuptools](https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#scripts) ارائه شده است.
+این نوع scriptها فایل‌های اضافی‌ای هستند که setuptools در `.venv\Scripts` نصب می‌کند.
 
-Currently only legacy scripts with the `.ps1`, `.cmd`, and `.bat` extensions are supported.
+در حال حاضر فقط scriptهای قدیمی با پسوندهای `.ps1`، `.cmd` و `.bat` پشتیبانی می‌شوند.
 
-For example, to run a Command Prompt script:
+برای مثال، برای اجرای یک script مربوط به Command Prompt:
 
 ```console
 $ uv run --with nuitka==2.6.7 -- nuitka.cmd --version
 ```
 
-In addition, you don't need to specify the extension. `uv` will automatically look for files ending
-in `.ps1`, `.cmd`, and `.bat` in that order of execution on your behalf.
+علاوه بر این، نیازی نیست پسوند را مشخص کنید. `uv` به‌طور خودکار به‌جای شما به‌ترتیب به‌دنبال فایل‌هایی با پایان
+`.ps1`، `.cmd` و `.bat` می‌گردد.
 
 ```console
 $ uv run --with nuitka==2.6.7 -- nuitka --version
 ```
 
-## Signal handling
+## مدیریت سیگنال {#signal-handling}
 
-uv does not cede control of the process to the spawned command in order to provide better error
-messages on failure. Consequently, uv is responsible for forwarding some signals to the child
-process the requested command runs in.
+uv برای ارائهٔ پیام‌های خطای بهتر در صورت شکست، کنترل فرایند را به دستور ایجادشده واگذار نمی‌کند. در نتیجه، uv مسئول ارسال برخی سیگنال‌ها به فرایند
+فرزندی است که دستور درخواستی در آن اجرا می‌شود.
 
-On Unix systems, uv will forward most signals (with the exception of SIGKILL, SIGCHLD, SIGIO, and
-SIGPOLL) to the child process. Since terminals send SIGINT to the foreground process group on
-Ctrl-C, uv will only forward a SIGINT to the child process if it is sent more than once or the child
-process group differs from uv's.
+در سیستم‌های Unix، uv بیشتر سیگنال‌ها را (به‌استثنای SIGKILL، SIGCHLD، SIGIO و
+SIGPOLL) به فرایند فرزند ارسال می‌کند. از آنجا که ترمینال‌ها با Ctrl-C سیگنال SIGINT را به گروه فرایند پیش‌زمینه ارسال می‌کنند، uv یک SIGINT را فقط در صورتی به فرایند فرزند ارسال می‌کند که بیش از یک بار ارسال شود یا گروه فرایند فرزند با گروه فرایند uv متفاوت باشد.
 
-On Windows, these concepts do not apply and uv ignores Ctrl-C events, deferring handling to the
-child process so it can exit cleanly.
+در Windows، این مفاهیم کاربرد ندارند و uv رویدادهای Ctrl-C را نادیده می‌گیرد و مدیریت آن را به
+فرایند فرزند واگذار می‌کند تا بتواند به‌تمیزی خارج شود.

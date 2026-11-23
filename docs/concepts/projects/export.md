@@ -1,28 +1,27 @@
 ---
-title: Exporting a lockfile
-description: Exporting a lockfile to different formats
+title: خروجی گرفتن از یک lockfile
+description: خروجی گرفتن از یک lockfile به قالب‌های مختلف
 ---
 
-# Exporting a lockfile
+# خروجی گرفتن از یک lockfile {#exporting-a-lockfile}
 
-uv can export a lockfile to different formats for integration with other tools and workflows. The
-`uv export` command supports multiple output formats, each suited to different use cases.
+uv می‌تواند یک lockfile را برای یکپارچه‌سازی با toolها و workflowهای دیگر به قالب‌های مختلف خروجی بگیرد. دستور
+`uv export` از چندین قالب خروجی پشتیبانی می‌کند که هر کدام برای موارد استفادهٔ متفاوتی مناسب‌اند.
 
-For more details on lockfiles and how they're created, see the [project layout](./layout.md) and
-[locking and syncing](./sync.md) documentation.
+برای جزئیات بیشتر دربارهٔ lockfileها و نحوهٔ ایجاد آن‌ها، به مستندات [چیدمان project](./layout.md) و
+[قفل کردن و همگام‌سازی](./sync.md) مراجعه کنید.
 
-## Overview of export formats
+## مروری بر قالب‌های خروجی {#overview-of-export-formats}
 
-uv supports three export formats:
+uv از سه قالب خروجی پشتیبانی می‌کند:
 
-- `requirements.txt`: The traditional pip-compatible
-  [requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/).
-- `pylock.toml`: The standardized Python lockfile format defined in
-  [PEP 751](https://peps.python.org/pep-0751/).
-- `CycloneDX`: An industry-standard [Software Bill of Materials (SBOM)](https://cyclonedx.org/)
-  format.
+- `requirements.txt`: قالب سنتی و سازگار با pip برای
+  [فایل requirement](https://pip.pypa.io/en/stable/reference/requirements-file-format/).
+- `pylock.toml`: قالب استانداردشدهٔ lockfile Python که در
+  [PEP 751](https://peps.python.org/pep-0751/) تعریف شده است.
+- `CycloneDX`: یک قالب استاندارد صنعتی برای [Software Bill of Materials (SBOM)](https://cyclonedx.org/).
 
-The format can be specified with the `--format` flag:
+می‌توان قالب را با فلگ `--format` مشخص کرد:
 
 ```console
 $ uv export --format requirements.txt
@@ -32,7 +31,7 @@ $ uv export --format cyclonedx1.5
 
 !!! tip
 
-    By default, `uv export` prints to stdout. Use `--output-file` to write to a file for any format:
+    به‌طور پیش‌فرض، `uv export` در stdout چاپ می‌کند. برای نوشتن در یک فایل برای هر قالب، از `--output-file` استفاده کنید:
 
     ```console
     $ uv export --format requirements.txt --output-file requirements.txt
@@ -40,82 +39,82 @@ $ uv export --format cyclonedx1.5
     $ uv export --format cyclonedx1.5 --output-file sbom.json
     ```
 
-## `requirements.txt` format
+## قالب `requirements.txt` {#requirements-txt-format}
 
-The `requirements.txt` format is the most widely supported format for Python dependencies. It can be
-used with `pip` and other Python package managers.
+قالب `requirements.txt` پرکاربردترین قالب برای dependencyهای Python است. می‌توان از آن
+با `pip` و دیگر package managerهای Python استفاده کرد.
 
-### Basic usage
+### استفادهٔ پایه {#basic-usage}
 
 ```console
 $ uv export --format requirements.txt
 ```
 
-The generated `requirements.txt` file can then be installed via `uv pip install`, or with other
-tools like `pip`.
+سپس می‌توان فایل `requirements.txt` تولیدشده را از طریق `uv pip install` نصب کرد، یا با toolهای دیگری
+مانند `pip`.
 
 !!! note
 
-    In general, we recommend against using both a `uv.lock` and a `requirements.txt` file. The
-    `uv.lock` format is more powerful and includes features that cannot be expressed in
-    `requirements.txt`. If you find yourself exporting a `uv.lock` file, consider opening an issue
-    to discuss your use case.
+    به‌طور کلی، توصیه می‌کنیم هم‌زمان از یک `uv.lock` و یک فایل `requirements.txt` استفاده نکنید.
+    قالب `uv.lock` قدرتمندتر است و شامل ویژگی‌هایی است که نمی‌توان آن‌ها را در
+    `requirements.txt` بیان کرد. اگر متوجه شدید که از یک فایل `uv.lock` خروجی می‌گیرید، در نظر بگیرید که یک issue باز کنید
+    تا دربارهٔ مورد استفادهٔ خود صحبت کنید.
 
-## `pylock.toml` format
+## قالب `pylock.toml` {#pylock-toml-format}
 
-[PEP 751](https://peps.python.org/pep-0751/) defines a TOML-based lockfile format for Python
-dependencies. uv can export your project's dependency lockfile to this format.
+[PEP 751](https://peps.python.org/pep-0751/) یک قالب lockfile مبتنی بر TOML را برای dependencyهای
+Python تعریف می‌کند. uv می‌تواند lockfile مربوط به dependency مربوط به project شما را به این قالب خروجی بگیرد.
 
-### Basic usage
+### استفادهٔ پایه {#basic-usage-1}
 
 ```console
 $ uv export --format pylock.toml
 ```
 
-Relative local paths are written relative to the output file's directory. When writing to stdout,
-they are relative to the current working directory. Use `--output-file` when writing a `pylock.toml`
-in another directory.
+مسیرهای local نسبی نسبت به پوشهٔ فایل خروجی نوشته می‌شوند. هنگام نوشتن در stdout،
+آن‌ها نسبت به پوشهٔ کاری فعلی هستند. هنگام نوشتن یک `pylock.toml`
+در پوشه‌ای دیگر، از `--output-file` استفاده کنید.
 
-## CycloneDX SBOM format
+## قالب CycloneDX SBOM {#cyclonedx-sbom-format}
 
-uv can export your project's dependency lockfile as a Software Bill of Materials (SBOM) in CycloneDX
-format. SBOMs provide a comprehensive inventory of all software components in your application,
-which is useful for security auditing, compliance, and supply chain transparency.
+uv می‌تواند lockfile مربوط به dependency مربوط به project شما را به‌عنوان یک Software Bill of Materials (SBOM) در قالب CycloneDX
+خروجی بگیرد. SBOMها یک فهرست جامع از همهٔ اجزای نرم‌افزاری در application شما ارائه می‌دهند،
+که برای ممیزی امنیتی، انطباق و شفافیت زنجیرهٔ تأمین مفید است.
 
 !!! important
 
-    Support for exporting to CycloneDX is in [preview](../preview.md), and may change in any future release.
+    پشتیبانی از خروجی گرفتن به CycloneDX در [پیش‌نمایش](../preview.md) است و ممکن است در هر نسخهٔ آینده تغییر کند.
 
-### What is CycloneDX?
+### CycloneDX چیست؟ {#what-is-cyclonedx}
 
-[CycloneDX](https://cyclonedx.org/) is an industry-standard format for creating Software Bill of
-Materials. CycloneDX is machine readable and widely supported by security scanning tools,
-vulnerability databases, and Software Composition Analysis (SCA) platforms.
+[CycloneDX](https://cyclonedx.org/) یک قالب استاندارد صنعتی برای ایجاد Software Bill of
+Materials است. CycloneDX قابل خواندن توسط ماشین است و به‌طور گسترده توسط toolهای اسکن امنیتی،
+پایگاه‌های دادهٔ آسیب‌پذیری و پلتفرم‌های Software Composition Analysis (SCA) پشتیبانی می‌شود.
 
-### Basic usage
+### استفادهٔ پایه {#basic-usage-2}
 
-To export your project's lockfile as a CycloneDX SBOM:
+برای خروجی گرفتن از lockfile مربوط به project خود به‌عنوان یک CycloneDX SBOM:
 
 ```console
 $ uv export --format cyclonedx1.5
 ```
 
-This will generate a JSON-encoded CycloneDX v1.5 document containing your project and all of its
-dependencies.
+این کار یک سند CycloneDX نسخهٔ ۱٫۵ با کدگذاری JSON تولید می‌کند که شامل project شما و همهٔ
+dependencyهای آن است.
 
-### SBOM Structure
+### ساختار SBOM {#sbom-structure}
 
-The generated SBOM follows the
-[CycloneDX specification](https://cyclonedx.org/specification/overview/). uv also includes the
-following custom properties on components:
+SBOM تولیدشده از
+[مشخصات CycloneDX](https://cyclonedx.org/specification/overview/) پیروی می‌کند. uv همچنین ویژگی‌های
+سفارشی زیر را روی componentها شامل می‌شود:
 
-- `uv:package:marker`: Environment markers (e.g., `python_version >= "3.8"`)
-- `uv:workspace:path`: Relative path for workspace members
+- `uv:package:marker`: Environment markerها (برای مثال `python_version >= "3.8"`)
+- `uv:workspace:path`: مسیر نسبی برای memberهای workspace
 
-## Next steps
+## گام‌های بعدی {#next-steps}
 
-To learn more about lockfiles and exporting, see the [locking and syncing](./sync.md) documentation
-and the [command reference](../../reference/cli.md#uv-export).
+برای یادگیری بیشتر دربارهٔ lockfileها و خروجی گرفتن، به مستندات [قفل کردن و همگام‌سازی](./sync.md)
+و [مرجع دستور](../../reference/cli.md#uv-export) مراجعه کنید.
 
-Or, read on to learn how to
-[build and publish your project to a package index](../../guides/package.md).
+یا، برای یادگیری نحوهٔ
+[ساخت و انتشار project خود در یک package index](../../guides/package.md) ادامهٔ مطلب را بخوانید.

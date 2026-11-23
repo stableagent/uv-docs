@@ -1,41 +1,40 @@
-# Creating projects
+# ایجاد پروژه‌ها {#creating-projects}
 
-uv supports creating a project with `uv init`.
+uv از ایجاد یک project با `uv init` پشتیبانی می‌کند.
 
-When creating projects, uv supports two basic templates: [**applications**](#applications) and
-[**libraries**](#libraries). By default, uv will create a project for an application. The `--lib`
-flag can be used to create a project for a library instead.
+هنگام ایجاد projectها، uv از دو قالب پایه پشتیبانی می‌کند: [**applicationها**](#applications) و
+[**libraryها**](#libraries). به‌طور پیش‌فرض، uv یک project برای یک application ایجاد می‌کند. فلگ `--lib`
+را می‌توان برای ایجاد یک project برای یک library به‌جای آن استفاده کرد.
 
-In both cases, uv prefers to define a [build system](./config.md#build-systems) and place source
-files in a dedicated `src/<project_name>/` directory. Defining a build system allows use of various
-Python packaging features, such as adding command-line entry points, and avoids common points of
-confusion with the Python import system. Use of a build system can be disabled by using the
-[`--no-package`](#creating-a-project-without-a-build-system) or
-[`--bare`](#creating-a-minimal-project) options.
+در هر دو حالت، uv ترجیح می‌دهد یک [build system](./config.md#build-systems) تعریف کند و فایل‌های منبع
+را در یک پوشهٔ اختصاصی `src/<project_name>/` قرار دهد. تعریف یک build system امکان استفاده از ویژگی‌های
+مختلف بسته‌بندی Python را فراهم می‌کند، مانند افزودن entry pointهای خط فرمان، و از نقاط رایج
+سردرگمی در سیستم import Python جلوگیری می‌کند. استفاده از build system را می‌توان با استفاده از
+گزینه‌های [`--no-package`](#creating-a-project-without-a-build-system) یا
+[`--bare`](#creating-a-minimal-project) غیرفعال کرد.
 
 !!! note
 
-    Prior to v0.12, uv did not define a build system for applications by default.
+    پیش از نسخهٔ 0.12، uv به‌طور پیش‌فرض برای applicationها build system تعریف نمی‌کرد.
 
-## Target directory
+## پوشهٔ هدف {#target-directory}
 
-uv will create a project in the working directory. To create one in a target directory, provide a
-name, e.g., `uv init foo`. The working directory can be modified with the `--directory` option,
-which will cause the target directory path to be interpreted relative to the specified working
-directory. If there's already a project in the target directory, i.e., if there's a
-`pyproject.toml`, uv will exit with an error.
+uv یک project را در پوشهٔ کاری ایجاد می‌کند. برای ایجاد یکی در یک پوشهٔ هدف، یک
+نام بدهید، برای مثال `uv init foo`. پوشهٔ کاری را می‌توان با گزینهٔ `--directory` تغییر داد،
+که باعث می‌شود مسیر پوشهٔ هدف نسبت به پوشهٔ کاری مشخص‌شده تفسیر شود. اگر از قبل یک project در پوشهٔ هدف وجود داشته باشد، یعنی اگر یک
+`pyproject.toml` وجود داشته باشد، uv با یک خطا خارج می‌شود.
 
-## Applications
+## Applicationها {#applications}
 
-Application projects are suitable for web servers, scripts, and command-line interfaces.
+projectهای application برای وب‌سرورها، scriptها و رابط‌های خط فرمان مناسب‌اند.
 
-Applications are the default target for `uv init`, but can also be specified with the `--app` flag:
+Applicationها هدف پیش‌فرض `uv init` هستند، اما می‌توان آن‌ها را با فلگ `--app` نیز مشخص کرد:
 
 ```console
 $ uv init example-app
 ```
 
-The source code lives in a `src` directory with a module directory and an `__init__.py` file:
+کد منبع در یک پوشهٔ `src` با یک پوشهٔ module و یک فایل `__init__.py` قرار دارد:
 
 ```console
 $ tree example-app
@@ -48,8 +47,8 @@ example-app/
         └── __init__.py
 ```
 
-A [build system](./config.md#build-systems) is defined, so the project will be installed into the
-environment:
+یک [build system](./config.md#build-systems) تعریف شده است، بنابراین project در
+environment نصب خواهد شد:
 
 ```toml title="pyproject.toml" hl_lines="12-14"
 [project]
@@ -70,9 +69,9 @@ build-backend = "uv_build"
 
 !!! tip
 
-    The `--build-backend` option can be used to request an alternative build system.
+    می‌توان از گزینهٔ `--build-backend` برای درخواست یک build system جایگزین استفاده کرد.
 
-A [command](./config.md#entry-points) definition is included:
+یک تعریف [command](./config.md#entry-points) نیز گنجانده شده است:
 
 ```toml title="pyproject.toml" hl_lines="9 10"
 [project]
@@ -91,7 +90,7 @@ requires = ["uv_build>=0.13.9,<0.14"]
 build-backend = "uv_build"
 ```
 
-The command can be executed with `uv run`:
+می‌توان دستور را با `uv run` اجرا کرد:
 
 ```console
 $ cd example-app
@@ -99,12 +98,12 @@ $ uv run example-app
 Hello from example-app!
 ```
 
-## Libraries
+## Libraryها {#libraries}
 
-A library provides functions and objects for other projects to consume. Libraries are intended to be
-built and distributed, e.g., by uploading them to PyPI.
+یک library توابع و آبجکت‌هایی را برای مصرف projectهای دیگر فراهم می‌کند. Libraryها برای این در نظر گرفته شده‌اند که
+ساخته و توزیع شوند، برای مثال با بارگذاری آن‌ها در PyPI.
 
-Libraries can be created by using the `--lib` flag:
+می‌توان libraryها را با استفاده از فلگ `--lib` ایجاد کرد:
 
 ```console
 $ uv init --lib example-lib
@@ -112,9 +111,9 @@ $ uv init --lib example-lib
 
 !!! note
 
-    Libraries always require a packaged project.
+    Libraryها همیشه به یک project بسته‌بندی‌شده نیاز دارند.
 
-A `py.typed` marker is included to indicate to consumers that types can be read from the library:
+یک نشانگر `py.typed` گنجانده شده است تا به مصرف‌کنندگان نشان دهد که می‌توان typeها را از library خواند:
 
 ```console
 $ tree example-lib
@@ -130,12 +129,12 @@ example-lib/
 
 !!! note
 
-    A `src` layout is particularly valuable when developing libraries. It ensures that the library
-    is isolated from any `python` invocations in the project root and that distributed library code
-    is well separated from the rest of the project source.
+    یک چیدمان `src` هنگام توسعهٔ libraryها به‌ویژه ارزشمند است. این چیدمان تضمین می‌کند که library
+    از هر فراخوانی `python` در ریشهٔ project جدا باشد و کد library توزیع‌شده
+    به‌خوبی از بقیهٔ منبع project جدا شود.
 
-A [build system](./config.md#build-systems) is defined, so the project will be installed into the
-environment:
+یک [build system](./config.md#build-systems) تعریف شده است، بنابراین project در
+environment نصب خواهد شد:
 
 ```toml title="pyproject.toml" hl_lines="12-14"
 [project]
@@ -153,18 +152,17 @@ build-backend = "uv_build"
 
 !!! tip
 
-    You can select a different build backend template by using `--build-backend` with `hatchling`,
-    `uv_build`, `flit-core`, `pdm-backend`, `setuptools`, `maturin`, or `scikit-build-core`. An
-    alternative backend is required if you want to create a [library with extension modules](#projects-with-extension-modules).
+    می‌توانید با استفاده از `--build-backend` همراه با `hatchling`،
+    `uv_build`، `flit-core`، `pdm-backend`، `setuptools`، `maturin` یا `scikit-build-core` یک قالب build backend متفاوت را انتخاب کنید. اگر می‌خواهید یک [library با extension moduleها](#projects-with-extension-modules) ایجاد کنید، به یک backend جایگزین نیاز دارید.
 
-The created module defines a simple API function:
+module ایجادشده یک تابع API ساده را تعریف می‌کند:
 
 ```python title="__init__.py"
 def hello() -> str:
     return "Hello from example-lib!"
 ```
 
-And you can import and execute it using `uv run`:
+و می‌توانید آن را با استفاده از `uv run` import و اجرا کنید:
 
 ```console
 $ cd example-lib
@@ -172,20 +170,20 @@ $ uv run python -c "import example_lib; print(example_lib.hello())"
 Hello from example-lib!
 ```
 
-## Projects with extension modules
+## Projectها با extension moduleها {#projects-with-extension-modules}
 
-Most Python projects are "pure Python", meaning they do not define modules in other languages like
-C, C++, FORTRAN, or Rust. However, projects with extension modules are often used for performance
-sensitive code.
+بیشتر projectهای Python «Python خالص» هستند، یعنی moduleهایی را به زبان‌های دیگر مانند
+C، C++، FORTRAN یا Rust تعریف نمی‌کنند. با این حال، projectهای دارای extension module اغلب برای کدهای
+حساس به عملکرد استفاده می‌شوند.
 
-Creating a project with an extension module requires choosing an alternative build system. uv
-supports creating projects with the following build systems that support building extension modules:
+ایجاد یک project با یک extension module نیازمند انتخاب یک build system جایگزین است. uv
+از ایجاد projectها با build systemهای زیر که از ساخت extension moduleها پشتیبانی می‌کنند، پشتیبانی می‌کند:
 
-- [`maturin`](https://www.maturin.rs) for projects with Rust
-- [`scikit-build-core`](https://github.com/scikit-build/scikit-build-core) for projects with C, C++,
-  FORTRAN, Cython
+- [`maturin`](https://www.maturin.rs) برای projectهای دارای Rust
+- [`scikit-build-core`](https://github.com/scikit-build/scikit-build-core) برای projectهای دارای C، C++،
+  FORTRAN، Cython
 
-Specify the build system with the `--build-backend` flag:
+build system را با فلگ `--build-backend` مشخص کنید:
 
 ```console
 $ uv init --build-backend maturin example-ext
@@ -193,10 +191,9 @@ $ uv init --build-backend maturin example-ext
 
 !!! note
 
-    Using `--build-backend` implies `--package`.
+    استفاده از `--build-backend` به‌معنای `--package` است.
 
-The project contains a `Cargo.toml` and a `lib.rs` file in addition to the typical Python project
-files:
+project علاوه بر فایل‌های معمول project Python، شامل یک فایل `Cargo.toml` و یک فایل `lib.rs` است:
 
 ```console
 $ tree example-ext
@@ -214,9 +211,9 @@ example-ext/
 
 !!! note
 
-    If using `scikit-build-core`, you'll see CMake configuration and a `main.cpp` file instead.
+    اگر از `scikit-build-core` استفاده می‌کنید، به‌جای آن پیکربندی CMake و یک فایل `main.cpp` را خواهید دید.
 
-The Rust library defines a simple function:
+library مربوط به Rust یک تابع ساده را تعریف می‌کند:
 
 ```rust title="src/lib.rs"
 use pyo3::prelude::*;
@@ -232,7 +229,7 @@ mod _core {
 }
 ```
 
-And the Python module imports it:
+و module Python آن را import می‌کند:
 
 ```python title="src/example_ext/__init__.py"
 from example_ext._core import hello_from_bin
@@ -242,7 +239,7 @@ def main() -> None:
     print(hello_from_bin())
 ```
 
-The command can be executed with `uv run`:
+می‌توان دستور را با `uv run` اجرا کرد:
 
 ```console
 $ cd example-ext
@@ -252,23 +249,23 @@ Hello from example-ext!
 
 !!! important
 
-    When creating a project with maturin or scikit-build-core, uv configures [`tool.uv.cache-keys`](../../reference/settings.md#cache-keys)
-    to include common source file types. To force a rebuild, e.g. when changing files outside
-    `cache-keys` or when not using `cache-keys`, use `--reinstall`.
+    هنگام ایجاد یک project با maturin یا scikit-build-core، uv [`tool.uv.cache-keys`](../../reference/settings.md#cache-keys) را
+    پیکربندی می‌کند تا انواع رایج فایل منبع را شامل شود. برای اجبار به بازسازی، برای مثال هنگام تغییر فایل‌های خارج از
+    `cache-keys` یا هنگام عدم استفاده از `cache-keys`، از `--reinstall` استفاده کنید.
 
-## Creating a project without a build system
+## ایجاد یک project بدون build system {#creating-a-project-without-a-build-system}
 
-While defining a build system generally provides a better experience, there are some cases in which
-it can be easier to omit it and define your Python modules directly in the top-level directory.
+در حالی که تعریف یک build system به‌طور کلی تجربهٔ بهتری فراهم می‌کند، مواردی وجود دارد که در آن‌ها
+حذف آن و تعریف moduleهای Python به‌طور مستقیم در پوشهٔ سطح بالا آسان‌تر است.
 
-Use the `--no-package` flag to disable using a build system:
+از فلگ `--no-package` برای غیرفعال کردن استفاده از build system استفاده کنید:
 
 ```console
 $ uv init --no-package example-app
 ```
 
-The project includes a `pyproject.toml`, a sample file (`main.py`), a readme, and a Python version
-pin file (`.python-version`).
+project شامل یک `pyproject.toml`، یک فایل نمونه (`main.py`)، یک readme و یک فایل
+pin نسخهٔ Python (`.python-version`) است.
 
 ```console
 $ tree example-app
@@ -279,8 +276,8 @@ example-app/
 └── pyproject.toml
 ```
 
-The `pyproject.toml` includes basic metadata but does not define a build system. The project is not
-a [package](./config.md#project-packaging) and will not be installed into the environment:
+فایل `pyproject.toml` شامل metadata پایه است اما build system تعریف نمی‌کند. project یک
+[package](./config.md#project-packaging) نیست و در environment نصب نخواهد شد:
 
 ```toml title="pyproject.toml"
 [project]
@@ -292,7 +289,7 @@ requires-python = ">=3.11"
 dependencies = []
 ```
 
-The sample file defines a `main` function with some standard boilerplate:
+فایل نمونه یک تابع `main` را با مقداری کد قالب استاندارد تعریف می‌کند:
 
 ```python title="main.py"
 def main():
@@ -303,7 +300,7 @@ if __name__ == "__main__":
     main()
 ```
 
-Python files can be executed with `uv run`:
+فایل‌های Python را می‌توان با `uv run` اجرا کرد:
 
 ```console
 $ cd example-app
@@ -311,16 +308,16 @@ $ uv run main.py
 Hello from example-app!
 ```
 
-## Creating a minimal project
+## ایجاد یک project حداقلی {#creating-a-minimal-project}
 
-If you only want to create a `pyproject.toml`, use the `--bare` option:
+اگر فقط می‌خواهید یک `pyproject.toml` ایجاد کنید، از گزینهٔ `--bare` استفاده کنید:
 
 ```console
 $ uv init example-bare --bare
 ```
 
-uv will skip creating a Python version pin file, a README, and any source directories or files.
-Additionally, uv will not initialize a version control system (i.e., `git`).
+uv از ایجاد یک فایل pin نسخهٔ Python، یک README و هر پوشه یا فایل منبعی صرف‌نظر می‌کند.
+علاوه بر این، uv یک سیستم کنترل نسخه (یعنی `git`) را مقداردهی اولیه نمی‌کند.
 
 ```console
 $ tree example-bare
@@ -328,7 +325,7 @@ example-bare
 └── pyproject.toml
 ```
 
-uv will also not add extra metadata to the `pyproject.toml`, such as the `description` or `authors`.
+uv همچنین metadata اضافی به `pyproject.toml` اضافه نمی‌کند، مانند `description` یا `authors`.
 
 ```toml
 [project]
@@ -338,10 +335,10 @@ requires-python = ">=3.12"
 dependencies = []
 ```
 
-The `--bare` option can be used with other options like `--lib` or `--build-backend` — in these
-cases uv will still configure a build system but will not create the expected file structure.
+می‌توان از گزینهٔ `--bare` همراه با گزینه‌های دیگر مانند `--lib` یا `--build-backend` استفاده کرد — در این
+موارد uv همچنان یک build system را پیکربندی می‌کند اما ساختار فایل مورد انتظار را ایجاد نمی‌کند.
 
-When `--bare` is used, additional features can still be used opt-in:
+هنگامی که از `--bare` استفاده می‌شود، همچنان می‌توان ویژگی‌های اضافی را به‌صورت اختیاری استفاده کرد:
 
 ```console
 $ uv init example-bare --bare --description "Hello world" --author-from git --vcs git --pin-python

@@ -1,75 +1,67 @@
-# Preview features
+# قابلیت‌های پیش‌نمایش {#preview-features}
 
-uv includes opt-in preview features to provide an opportunity for community feedback and increase
-confidence that changes are a net-benefit before enabling them for everyone.
+uv شامل قابلیت‌های پیش‌نمایشِ اختیاری است تا فرصتی برای بازخورد جامعه فراهم کند و پیش از فعال‌کردن آن‌ها برای همه، اطمینان حاصل شود که تغییرات در مجموع سودمندند.
 
-## Enabling preview features
+## فعال‌کردن قابلیت‌های پیش‌نمایش {#enabling-preview-features}
 
-To enable all preview features, use the `--preview` flag:
+برای فعال‌کردن همهٔ قابلیت‌های پیش‌نمایش، از فلگ `--preview` استفاده کنید:
 
 ```console
 $ uv run --preview ...
 ```
 
-Or, set the `UV_PREVIEW` environment variable:
+یا environment variable `UV_PREVIEW` را تنظیم کنید:
 
 ```console
 $ UV_PREVIEW=1 uv run ...
 ```
 
-To enable specific preview features, use the `--preview-features` flag:
+برای فعال‌کردن قابلیت‌های پیش‌نمایش خاص، از فلگ `--preview-features` استفاده کنید:
 
 ```console
 $ uv run --preview-features foo ...
 ```
 
-The `--preview-features` flag can be repeated to enable multiple features:
+فلگ `--preview-features` را می‌توان برای فعال‌کردن چند قابلیت تکرار کرد:
 
 ```console
 $ uv run --preview-features foo --preview-features bar ...
 ```
 
-Or, features can be provided in a comma separated list:
+یا قابلیت‌ها را می‌توان در قالب فهرستی با جداکنندهٔ کاما ارائه کرد:
 
 ```console
 $ uv run --preview-features foo,bar ...
 ```
 
-The `UV_PREVIEW_FEATURES` environment variable can be used similarly, e.g.:
+می‌توان به‌همین صورت از environment variable `UV_PREVIEW_FEATURES` استفاده کرد، مثلاً:
 
 ```console
 $ UV_PREVIEW_FEATURES=foo,bar uv run ...
 ```
 
-Preview features can also be enabled in `uv.toml`, or under `[tool.uv]` in `pyproject.toml` and PEP
-723 metadata:
+قابلیت‌های پیش‌نمایش را می‌توان در `uv.toml` یا در بخش `[tool.uv]` در `pyproject.toml` و metadata PEP 723 نیز فعال کرد:
 
 ```toml
 preview-features = ["foo", "bar"]
 ```
 
-Set `preview-features = true` to enable all preview features.
+برای فعال‌کردن همهٔ قابلیت‌های پیش‌نمایش، `preview-features = true` را تنظیم کنید.
 
-Some preview features take effect before configuration files are loaded and cannot be enabled from
-configuration.
+برخی از قابلیت‌های پیش‌نمایش پیش از بارگذاری فایل‌های پیکربندی اعمال می‌شوند و نمی‌توان آن‌ها را از طریق پیکربندی فعال کرد.
 
-For backwards compatibility, enabling preview features that do not exist will warn, but not error,
-regardless of the source.
+برای سازگاری با نسخه‌های قبلی، فعال‌کردن قابلیت‌های پیش‌نمایش که وجود ندارند، صرف‌نظر از منبع، هشدار می‌دهد اما خطا نمی‌دهد.
 
-## Using preview features
+## استفاده از قابلیت‌های پیش‌نمایش {#using-preview-features}
 
-Often, preview features can be used without changing any preview settings if the behavior change is
-gated by user interaction. For example, while `pylock.toml` support is in preview, you can use
-`uv pip install` with a `pylock.toml` file without additional configuration because specifying the
-`pylock.toml` file indicates you want to use the feature. However, a warning will be displayed that
-the feature is in preview. The preview feature can be enabled to silence the warning.
+اغلب می‌توان از قابلیت‌های پیش‌نمایش بدون تغییر تنظیمات پیش‌نمایش استفاده کرد، اگر تغییر رفتار به تعامل کاربر وابسته باشد. برای مثال، در حالی که پشتیبانی از `pylock.toml` در مرحلهٔ پیش‌نمایش است، می‌توانید از `uv pip install` با یک فایل `pylock.toml` بدون پیکربندی اضافه استفاده کنید، زیرا مشخص‌کردن فایل `pylock.toml` نشان می‌دهد که می‌خواهید از این قابلیت استفاده کنید. با این حال، هشداری نمایش داده می‌شود که این قابلیت در مرحلهٔ پیش‌نمایش است. می‌توان قابلیت پیش‌نمایش را فعال کرد تا هشدار خاموش شود.
 
-## Available preview features
+## قابلیت‌های پیش‌نمایش موجود {#available-preview-features}
 
-The following preview features are available:
+قابلیت‌های پیش‌نمایش زیر موجودند:
 
 --8<-- "docs/reference/.preview-features.md"
 
-## Disabling preview features
+## غیرفعال‌کردن قابلیت‌های پیش‌نمایش {#disabling-preview-features}
 
-The `--no-preview` option can be used to disable preview features.
+می‌توان از گزینهٔ `--no-preview` برای غیرفعال‌کردن قابلیت‌های پیش‌نمایش استفاده کرد.

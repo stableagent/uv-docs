@@ -1,22 +1,16 @@
-# Configuration files
+# فایل‌های پیکربندی {#configuration-files}
 
-uv supports persistent configuration files at both the project- and user-level.
+uv از فایل‌های پیکربندی پایدار هم در سطح project و هم در سطح کاربر پشتیبانی می‌کند.
 
-Specifically, uv will search for a `pyproject.toml` or `uv.toml` file in the current directory, or
-in the nearest parent directory.
+به‌طور مشخص، uv در پوشهٔ جاری یا در نزدیک‌ترین پوشهٔ والد، به‌دنبال فایل `pyproject.toml` یا `uv.toml` می‌گردد.
 
 !!! note
 
-    For `tool` commands, which operate at the user level, local configuration
-    files will be ignored. Instead, uv will exclusively read from user-level configuration
-    (e.g., `~/.config/uv/uv.toml`) and system-level configuration (e.g., `/etc/uv/uv.toml`).
+    برای دستورهای `tool` که در سطح کاربر عمل می‌کنند، فایل‌های پیکربندی محلی نادیده گرفته می‌شوند. در عوض، uv فقط از پیکربندی سطح کاربر (مثلاً `~/.config/uv/uv.toml`) و پیکربندی سطح سیستم (مثلاً `/etc/uv/uv.toml`) می‌خواند.
 
-In workspaces, uv will begin its search at the workspace root, ignoring any configuration defined in
-workspace members. Since the workspace is locked as a single unit, configuration is shared across
-all members.
+در workspaceها، uv جست‌وجوی خود را از ریشهٔ workspace آغاز می‌کند و هر پیکربندی تعریف‌شده در اعضای workspace را نادیده می‌گیرد. از آنجا که workspace به‌عنوان یک واحد قفل می‌شود، پیکربندی بین همهٔ اعضا مشترک است.
 
-If a `pyproject.toml` file is found, uv will read configuration from the `[tool.uv]` table. For
-example, to set a persistent index URL, add the following to a `pyproject.toml`:
+اگر فایل `pyproject.toml` پیدا شود، uv پیکربندی را از جدول `[tool.uv]` می‌خواند. برای مثال، برای تنظیم یک index URL پایدار، موارد زیر را به یک `pyproject.toml` اضافه کنید:
 
 ```toml title="pyproject.toml"
 [[tool.uv.index]]
@@ -24,11 +18,9 @@ url = "https://test.pypi.org/simple"
 default = true
 ```
 
-(If there is no such table, the `pyproject.toml` file will be ignored, and uv will continue
-searching in the directory hierarchy.)
+(اگر چنین جدولی وجود نداشته باشد، فایل `pyproject.toml` نادیده گرفته می‌شود و uv به جست‌وجو در سلسله‌مراتب پوشه‌ها ادامه می‌دهد.)
 
-uv will also search for `uv.toml` files, which follow an identical structure, but omit the
-`[tool.uv]` prefix. For example:
+uv همچنین به‌دنبال فایل‌های `uv.toml` می‌گردد که ساختاری یکسان دارند، اما پیشوند `[tool.uv]` را ندارند. برای مثال:
 
 ```toml title="uv.toml"
 [[index]]
@@ -38,54 +30,35 @@ default = true
 
 !!! note
 
-    `uv.toml` files take precedence over `pyproject.toml` files, so if both `uv.toml` and
-    `pyproject.toml` files are present in a directory, configuration will be read from `uv.toml`, and
-    the `[tool.uv]` section in the accompanying `pyproject.toml` will be ignored.
+    فایل‌های `uv.toml` بر فایل‌های `pyproject.toml` اولویت دارند، پس اگر هر دو فایل `uv.toml` و `pyproject.toml` در یک پوشه وجود داشته باشند، پیکربندی از `uv.toml` خوانده می‌شود و بخش `[tool.uv]` در `pyproject.toml` همراه نادیده گرفته می‌شود.
 
-uv will also discover `uv.toml` configuration files in the user- and system-level
-[configuration directories](../reference/storage.md#configuration-directories), e.g., user-level
-configuration in `~/.config/uv/uv.toml` on macOS and Linux, or `%APPDATA%\uv\uv.toml` on Windows,
-and system-level configuration at `/etc/uv/uv.toml` on macOS and Linux, or
-`%PROGRAMDATA%\uv\uv.toml` on Windows.
+uv همچنین فایل‌های پیکربندی `uv.toml` را در [پوشه‌های پیکربندی](../reference/storage.md#configuration-directories) سطح کاربر و سطح سیستم پیدا می‌کند؛ مثلاً پیکربندی سطح کاربر در `~/.config/uv/uv.toml` در macOS و Linux یا `%APPDATA%\uv\uv.toml` در Windows، و پیکربندی سطح سیستم در `/etc/uv/uv.toml` در macOS و Linux یا `%PROGRAMDATA%\uv\uv.toml` در Windows.
 
 !!! important
 
-    User- and system-level configuration files cannot use the `pyproject.toml` format.
+    فایل‌های پیکربندی سطح کاربر و سطح سیستم نمی‌توانند از قالب `pyproject.toml` استفاده کنند.
 
-If project-, user-, and system-level configuration files are found, the settings will be merged,
-with project-level configuration taking precedence over the user-level configuration, and user-level
-configuration taking precedence over the system-level configuration. (If multiple system-level
-configuration files are found, e.g., at both `/etc/uv/uv.toml` and `$XDG_CONFIG_DIRS/uv/uv.toml`,
-only the first-discovered file will be used, with XDG taking priority.)
+اگر فایل‌های پیکربندی سطح project و سطح کاربر و سطح سیستم پیدا شوند، تنظیمات ادغام می‌شوند؛ به‌این صورت که پیکربندی سطح project بر پیکربندی سطح کاربر اولویت دارد و پیکربندی سطح کاربر بر پیکربندی سطح سیستم اولویت دارد. (اگر چند فایل پیکربندی سطح سیستم پیدا شوند، مثلاً هم در `/etc/uv/uv.toml` و هم در `$XDG_CONFIG_DIRS/uv/uv.toml`، فقط اولین فایلِ پیدا‌شده استفاده می‌شود و XDG اولویت دارد.)
 
-For example, if a string, number, or boolean is present in both the project- and user-level
-configuration tables, the project-level value will be used, and the user-level value will be
-ignored. If an array is present in both tables, the arrays will be concatenated, with the
-project-level settings appearing earlier in the merged array.
+برای مثال، اگر یک رشته، عدد یا مقدار بولی در هر دو جدول پیکربندی سطح project و سطح کاربر وجود داشته باشد، مقدار سطح project استفاده می‌شود و مقدار سطح کاربر نادیده گرفته می‌شود. اگر یک آرایه در هر دو جدول وجود داشته باشد، آرایه‌ها به هم متصل می‌شوند و تنظیمات سطح project در آرایهٔ ادغام‌شده زودتر ظاهر می‌شوند.
 
-Settings provided via environment variables take precedence over persistent configuration, and
-settings provided via the command line take precedence over both.
+تنظیماتی که از طریق environment variableها ارائه می‌شوند، بر پیکربندی پایدار اولویت دارند و تنظیماتی که از طریق خط دستور ارائه می‌شوند، بر هر دو اولویت دارند.
 
-uv accepts a `--no-config` command-line argument which, when provided, disables the discovery of any
-persistent configuration.
+uv یک آرگومان خط دستور `--no-config` می‌پذیرد که هنگام ارائه، کشف هرگونه پیکربندی پایدار را غیرفعال می‌کند.
 
-uv also accepts a `--config-file` command-line argument, which accepts a path to a `uv.toml` to use
-as the configuration file. When provided, this file will be used in place of _any_ discovered
-configuration files (e.g., user-level configuration will be ignored).
+uv همچنین یک آرگومان خط دستور `--config-file` می‌پذیرد که مسیری به یک `uv.toml` را می‌گیرد تا به‌عنوان فایل پیکربندی استفاده شود. هنگام ارائه، این فایل به‌جای _هر_ فایل پیکربندیِ کشف‌شده‌ای استفاده می‌شود (مثلاً پیکربندی سطح کاربر نادیده گرفته می‌شود).
 
-## Settings
+## تنظیمات {#settings}
 
-See the [settings reference](../reference/settings.md) for an enumeration of the available settings.
+برای فهرست تنظیمات موجود، [مرجع تنظیمات](../reference/settings.md) را ببینید.
 
-## Environment variable files
+## فایل‌های environment variable {#environment-variable-files}
 
-`uv run` can load environment variables from dotenv files (e.g., `.env`, `.env.local`,
-`.env.development`), powered by the [`dotenvy`](https://github.com/allan2/dotenvy) crate.
+`uv run` می‌تواند environment variableها را از فایل‌های dotenv (مثلاً `.env`، `.env.local`، `.env.development`) بارگذاری کند؛ این قابلیت با crate [`dotenvy`](https://github.com/allan2/dotenvy) پیاده‌سازی شده است.
 
-To load a `.env` file from a dedicated location, set the `UV_ENV_FILE` environment variable, or pass
-the `--env-file` flag to `uv run`.
+برای بارگذاری یک فایل `.env` از یک مکان مشخص، environment variable `UV_ENV_FILE` را تنظیم کنید یا فلگ `--env-file` را به `uv run` بدهید.
 
-For example, to load environment variables from a `.env` file in the current working directory:
+برای مثال، برای بارگذاری environment variableها از یک فایل `.env` در پوشهٔ کاری جاری:
 
 ```console
 $ echo "MY_VAR='Hello, world!'" > .env
@@ -93,32 +66,19 @@ $ uv run --env-file .env -- python -c 'import os; print(os.getenv("MY_VAR"))'
 Hello, world!
 ```
 
-The `--env-file` flag can be provided multiple times, with subsequent files overriding values
-defined in previous files. To provide multiple files via the `UV_ENV_FILE` environment variable,
-separate the paths with a space (e.g., `UV_ENV_FILE="/path/to/file1 /path/to/file2"`).
+فلگ `--env-file` را می‌توان چند بار ارائه کرد و فایل‌های بعدی، مقادیر تعریف‌شده در فایل‌های قبلی را بازنویسی می‌کنند. برای ارائهٔ چند فایل از طریق environment variable `UV_ENV_FILE`، مسیرها را با فاصله از هم جدا کنید (مثلاً `UV_ENV_FILE="/path/to/file1 /path/to/file2"`).
 
-To disable dotenv loading (e.g., to override `UV_ENV_FILE` or the `--env-file` command-line
-argument), set the `UV_NO_ENV_FILE` environment variable to `1`, or pass the `--no-env-file` flag to
-`uv run`.
+برای غیرفعال‌کردن بارگذاری dotenv (مثلاً برای بازنویسی `UV_ENV_FILE` یا آرگومان خط دستور `--env-file`)، environment variable `UV_NO_ENV_FILE` را روی `1` تنظیم کنید یا فلگ `--no-env-file` را به `uv run` بدهید.
 
-If the same variable is defined in the environment and in a `.env` file, the value from the
-environment will take precedence.
+اگر یک متغیر هم در environment و هم در یک فایل `.env` تعریف شده باشد، مقدار environment اولویت دارد.
 
-## Configuring the pip interface
+## پیکربندی رابط pip {#configuring-the-pip-interface}
 
-A dedicated [`[tool.uv.pip]`](../reference/settings.md#pip) section is provided for configuring
-_just_ the `uv pip` command line interface. Settings in this section will not apply to `uv` commands
-outside the `uv pip` namespace. However, many of the settings in this section have corollaries in
-the top-level namespace which _do_ apply to the `uv pip` interface unless they are overridden by a
-value in the `uv.pip` section.
+یک بخش اختصاصی [`[tool.uv.pip]`](../reference/settings.md#pip) برای پیکربندی _فقط_ رابط خط دستور `uv pip` ارائه شده است. تنظیمات این بخش روی دستورهای `uv` خارج از فضای نام `uv pip` اعمال نمی‌شوند. با این حال، بسیاری از تنظیمات این بخش در فضای نام سطح بالا معادل‌هایی دارند که _روی_ رابط `uv pip` اعمال می‌شوند، مگر اینکه با مقداری در بخش `uv.pip` بازنویسی شوند.
 
-The `uv.pip` settings are designed to adhere closely to pip's interface and are declared separately
-to retain compatibility while allowing the global settings to use alternate designs (e.g.,
-`--no-build`).
+تنظیمات `uv.pip` طوری طراحی شده‌اند که به رابط pip نزدیک باشند و جداگانه اعلام شده‌اند تا سازگاری حفظ شود و در عین حال تنظیمات سراسری بتوانند از طراحی‌های جایگزین استفاده کنند (مثلاً `--no-build`).
 
-As an example, setting the `index-url` under `[tool.uv.pip]`, as in the following `pyproject.toml`,
-would only affect the `uv pip` subcommands (e.g., `uv pip install`, but not `uv sync`, `uv lock`, or
-`uv run`):
+به‌عنوان مثال، تنظیم `index-url` در بخش `[tool.uv.pip]`، مانند `pyproject.toml` زیر، فقط روی زیردستورهای `uv pip` اثر می‌گذارد (مثلاً `uv pip install`، اما نه `uv sync`، `uv lock` یا `uv run`):
 
 ```toml title="pyproject.toml"
 [tool.uv.pip]

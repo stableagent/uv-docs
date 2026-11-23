@@ -23,24 +23,24 @@ theme:
     - media: "(prefers-color-scheme)"
       toggle:
         icon: material/brightness-auto
-        name: Switch to light mode
+        name: تغییر به حالت روشن
     - media: "(prefers-color-scheme: light)"
       scheme: astral-light
       toggle:
         icon: material/brightness-7
-        name: Switch to dark mode
+        name: تغییر به حالت تیره
     - media: "(prefers-color-scheme: dark)"
       scheme: astral-dark
       toggle:
         icon: material/brightness-4
-        name: Switch to system preference
+        name: تغییر به ترجیح سیستم
   custom_dir: docs/.overrides
 repo_url: https://github.com/astral-sh/uv
 repo_name: uv
 site_author: charliermarsh
 site_url: https://docs.astral.sh/uv/
 site_dir: site/uv
-site_description: uv is an extremely fast Python package and project manager, written in Rust.
+site_description: uv یک مدیر package و project بسیار سریع برای Python است که با Rust نوشته شده است.
 markdown_extensions:
   - admonition
   - pymdownx.details
@@ -181,24 +181,24 @@ extra:
     - icon: fontawesome/brands/x-twitter
       link: https://x.com/astral_sh
 nav:
-  - Introduction: index.md
-  - Getting started:
+  - معرفی: index.md
+  - شروع کار:
       - getting-started/index.md
-      - Installation: getting-started/installation.md
-      - First steps: getting-started/first-steps.md
-      - Features: getting-started/features.md
-      - Getting help: getting-started/help.md
-  - Guides:
+      - نصب uv: getting-started/installation.md
+      - قدم‌های اول با uv: getting-started/first-steps.md
+      - قابلیت‌ها: getting-started/features.md
+      - دریافت کمک: getting-started/help.md
+  - راهنماها:
       - guides/index.md
-      - Installing Python: guides/install-python.md
-      - Running scripts: guides/scripts.md
-      - Using tools: guides/tools.md
-      - Working on projects: guides/projects.md
-      - Publishing packages: guides/package.md
-      - Migration:
+      - نصب Python: guides/install-python.md
+      - اجرای scriptها: guides/scripts.md
+      - استفاده از toolها: guides/tools.md
+      - کار کردن روی پروژه‌ها: guides/projects.md
+      - ساخت و انتشار یک package: guides/package.md
+      - مهاجرت:
           - guides/migration/index.md
-          - From pip to a uv project: guides/migration/pip-to-project.md
-      - Integrations:
+          - مهاجرت از pip به یک uv project: guides/migration/pip-to-project.md
+      - یکپارچه‌سازی‌ها:
           - guides/integration/index.md
           - Docker: guides/integration/docker.md
           - Jupyter: guides/integration/jupyter.md
@@ -217,68 +217,68 @@ nav:
           - Dependabot: guides/integration/dependabot.md
           - AWS Lambda: guides/integration/aws-lambda.md
           - Coiled: guides/integration/coiled.md
-  - Concepts:
+  - مفاهیم:
       - concepts/index.md
-      - Projects:
+      - projectها:
           - concepts/projects/index.md
-          - Structure and files: concepts/projects/layout.md
-          - Creating projects: concepts/projects/init.md
-          - Managing dependencies: concepts/projects/dependencies.md
-          - Running commands: concepts/projects/run.md
-          - Locking and syncing: concepts/projects/sync.md
-          - Configuring projects: concepts/projects/config.md
-          - Building distributions: concepts/projects/build.md
-          - Exporting lockfiles: concepts/projects/export.md
-          - Using workspaces: concepts/projects/workspaces.md
-      - Tools: concepts/tools.md
-      - Python versions: concepts/python-versions.md
-      - Configuration files: concepts/configuration-files.md
-      - Package indexes: concepts/indexes.md
+          - ساختار و فایل‌های project: concepts/projects/layout.md
+          - ایجاد پروژه‌ها: concepts/projects/init.md
+          - مدیریت dependencies: concepts/projects/dependencies.md
+          - اجرای دستورها در projectها: concepts/projects/run.md
+          - قفل کردن و همگام‌سازی: concepts/projects/sync.md
+          - پیکربندی projectها: concepts/projects/config.md
+          - ساخت distributionها: concepts/projects/build.md
+          - خروجی گرفتن از یک lockfile: concepts/projects/export.md
+          - استفاده از workspaceها: concepts/projects/workspaces.md
+      - toolها: concepts/tools.md
+      - نسخه‌های Python: concepts/python-versions.md
+      - فایل‌های پیکربندی: concepts/configuration-files.md
+      - ایندکس‌های package: concepts/indexes.md
       - Resolution: concepts/resolution.md
-      - Build backend: concepts/build-backend.md
-      - Authentication:
+      - بک‌اند بیلد uv: concepts/build-backend.md
+      - احراز هویت:
           - concepts/authentication/index.md
-          - The auth CLI: concepts/authentication/cli.md
-          - HTTP credentials: concepts/authentication/http.md
-          - Git credentials: concepts/authentication/git.md
-          - TLS certificates: concepts/authentication/certificates.md
-          - Third-party services: concepts/authentication/third-party.md
-      - Caching: concepts/cache.md
-      - Preview features: concepts/preview.md
+          - CLI ابزار uv auth: concepts/authentication/cli.md
+          - credentialهای HTTP: concepts/authentication/http.md
+          - credentialهای Git: concepts/authentication/git.md
+          - گواهی‌های TLS: concepts/authentication/certificates.md
+          - سرویس‌های شخص ثالث: concepts/authentication/third-party.md
+      - cache کردن: concepts/cache.md
+      - قابلیت‌های پیش‌نمایش: concepts/preview.md
       # Note:  The `pip` section was moved to the `concepts/` section but the
       # top-level directory structure was retained to ease the transition.
-      - The pip interface:
+      - رابط pip:
           - pip/index.md
-          - Using environments: pip/environments.md
-          - Managing packages: pip/packages.md
-          - Inspecting environments: pip/inspection.md
-          - Declaring dependencies: pip/dependencies.md
-          - Locking environments: pip/compile.md
-          - Compatibility with pip: pip/compatibility.md
-  - Reference:
+          - استفاده از environment‌های Python: pip/environments.md
+          - مدیریت package‌ها: pip/packages.md
+          - بازرسی environment‌ها: pip/inspection.md
+          - اعلام dependency‌ها: pip/dependencies.md
+          - قفل کردن environment‌ها: pip/compile.md
+          - سازگاری با pip و pip-tools: pip/compatibility.md
+  - مرجع:
       - reference/index.md
-      - Commands: reference/cli.md
-      - Settings: reference/settings.md
-      - Environment variables: reference/environment.md
-      - Storage: reference/storage.md
-      - Installer options: reference/installer.md
-      - Troubleshooting:
+      - دستورها: reference/cli.md
+      - تنظیمات: reference/settings.md
+      - متغیرهای environment: reference/environment.md
+      - ذخیره‌سازی: reference/storage.md
+      - نصب‌کنندهٔ uv: reference/installer.md
+      - عیب‌یابی:
           - reference/troubleshooting/index.md
-          - Build failures: reference/troubleshooting/build-failures.md
-          - Reproducible examples: reference/troubleshooting/reproducible-examples.md
-      - Contributing: reference/contributing.md
-      - Internals:
+          - عیب‌یابی خطاهای build: reference/troubleshooting/build-failures.md
+          - مثال‌های قابل تکرار: reference/troubleshooting/reproducible-examples.md
+      - مشارکت: reference/contributing.md
+      - بخش‌های داخلی:
           - reference/internals/index.md
-          - Resolver: reference/internals/resolver.md
-          - Workspace Metadata: reference/internals/metadata.md
-      - Benchmarks: reference/benchmarks.md
-      - Policies:
+          - بخش‌های داخلی resolver: reference/internals/resolver.md
+          - metadata مربوط به workspace: reference/internals/metadata.md
+      - بنچمارک‌ها: reference/benchmarks.md
+      - سیاست‌ها:
           - reference/policies/index.md
-          - Versioning: reference/policies/versioning.md
-          - Platform support: reference/policies/platforms.md
-          - Python support: reference/policies/python.md
-          - Rust support: reference/policies/rust.md
-          - License: reference/policies/license.md
+          - نسخه‌بندی: reference/policies/versioning.md
+          - پشتیبانی از platform: reference/policies/platforms.md
+          - پشتیبانی از Python: reference/policies/python.md
+          - پشتیبانی از Rust: reference/policies/rust.md
+          - مجوز: reference/policies/license.md
 validation:
   omitted_files: warn
   absolute_links: warn

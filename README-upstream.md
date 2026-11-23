@@ -1,49 +1,49 @@
-# uv
+# uv {#uv}
 
-<a href="https://pypi.python.org/pypi/uv"><img src="https://img.shields.io/pypi/v/uv.svg" alt="Latest PyPI version" /></a>
-<a href="https://pypi.python.org/pypi/uv"><img src="https://img.shields.io/pypi/pyversions/uv.svg" alt="Supported Python versions" /></a>
+<a href="https://pypi.python.org/pypi/uv"><img src="https://img.shields.io/pypi/v/uv.svg" alt="آخرین version در PyPI" /></a>
+<a href="https://pypi.python.org/pypi/uv"><img src="https://img.shields.io/pypi/pyversions/uv.svg" alt="Python version های پشتیبانی‌شده" /></a>
 <a href="https://discord.gg/astral-sh"><img src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white" alt="Discord" /></a>
 
-An extremely fast Python package and project manager, written in Rust.
+یک مدیر package و project بسیار سریع برای Python که با Rust نوشته شده است.
 
 <p align="center">
   <picture align="center">
     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/astral-sh/uv/assets/1309177/03aa9163-1c79-4a87-a31d-7a9311ed9310">
     <source media="(prefers-color-scheme: light)" srcset="https://github.com/astral-sh/uv/assets/1309177/629e59c0-9c6e-4013-9ad4-adb2bcf5080d">
-    <img alt="Shows a bar chart with benchmark results." src="https://github.com/astral-sh/uv/assets/1309177/629e59c0-9c6e-4013-9ad4-adb2bcf5080d">
+    <img alt="نمودار میله‌ای با نتایج benchmark را نشان می‌دهد." src="https://github.com/astral-sh/uv/assets/1309177/629e59c0-9c6e-4013-9ad4-adb2bcf5080d">
   </picture>
 </p>
 
 <p align="center">
-  <i>Installing <a href="https://trio.readthedocs.io/">Trio</a>'s dependencies with a warm cache.</i>
+  <i>نصب dependencies های <a href="https://trio.readthedocs.io/">Trio</a> با یک cache گرم.</i>
 </p>
 
-## Highlights
+## نکات برجسته {#highlights}
 
-- A single tool to replace `pip`, `pip-tools`, `pipx`, `poetry`, `pyenv`, `twine`, `virtualenv`, and
-  more.
-- [10-100x faster](https://github.com/astral-sh/uv/blob/main/BENCHMARKS.md) than `pip`.
-- Provides [comprehensive project management](#projects), with a
-  [universal lockfile](https://docs.astral.sh/uv/concepts/projects/layout#the-lockfile).
-- [Runs scripts](#scripts), with support for
-  [inline dependency metadata](https://docs.astral.sh/uv/guides/scripts#declaring-script-dependencies).
-- [Installs and manages](#python-versions) Python versions.
-- [Runs and installs](#tools) tools published as Python packages.
-- Includes a [pip-compatible interface](#the-pip-interface) for a performance boost with a familiar
-  CLI.
-- Supports Cargo-style [workspaces](https://docs.astral.sh/uv/concepts/projects/workspaces) for
-  scalable projects.
-- Disk-space efficient, with a [global cache](https://docs.astral.sh/uv/concepts/cache) for
-  dependency deduplication.
-- Installable without Rust or Python via `curl` or `pip`.
-- Supports macOS, Linux, and Windows.
+- یک tool واحد که جایگزین `pip`، `pip-tools`، `pipx`، `poetry`، `pyenv`، `twine`، `virtualenv` و
+  موارد دیگر می‌شود.
+- [۱۰ تا ۱۰۰ برابر سریع‌تر](https://github.com/astral-sh/uv/blob/main/BENCHMARKS.md) از `pip`.
+- [مدیریت جامع project](#projects) را فراهم می‌کند، همراه با یک
+  [lockfile سراسری](https://docs.astral.sh/uv/concepts/projects/layout#the-lockfile).
+- [اجرای script ها](#scripts)، با پشتیبانی از
+  [metadata درون‌خطی dependency](https://docs.astral.sh/uv/guides/scripts#declaring-script-dependencies).
+- [نصب و مدیریت](#python-versions) Python version ها.
+- [اجرا و نصب](#tools) tool های منتشرشده به‌عنوان package های Python.
+- شامل یک [رابط سازگار با pip](#the-pip-interface) برای افزایش کارایی با یک CLI
+  آشنا است.
+- از [workspace](https://docs.astral.sh/uv/concepts/projects/workspaces) های به‌سبک Cargo برای
+  project های مقیاس‌پذیر پشتیبانی می‌کند.
+- بهینه در مصرف فضای دیسک، با یک [cache سراسری](https://docs.astral.sh/uv/concepts/cache) برای
+  حذف تکراری dependency ها.
+- قابل نصب بدون Rust یا Python با `curl` یا `pip`.
+- از macOS و Linux و Windows پشتیبانی می‌کند.
 
-uv is backed by [Astral](https://astral.sh), the creators of
-[Ruff](https://github.com/astral-sh/ruff) and [ty](https://github.com/astral-sh/ty).
+uv از سوی [Astral](https://astral.sh) پشتیبانی می‌شود؛ سازندگان
+[Ruff](https://github.com/astral-sh/ruff) و [ty](https://github.com/astral-sh/ty).
 
-## Installation
+## نصب {#installation}
 
-Install uv with our standalone installers:
+uv را با installer های مستقل ما نصب کنید:
 
 ```bash
 # On macOS and Linux.
@@ -55,7 +55,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-Or, from [PyPI](https://pypi.org/project/uv/):
+یا از [PyPI](https://pypi.org/project/uv/):
 
 ```bash
 # With pip.
@@ -67,27 +67,27 @@ pip install uv
 pipx install uv
 ```
 
-If installed via the standalone installer, uv can update itself to the latest version:
+اگر با installer مستقل نصب شده باشد، uv می‌تواند خودش را به آخرین version به‌روز کند:
 
 ```bash
 uv self update
 ```
 
-See the [installation documentation](https://docs.astral.sh/uv/getting-started/installation/) for
-details and alternative installation methods.
+برای جزئیات و روش‌های نصب جایگزین، [مستندات نصب](https://docs.astral.sh/uv/getting-started/installation/)
+را ببینید.
 
-## Documentation
+## مستندات {#documentation}
 
-uv's documentation is available at [docs.astral.sh/uv](https://docs.astral.sh/uv).
+مستندات uv در [docs.astral.sh/uv](https://docs.astral.sh/uv) در دسترس است.
 
-Additionally, the command line reference documentation can be viewed with `uv help`.
+علاوه بر این، مستندات مرجع خط فرمان را می‌توان با `uv help` مشاهده کرد.
 
-## Features
+## قابلیت‌ها {#features}
 
-### Projects
+### Project ها {#projects}
 
-uv manages project dependencies and environments, with support for lockfiles, workspaces, and more,
-similar to `rye` or `poetry`:
+uv dependency ها و environment های project را مدیریت می‌کند، با پشتیبانی از lockfile ها،
+workspace ها و موارد دیگر، مشابه `rye` یا `poetry`:
 
 ```console
 $ uv init example
@@ -115,16 +115,16 @@ Resolved 2 packages in 0.70ms
 Checked 1 package in 0.02ms
 ```
 
-See the [project documentation](https://docs.astral.sh/uv/guides/projects/) to get started.
+برای شروع، [مستندات project](https://docs.astral.sh/uv/guides/projects/) را ببینید.
 
-uv also supports building and publishing projects, even if they're not managed with uv. See the
-[publish guide](https://docs.astral.sh/uv/guides/publish/) to learn more.
+uv از build و منتشر کردن project ها هم پشتیبانی می‌کند، حتی اگر با uv مدیریت نشوند. برای
+اطلاعات بیشتر، [راهنمای publish](https://docs.astral.sh/uv/guides/publish/) را ببینید.
 
-### Scripts
+### Script ها {#scripts}
 
-uv manages dependencies and environments for single-file scripts.
+uv dependency ها و environment ها را برای script های تک‌فایلی مدیریت می‌کند.
 
-Create a new script and add inline metadata declaring its dependencies:
+یک script جدید بسازید و metadata درون‌خطی که dependency های آن را اعلام می‌کند اضافه کنید:
 
 ```console
 $ echo 'import requests; print(requests.get("https://astral.sh"))' > example.py
@@ -133,7 +133,7 @@ $ uv add --script example.py requests
 Updated `example.py`
 ```
 
-Then, run the script in an isolated virtual environment:
+سپس، script را در یک virtual environment مجزا اجرا کنید:
 
 ```console
 $ uv run example.py
@@ -142,13 +142,13 @@ Installed 5 packages in 12ms
 <Response [200]>
 ```
 
-See the [scripts documentation](https://docs.astral.sh/uv/guides/scripts/) to get started.
+برای شروع، [مستندات script ها](https://docs.astral.sh/uv/guides/scripts/) را ببینید.
 
-### Tools
+### Tool ها {#tools}
 
-uv executes and installs command-line tools provided by Python packages, similar to `pipx`.
+uv tool های خط فرمان ارائه‌شده توسط package های Python را اجرا و نصب می‌کند، مشابه `pipx`.
 
-Run a tool in an ephemeral environment using `uvx` (an alias for `uv tool run`):
+یک tool را در یک environment موقت با `uvx` اجرا کنید (نام مستعار `uv tool run`):
 
 ```console
 $ uvx pycowsay 'hello world!'
@@ -167,7 +167,7 @@ Installed 1 package in 9ms
            ||     ||
 ```
 
-Install a tool with `uv tool install`:
+یک tool را با `uv tool install` نصب کنید:
 
 ```console
 $ uv tool install ruff
@@ -180,13 +180,13 @@ $ ruff --version
 ruff 0.5.0
 ```
 
-See the [tools documentation](https://docs.astral.sh/uv/guides/tools/) to get started.
+برای شروع، [مستندات tool ها](https://docs.astral.sh/uv/guides/tools/) را ببینید.
 
-### Python versions
+### Python version ها {#python-versions}
 
-uv installs Python and allows quickly switching between versions.
+uv Python را نصب می‌کند و امکان جابه‌جایی سریع بین version ها را می‌دهد.
 
-Install multiple Python versions:
+چند Python version نصب کنید:
 
 ```console
 $ uv python install 3.12 3.13 3.14
@@ -197,7 +197,7 @@ Installed 3 versions in 972ms
 
 ```
 
-Download Python versions as needed:
+Python version ها را در صورت نیاز دانلود کنید:
 
 ```console
 $ uv venv --python 3.12.0
@@ -212,28 +212,27 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>>>
 ```
 
-Use a specific Python version in the current directory:
+از یک Python version مشخص در پوشهٔ جاری استفاده کنید:
 
 ```console
 $ uv python pin 3.11
 Pinned `.python-version` to `3.11`
 ```
 
-See the [Python installation documentation](https://docs.astral.sh/uv/guides/install-python/) to get
-started.
+برای شروع، [مستندات نصب Python](https://docs.astral.sh/uv/guides/install-python/) را ببینید.
 
-### The pip interface
+### رابط pip {#the-pip-interface}
 
-uv provides a drop-in replacement for common `pip`, `pip-tools`, and `virtualenv` commands.
+uv یک جایگزین drop-in برای دستورهای رایج `pip`، `pip-tools` و `virtualenv` فراهم می‌کند.
 
-uv extends their interfaces with advanced features, such as dependency version overrides,
-platform-independent resolutions, reproducible resolutions, alternative resolution strategies, and
-more.
+uv رابط‌های آن‌ها را با قابلیت‌های پیشرفته گسترش می‌دهد؛ مانند override های version
+dependency، resolution های مستقل از platform، resolution های قابل بازتولید، استراتژی‌های
+جایگزین resolution و موارد دیگر.
 
-Migrate to uv without changing your existing workflows — and experience a 10-100x speedup — with the
-`uv pip` interface.
+بدون تغییر workflow های موجود خود به uv مهاجرت کنید — و با رابط `uv pip`، سرعت ۱۰ تا ۱۰۰
+برابری را تجربه کنید.
 
-Compile requirements into a platform-independent requirements file:
+requirement ها را در یک فایل requirement مستقل از platform کامپایل کنید:
 
 ```console
 $ uv pip compile requirements.in \
@@ -242,7 +241,7 @@ $ uv pip compile requirements.in \
 Resolved 43 packages in 12ms
 ```
 
-Create a virtual environment:
+یک virtual environment بسازید:
 
 ```console
 $ uv venv
@@ -251,7 +250,7 @@ Creating virtual environment at: .venv
 Activate with: source .venv/bin/activate
 ```
 
-Install the locked requirements:
+requirement های قفل‌شده را نصب کنید:
 
 ```console
 $ uv pip sync requirements.txt
@@ -263,64 +262,64 @@ Installed 43 packages in 208ms
  ...
 ```
 
-See the [pip interface documentation](https://docs.astral.sh/uv/pip/index/) to get started.
+برای شروع، [مستندات رابط pip](https://docs.astral.sh/uv/pip/index/) را ببینید.
 
-## Contributing
+## مشارکت {#contributing}
 
-We are passionate about supporting contributors of all levels of experience and would love to see
-you get involved in the project. See the
-[contributing guide](https://github.com/astral-sh/uv?tab=contributing-ov-file#contributing) to get
-started.
+ما با اشتیاق از مشارکت‌کنندگان در همهٔ سطوح تجربه پشتیبانی می‌کنیم و دوست داریم شما را درگیر
+project ببینیم. برای شروع، [راهنمای مشارکت](https://github.com/astral-sh/uv?tab=contributing-ov-file#contributing)
+را ببینید.
 
-## FAQ
+## پرسش‌های متداول {#faq}
 
-#### How do you pronounce uv?
+#### تلفظ uv چگونه است؟ {#how-do-you-pronounce-uv}
 
-It's pronounced as "you - vee" ([`/juː viː/`](https://en.wikipedia.org/wiki/Help:IPA/English#Key))
+به‌صورت «یو – وی» تلفظ می‌شود ([`/juː viː/`](https://en.wikipedia.org/wiki/Help:IPA/English#Key))
 
-#### How should I stylize uv?
+#### uv را چطور باید نوشت؟ {#how-should-i-stylize-uv}
 
-Just "uv", please. See the [style guide](./STYLE.md#styling-uv) for details.
+فقط «uv»، لطفاً. برای جزئیات، [راهنمای سبک](./STYLE.md#styling-uv) را ببینید.
 
-#### What platforms does uv support?
+#### uv از چه platform هایی پشتیبانی می‌کند؟ {#what-platforms-does-uv-support}
 
-See uv's [platform support](https://docs.astral.sh/uv/reference/platforms/) document.
+سند [پشتیبانی platform](https://docs.astral.sh/uv/reference/platforms/) مربوط به uv را ببینید.
 
-#### Is uv ready for production?
+#### آیا uv برای production آماده است؟ {#is-uv-ready-for-production}
 
-Yes, uv is stable and widely used in production. See uv's
-[versioning policy](https://docs.astral.sh/uv/reference/versioning/) document for details.
+بله، uv پایدار است و به‌طور گسترده در production استفاده می‌شود. برای جزئیات، سند
+[سیاست versioning](https://docs.astral.sh/uv/reference/versioning/) مربوط به uv را ببینید.
 
-## Acknowledgements
+## قدردانی {#acknowledgements}
 
-uv's dependency resolver uses [PubGrub](https://github.com/pubgrub-rs/pubgrub) under the hood. We're
-grateful to the PubGrub maintainers, especially [Jacob Finkelman](https://github.com/Eh2406), for
-their support.
+resolver ی dependency مربوط به uv در پشت صحنه از [PubGrub](https://github.com/pubgrub-rs/pubgrub)
+استفاده می‌کند. ما از نگهدارندگان PubGrub، به‌ویژه [Jacob Finkelman](https://github.com/Eh2406)،
+بابت پشتیبانی‌شان سپاسگزاریم.
 
-uv's Git implementation is based on [Cargo](https://github.com/rust-lang/cargo).
+پیاده‌سازی Git در uv بر اساس [Cargo](https://github.com/rust-lang/cargo) است.
 
-Some of uv's optimizations are inspired by the great work we've seen in [pnpm](https://pnpm.io/),
-[Orogene](https://github.com/orogene/orogene), and [Bun](https://github.com/oven-sh/bun). We've also
-learned a lot from Nathaniel J. Smith's [Posy](https://github.com/njsmith/posy) and adapted its
+برخی از بهینه‌سازی‌های uv از کار بزرگی الهام گرفته شده است که در
+[pnpm](https://pnpm.io/)، [Orogene](https://github.com/orogene/orogene) و
+[Bun](https://github.com/oven-sh/bun) دیده‌ایم. ما همچنین از [Posy](https://github.com/njsmith/posy)
+متعلق به Nathaniel J. Smith چیزهای زیادی آموخته‌ایم و
 [trampoline](https://github.com/njsmith/posy/tree/main/src/trampolines/windows-trampolines/posy-trampoline)
-for Windows support.
+آن را برای پشتیبانی از Windows تطبیق داده‌ایم.
 
-## License
+## مجوز {#license}
 
-uv is licensed under either of
+uv تحت یکی از این دو مجوز است:
 
 - Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
   <https://www.apache.org/licenses/LICENSE-2.0>)
 - MIT license ([LICENSE-MIT](LICENSE-MIT) or <https://opensource.org/licenses/MIT>)
 
-at your option.
+به انتخاب شما.
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in uv
-by you, as defined in the Apache-2.0 license, shall be dually licensed as above, without any
-additional terms or conditions.
+مگر اینکه صراحتاً خلاف آن را اعلام کنید، هر مشارکتی که عمداً برای گنجاندن در uv توسط شما ارسال
+شود، همان‌طور که در مجوز Apache-2.0 تعریف شده است، تحت هر دو مجوز بالا خواهد بود، بدون هیچ شرط
+یا ضابطهٔ اضافی.
 
 <div align="center">
   <a target="_blank" href="https://astral.sh" style="background:none">
-    <img src="https://raw.githubusercontent.com/astral-sh/uv/main/assets/svg/Astral.svg" alt="Made by Astral">
+    <img src="https://raw.githubusercontent.com/astral-sh/uv/main/assets/svg/Astral.svg" alt="ساخته‌شده توسط Astral">
   </a>
 </div>

@@ -1,19 +1,19 @@
 ---
-title: Using uv with pre-commit
+title: استفاده از uv با pre-commit
 description:
-  A guide to using uv with pre-commit to automatically update lock files, export requirements, and
-  compile requirements files.
+  راهنمای استفاده از uv با pre-commit برای به‌روزرسانی خودکار lock fileها، export کردن requirements و
+  compile کردن فایل‌های requirements.
 ---
 
-# Using uv in pre-commit
+# استفاده از uv در pre-commit {#using-uv-in-pre-commit}
 
-An official pre-commit hook is provided at
-[`astral-sh/uv-pre-commit`](https://github.com/astral-sh/uv-pre-commit).
+یک hook رسمی pre-commit در
+[`astral-sh/uv-pre-commit`](https://github.com/astral-sh/uv-pre-commit) ارائه شده است.
 
-To use uv with pre-commit, add one of the following examples to the `repos` list in the
-`.pre-commit-config.yaml`.
+برای استفاده از uv با pre-commit، یکی از مثال‌های زیر را به فهرست `repos` در فایل
+`.pre-commit-config.yaml` اضافه کنید.
 
-To make sure your `uv.lock` file is up to date even if your `pyproject.toml` file was changed:
+برای اینکه مطمئن شوید فایل `uv.lock` شما به‌روز است، حتی اگر فایل `pyproject.toml` تغییر کرده باشد:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
@@ -24,7 +24,7 @@ repos:
       - id: uv-lock
 ```
 
-To keep a `requirements.txt` file in sync with your `uv.lock` file:
+برای همگام نگه داشتن فایل `requirements.txt` با فایل `uv.lock`:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
@@ -35,7 +35,7 @@ repos:
       - id: uv-export
 ```
 
-To compile requirements files:
+برای compile کردن فایل‌های requirements:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
@@ -48,7 +48,7 @@ repos:
         args: [requirements.in, -o, requirements.txt]
 ```
 
-To compile alternative requirements files, modify `args` and `files`:
+برای compile کردن فایل‌های requirements جایگزین، `args` و `files` را تغییر دهید:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:
@@ -62,7 +62,7 @@ repos:
         files: ^requirements-dev\.(in|txt)$
 ```
 
-To run the hook over multiple files at the same time, add additional entries:
+برای اجرای hook روی چند فایل به‌صورت هم‌زمان، ورودی‌های بیشتری اضافه کنید:
 
 ```yaml title=".pre-commit-config.yaml"
 repos:

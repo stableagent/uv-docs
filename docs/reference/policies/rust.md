@@ -1,9 +1,10 @@
-# Rust support
+# پشتیبانی از Rust {#rust-support}
 
-The minimum supported Rust version required to compile uv is listed in the `rust-version` key of the
-`[workspace.package]` section in `Cargo.toml`. It may change in any release (minor or patch). It
-will never be newer than N-2 Rust versions, where N is the latest stable version. For example, if
-the latest stable Rust version is 1.85, uv's minimum supported Rust version will be at most 1.83.
+حداقل نسخهٔ پشتیبانی‌شدهٔ Rust که برای کامپایل uv لازم است، در کلید `rust-version` در بخش
+`[workspace.package]` در `Cargo.toml` آمده است. این مقدار ممکن است در هر نسخه (minor یا patch)
+تغییر کند. هرگز جدیدتر از N-2 نسخهٔ Rust نخواهد بود؛ که در آن N آخرین نسخهٔ پایدار است. برای
+مثال، اگر آخرین نسخهٔ پایدار Rust برابر 1.85 باشد، حداقل نسخهٔ پشتیبانی‌شدهٔ Rust در uv حداکثر
+1.83 خواهد بود.
 
-This is only relevant to users who build uv from source. Installing uv from the Python package index
-usually installs a pre-built binary and does not require Rust compilation.
+این موضوع فقط برای کاربرانی مهم است که uv را از source می‌سازند. نصب uv از Python package index
+معمولاً یک باینری از پیش ساخته‌شده را نصب می‌کند و به کامپایل Rust نیازی ندارد.
