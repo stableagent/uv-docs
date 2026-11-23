@@ -1,0 +1,5 @@
+# MkDocs build output
+site/
+# Python / uv local cache (if you ever run uv here)
+.venv/
+__pycache__/
